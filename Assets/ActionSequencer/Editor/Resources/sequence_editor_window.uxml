@@ -11,10 +11,10 @@
                 <ActionSequencer.Editor.VisualElements.Toolbar name="TrackToolbar" />
                 <ui:ListView focusable="true" name="TrackList" reorder-mode="Animated" reorderable="true" />
             </ui:VisualElement>
-            <ui:VisualElement name="EventArea" style="background-color: rgb(92, 92, 92); flex-direction: row;">
+            <ui:VisualElement name="EventArea" style="background-color: rgb(92, 92, 92); flex-direction: row; border-left-width: 4px; visibility: visible; border-left-color: rgb(64, 64, 64);">
                 <ui:ScrollView name="EventScrollView" vertical-scroller-visibility="Hidden" mode="Horizontal">
                     <ui:VisualElement name="EventContent">
-                        <ui:VisualElement name="RulerPanel" style="height: 20px; background-color: rgb(64, 64, 64);">
+                        <ui:VisualElement name="EventRuler" style="height: 20px; background-color: rgb(64, 64, 64);">
                             <ActionSequencer.Editor.VisualElements.RulerView name="TimelineRulerView" />
                         </ui:VisualElement>
                         <ui:ScrollView horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="EventPanel">
