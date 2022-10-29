@@ -1,0 +1,45 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/ActionSequencer/Editor/Resources/sequence_editor_window.uss?fileID=7433441132597879392&amp;guid=1fa74295071c045a0a7f3915c99d18c7&amp;type=3#sequence_editor_window" />
+    <ActionSequencer.Editor.VisualElements.Toolbar>
+        <ActionSequencer.Editor.VisualElements.ToolbarMenu name="CreateMenu" text="Create" style="-unity-font-style: bold;" />
+        <ActionSequencer.Editor.VisualElements.ToolbarToggle focusable="false" name="PlayPauseToggle" class="pause_icon" />
+        <ActionSequencer.Editor.VisualElements.ObjectField name="TargetObjectField" type="ActionSequencer.SequenceClip, ActionSequencer" />
+    </ActionSequencer.Editor.VisualElements.Toolbar>
+    <ActionSequencer.Editor.VisualElements.SplitView fixed-pane-index="1" fixed-pane-initial-dimension="360">
+        <ui:VisualElement name="LeftPanel">
+            <ActionSequencer.Editor.VisualElements.SplitView fixed-pane-initial-dimension="150">
+                <ui:VisualElement name="LeftPanel" style="background-color: rgb(92, 92, 92);">
+                    <ui:VisualElement name="RulerSpace" style="height: 20px; background-color: rgb(64, 64, 64);" />
+                    <ui:ScrollView horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto" name="TrackPanel">
+                        <ui:VisualElement class="track_box" style="height: auto;">
+                            <ui:TextField picking-mode="Ignore" label="Text Field" text="filler text" readonly="false" class="track_textfield" />
+                            <ui:VisualElement class="track_spacer" />
+                        </ui:VisualElement>
+                    </ui:ScrollView>
+                </ui:VisualElement>
+                <ui:VisualElement name="RightPanel" style="background-color: rgb(92, 92, 92); flex-direction: row;">
+                    <ui:VisualElement name="SafeArea" style="height: 100%; width: 3px; background-color: rgb(64, 64, 64); opacity: 1; visibility: visible;" />
+                    <ui:ScrollView mode="Horizontal" name="TimelineScrollView" style="height: 100%; flex-direction: column; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0;">
+                        <ui:VisualElement>
+                            <ui:VisualElement name="RulerPanel" style="height: 20px; background-color: rgb(64, 64, 64);">
+                                <ActionSequencer.Editor.VisualElements.RulerView name="TimelineRulerView" />
+                            </ui:VisualElement>
+                            <ui:ScrollView horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" name="EventPanel">
+                                <ui:VisualElement name="VisualElement" class="event_box">
+                                    <ui:VisualElement class="range_event" style="width: 222px;" />
+                                    <ui:VisualElement class="range_event" />
+                                </ui:VisualElement>
+                            </ui:ScrollView>
+                        </ui:VisualElement>
+                    </ui:ScrollView>
+                </ui:VisualElement>
+            </ActionSequencer.Editor.VisualElements.SplitView>
+        </ui:VisualElement>
+        <ui:VisualElement name="RightPanel">
+            <ui:VisualElement name="Header" style="height: 20px; background-color: rgb(64, 64, 64);">
+                <ui:Label text="Inspector" display-tooltip-when-elided="true" style="-unity-font-style: bold; font-size: 12px; -unity-text-align: visible; height: 100%; margin-left: 0; padding-left: 6px;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="InspectorPanel" style="height: auto; padding-left: 4px; padding-right: 4px; padding-top: 4px; padding-bottom: 4px;" />
+        </ui:VisualElement>
+    </ActionSequencer.Editor.VisualElements.SplitView>
+</ui:UXML>

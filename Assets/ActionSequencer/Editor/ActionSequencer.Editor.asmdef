@@ -1,0 +1,18 @@
+{
+    "name": "ActionSequencer.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b7ce230c26f0a4c31a26e8847a04cc87"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

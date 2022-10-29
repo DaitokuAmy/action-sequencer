@@ -1,0 +1,170 @@
+.event_box {
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: rgb(100, 100, 100);
+    margin-bottom: 4px;
+    min-height: 21px;
+}
+
+.range_event {
+    margin-top: 1px;
+    margin-bottom: 1px;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    background-color: rgb(92, 128, 255);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    margin-left: 0;
+    margin-right: 0;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    width: 100px;
+    height: 19px;
+    border-left-color: rgba(0, 0, 0, 0.75);
+    border-right-color: rgba(0, 0, 0, 0.75);
+    border-top-color: rgba(0, 0, 0, 0.75);
+    border-bottom-color: rgba(0, 0, 0, 0.75);
+    min-width: 10px;
+}
+
+.range_event:hover {
+    border-left-color: rgb(192, 192, 255);
+    border-right-color: rgb(192, 192, 255);
+    border-top-color: rgb(192, 192, 255);
+    border-bottom-color: rgb(192, 192, 255);
+}
+
+.signal_event {
+    width: 10px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    background-color: rgb(255, 128, 128);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    white-space: nowrap;
+    color: rgba(210, 210, 210, 0);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    height: 19px;
+    translate: -5px 0;
+    border-left-color: rgba(0, 0, 0, 0.75);
+    border-right-color: rgba(0, 0, 0, 0.75);
+    border-top-color: rgba(0, 0, 0, 0.75);
+    border-bottom-color: rgba(0, 0, 0, 0.75);
+    max-width: 10px;
+    min-width: 10px;
+}
+
+.signal_event:hover {
+    border-left-color: rgb(255, 192, 192);
+    border-right-color: rgb(255, 192, 192);
+    border-top-color: rgb(255, 192, 192);
+    border-bottom-color: rgb(255, 192, 192);
+}
+
+.event--selected {
+    border-left-color: rgba(255, 255, 255, 0.5);
+    border-right-color: rgba(255, 255, 255, 0.5);
+    border-top-color: rgba(255, 255, 255, 0.5);
+    border-bottom-color: rgba(255, 255, 255, 0.5);
+}
+
+.track_box {
+    -unity-text-align: upper-left;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 4px;
+    background-color: rgb(100, 100, 100);
+    height: auto;
+}
+
+.track_textfield {
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    -unity-text-align: middle-left;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    background-color: rgb(48, 48, 48);
+    height: 21px;
+}
+
+.track_spacer {
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 21px;
+    width: 100%;
+    visibility: hidden;
+}
+
+.play_icon {
+    background-image: resource('d_PlayButton');
+    -unity-background-scale-mode: scale-to-fit;
+    width: 30px;
+}
+
+.pause_icon {
+    background-image: resource('d_PauseButton');
+    -unity-background-scale-mode: scale-to-fit;
+    width: 30px;
+}
+
+.ruler_label {
+    position: absolute;
+    font-size: 10px;
+    color: rgba(192, 192, 192, 255);
+    padding-left: 3px;
+    overflow: hidden;
+}
