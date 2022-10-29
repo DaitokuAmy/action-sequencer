@@ -16,12 +16,12 @@ namespace ActionSequencer.Editor
         {
             EditorModel = editorModel;
             
-            View.RegisterCallback<MouseDownEvent>(OnMouseDownEvent);
+            LabelView.RegisterCallback<MouseDownEvent>(OnMouseDownEvent);
             EditorModel.OnChangedSelectedTargets += OnChangedSelectedTargets;
             
             // Drag監視
-            View.Manipulator.OnDragStart += OnDragStart;
-            View.Manipulator.OnDragging += OnDragging;
+            LabelView.Manipulator.OnDragStart += OnDragStart;
+            LabelView.Manipulator.OnDragging += OnDragging;
 
             EditorModel.OnEventDragStart += OnEventDragStart;
             EditorModel.OnEventDragging += OnEventDragging;
@@ -31,10 +31,10 @@ namespace ActionSequencer.Editor
         {
             base.Dispose();
             
-            View.UnregisterCallback<MouseDownEvent>(OnMouseDownEvent);
+            LabelView.UnregisterCallback<MouseDownEvent>(OnMouseDownEvent);
             
-            View.Manipulator.OnDragStart -= OnDragStart;
-            View.Manipulator.OnDragging -= OnDragging;
+            LabelView.Manipulator.OnDragStart -= OnDragStart;
+            LabelView.Manipulator.OnDragging -= OnDragging;
 
             EditorModel.OnEventDragStart -= OnEventDragStart;
             EditorModel.OnEventDragging -= OnEventDragging;
@@ -55,7 +55,7 @@ namespace ActionSequencer.Editor
 
         private void OnEventDragStart(Object target, SequenceEventManipulator.DragType dragType)
         {
-            if (target == Model.Target || !View.Selected)
+            if (target == Model.Target || !LabelView.Selected)
             {
                 return;
             }
@@ -65,7 +65,7 @@ namespace ActionSequencer.Editor
 
         private void OnEventDragging(Object target, SequenceEventManipulator.DragInfo info)
         {
-            if (target == Model.Target || !View.Selected)
+            if (target == Model.Target || !LabelView.Selected)
             {
                 return;
             }
@@ -93,7 +93,7 @@ namespace ActionSequencer.Editor
         private void OnChangedSelectedTargets(Object[] targets)
         {
             var selected = targets.Contains(Model.Target);
-            View.Selected = selected;
+            LabelView.Selected = selected;
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ActionSequencer.Editor.VisualElements;
+using UnityEditor.UIElements;
 using ObjectField = UnityEditor.UIElements.ObjectField;
 using ToolbarMenu = UnityEditor.UIElements.ToolbarMenu;
 using ToolbarToggle = UnityEditor.UIElements.ToolbarToggle;
@@ -23,8 +24,6 @@ namespace ActionSequencer.Editor
         private SequenceEditorModel _editorModel;
         // TrackのPresenterリスト
         private readonly List<SequenceTrackPresenter> _trackPresenters = new List<SequenceTrackPresenter>();
-        // Inspector表示用
-        private UnityEditor.Editor _inspectorEditor;
         // ルーラー表示用View
         private RulerView _rulerView;
 
@@ -58,38 +57,51 @@ namespace ActionSequencer.Editor
             titleContent = new GUIContent(clip != null ? clip.name : ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow)));
             
             var root = rootVisualElement;
-            var trackPanel = root.Q<VisualElement>("TrackPanel");
-            var eventPanel = root.Q<VisualElement>("EventPanel");
-            trackPanel.Clear();
-            eventPanel.Clear();
+            var trackLabelList = root.Q<ListView>("TrackLabelList");
+            var trackList = root.Q<ListView>("TrackList");
+            trackLabelList.Bind(_editorModel.ClipModel.SerializedObject);
+            trackLabelList.makeItem = () => {
+                var trackLabelView = new SequenceTrackLabelView(0);
+                return trackLabelView;
+            };
+            trackLabelList.bindItem = (element, i) => {
+                var trackLabelView = (SequenceTrackLabelView)element;
+                var track = clip.tracks[i];
+                trackLabelView.Label = track.label;
+                trackLabelView.LineCount = track.sequenceEvents.Length;
+            };
+            trackList.Bind(_editorModel.ClipModel.SerializedObject);
+            trackList.makeItem = () => {
+                var trackView = new SequenceTrackView();
+                return trackView;
+            };
+            trackList.bindItem = (element, i) => {
+                var trackView = (SequenceTrackView)element;
+                var track = clip.tracks[i];
+                trackView.Clear();
+                foreach (var evt in track.sequenceEvents) {
+                    var eventView = default(SequenceEventView);
+                    if (evt is SequenceSignalEvent) {
+                        eventView = new SequenceSignalEventView();
+                    }
+                    else {
+                        eventView = new SequenceRangeEventView();
+                    }
+                    trackView.Add(eventView);
+                }
+            };
             
             // Inspectorパネル初期化 ※InspectorElementはLayoutに不具合があったので未使用
-            var inspectorPanel = root.Q<VisualElement>("InspectorPanel");
-            inspectorPanel.Clear();
-            var inspectorView = new IMGUIContainer();
-            inspectorPanel.Add(inspectorView);
-            inspectorView.onGUIHandler += () =>
-            {
-                if (_inspectorEditor == null)
-                {
-                    return;
-                }
-                _inspectorEditor.OnInspectorGUI();
-            };
+            var inspectorView = root.Q<InspectorView>();
+            inspectorView.Clear();
             
             // ObjectField初期化
             var objectField = root.Q<ObjectField>("TargetObjectField");
             objectField.value = clip;
 
-            _editorModel.OnChangedSelectedTargets += target =>
+            _editorModel.OnChangedSelectedTargets += targets =>
             {
-                if (_inspectorEditor != null)
-                {
-                    DestroyImmediate(_inspectorEditor);
-                    _inspectorEditor = null;
-                }
-
-                _inspectorEditor = UnityEditor.Editor.CreateEditor(target);
+                inspectorView.SetTarget(targets);
             };
 
             _editorModel.OnChangedTimeToSize += timeToSize =>
@@ -102,8 +114,8 @@ namespace ActionSequencer.Editor
             {
                 void OnAddedTrackModel(SequenceTrackModel model)
                 {
-                    var view = new SequenceTrackView(eventPanel, model.EventCount);
-                    trackPanel.Add(view);
+                    var view = new SequenceTrackLabelView(model.EventCount);
+                    trackLabelList.Add(view);
                     var presenter = new SequenceTrackPresenter(model, view, _editorModel);
                     _trackPresenters.Add(presenter);
                 }
@@ -115,7 +127,7 @@ namespace ActionSequencer.Editor
                     {
                         return;
                     }
-                    trackPanel.Remove(presenter.View);
+                    trackLabelList.Remove(presenter.LabelView);
                     presenter.Dispose();
                     _trackPresenters.Remove(presenter);
                 }
@@ -147,15 +159,15 @@ namespace ActionSequencer.Editor
             root.styleSheets.Add(styleSheet);
 
             // Scroll位置の同期
-            var trackScrollView = root.Q<ScrollView>("TrackPanel");
-            var eventScrollView = root.Q<ScrollView>("EventPanel");
-            trackScrollView.verticalScroller.valueChanged += x =>
+            var trackList = root.Q<ListView>("TrackList");
+            var eventList = root.Q<ListView>("EventList");
+            trackList.Q<ScrollView>().verticalScroller.valueChanged += x =>
             {
-                eventScrollView.verticalScroller.value = x;
+                eventList.Q<ScrollView>().verticalScroller.value = x;
             };
-            eventScrollView.verticalScroller.valueChanged += x =>
+            eventList.Q<ScrollView>().verticalScroller.valueChanged += x =>
             {
-                trackScrollView.verticalScroller.value = x;
+                trackList.Q<ScrollView>().verticalScroller.value = x;
             };
             
             // Timelineのクリップ範囲指定
@@ -254,11 +266,6 @@ namespace ActionSequencer.Editor
         /// </summary>
         private void OnDisable()
         {
-            if (_inspectorEditor != null)
-            {
-                DestroyImmediate(_inspectorEditor);
-                _inspectorEditor = null;
-            }
             _editorModel?.Dispose();
             _editorModel = null;
         }

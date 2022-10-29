@@ -6,19 +6,19 @@
     </ActionSequencer.Editor.VisualElements.Toolbar>
     <ActionSequencer.Editor.VisualElements.SplitView fixed-pane-index="1" fixed-pane-initial-dimension="360" name="EditorArea">
         <ActionSequencer.Editor.VisualElements.SplitView fixed-pane-initial-dimension="150" name="ContentArea">
-            <ui:VisualElement name="TrackArea" style="background-color: rgb(92, 92, 92);">
+            <ui:VisualElement name="TrackLabelArea" style="background-color: rgb(92, 92, 92);">
                 <ActionSequencer.Editor.VisualElements.Toolbar name="TrackToolbar">
                     <ActionSequencer.Editor.VisualElements.ToolbarMenu name="CreateMenu" text="Create" style="-unity-font-style: bold;" />
                 </ActionSequencer.Editor.VisualElements.Toolbar>
-                <ui:ListView focusable="true" name="TrackList" reorder-mode="Animated" reorderable="true" />
+                <ui:ListView focusable="true" name="TrackLabelList" reorder-mode="Animated" reorderable="true" />
             </ui:VisualElement>
-            <ui:VisualElement name="EventArea" style="background-color: rgb(92, 92, 92); border-left-width: 4px; visibility: visible; border-left-color: rgb(64, 64, 64);">
-                <ui:ScrollView name="EventScrollView" vertical-scroller-visibility="Hidden" mode="Horizontal">
-                    <ui:VisualElement name="EventContent" style="min-width: 300px;">
-                        <ui:VisualElement name="EventRuler" style="height: 20px; background-color: rgb(64, 64, 64);">
-                            <ActionSequencer.Editor.VisualElements.RulerView name="TimelineRulerView" />
+            <ui:VisualElement name="TrackArea" style="background-color: rgb(92, 92, 92); border-left-width: 4px; visibility: visible; border-left-color: rgb(64, 64, 64);">
+                <ui:ScrollView name="TrackScrollView" vertical-scroller-visibility="Hidden" mode="Horizontal">
+                    <ui:VisualElement name="TrackContent" style="min-width: 300px;">
+                        <ui:VisualElement name="TrackRuler" style="height: 20px; background-color: rgb(64, 64, 64);">
+                            <ActionSequencer.Editor.VisualElements.RulerView name="RulerView" />
                         </ui:VisualElement>
-                        <ui:ListView focusable="true" name="EventList" />
+                        <ui:ListView focusable="true" name="TrackList" />
                     </ui:VisualElement>
                 </ui:ScrollView>
             </ui:VisualElement>
