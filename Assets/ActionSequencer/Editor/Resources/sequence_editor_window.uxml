@@ -11,10 +11,9 @@
                 <ActionSequencer.Editor.VisualElements.Toolbar name="TrackToolbar" />
                 <ui:ListView focusable="true" name="TrackList" reorder-mode="Animated" reorderable="true" />
             </ui:VisualElement>
-            <ui:VisualElement name="RightPanel" style="background-color: rgb(92, 92, 92); flex-direction: row;">
-                <ui:VisualElement name="SafeArea" style="height: 100%; width: 3px; background-color: rgb(64, 64, 64); opacity: 1; visibility: visible;" />
-                <ui:ScrollView mode="Horizontal" name="TimelineScrollView" style="height: 100%; flex-direction: column; border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0;">
-                    <ui:VisualElement>
+            <ui:VisualElement name="EventArea" style="background-color: rgb(92, 92, 92); flex-direction: row;">
+                <ui:ScrollView name="EventScrollView" vertical-scroller-visibility="Hidden" mode="Horizontal">
+                    <ui:VisualElement name="EventContent">
                         <ui:VisualElement name="RulerPanel" style="height: 20px; background-color: rgb(64, 64, 64);">
                             <ActionSequencer.Editor.VisualElements.RulerView name="TimelineRulerView" />
                         </ui:VisualElement>
