@@ -7,14 +7,9 @@
     </ActionSequencer.Editor.VisualElements.Toolbar>
     <ActionSequencer.Editor.VisualElements.SplitView fixed-pane-index="1" fixed-pane-initial-dimension="360" name="EditorArea">
         <ActionSequencer.Editor.VisualElements.SplitView fixed-pane-initial-dimension="150" name="ContentArea">
-            <ui:VisualElement name="LeftPanel" style="background-color: rgb(92, 92, 92);">
-                <ui:VisualElement name="RulerSpace" style="height: 20px; background-color: rgb(64, 64, 64);" />
-                <ui:ScrollView horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto" name="TrackPanel">
-                    <ui:VisualElement class="track_box" style="height: auto;">
-                        <ui:TextField picking-mode="Ignore" label="Text Field" text="filler text" readonly="false" class="track_textfield" />
-                        <ui:VisualElement class="track_spacer" />
-                    </ui:VisualElement>
-                </ui:ScrollView>
+            <ui:VisualElement name="TrackArea" style="background-color: rgb(92, 92, 92);">
+                <ActionSequencer.Editor.VisualElements.Toolbar name="TrackToolbar" />
+                <ui:ListView focusable="true" name="TrackList" reorder-mode="Animated" reorderable="true" />
             </ui:VisualElement>
             <ui:VisualElement name="RightPanel" style="background-color: rgb(92, 92, 92); flex-direction: row;">
                 <ui:VisualElement name="SafeArea" style="height: 100%; width: 3px; background-color: rgb(64, 64, 64); opacity: 1; visibility: visible;" />
