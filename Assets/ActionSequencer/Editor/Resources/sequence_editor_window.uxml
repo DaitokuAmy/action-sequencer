@@ -1,14 +1,15 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/ActionSequencer/Editor/Resources/sequence_editor_window.uss?fileID=7433441132597879392&amp;guid=1fa74295071c045a0a7f3915c99d18c7&amp;type=3#sequence_editor_window" />
     <ActionSequencer.Editor.VisualElements.Toolbar>
-        <ActionSequencer.Editor.VisualElements.ToolbarMenu name="CreateMenu" text="Create" style="-unity-font-style: bold;" />
         <ActionSequencer.Editor.VisualElements.ToolbarToggle focusable="false" name="PlayPauseToggle" class="pause_icon" />
         <ActionSequencer.Editor.VisualElements.ObjectField name="TargetObjectField" type="ActionSequencer.SequenceClip, ActionSequencer" />
     </ActionSequencer.Editor.VisualElements.Toolbar>
     <ActionSequencer.Editor.VisualElements.SplitView fixed-pane-index="1" fixed-pane-initial-dimension="360" name="EditorArea">
         <ActionSequencer.Editor.VisualElements.SplitView fixed-pane-initial-dimension="150" name="ContentArea">
             <ui:VisualElement name="TrackArea" style="background-color: rgb(92, 92, 92);">
-                <ActionSequencer.Editor.VisualElements.Toolbar name="TrackToolbar" />
+                <ActionSequencer.Editor.VisualElements.Toolbar name="TrackToolbar">
+                    <ActionSequencer.Editor.VisualElements.ToolbarMenu name="CreateMenu" text="Create" style="-unity-font-style: bold;" />
+                </ActionSequencer.Editor.VisualElements.Toolbar>
                 <ui:ListView focusable="true" name="TrackList" reorder-mode="Animated" reorderable="true" />
             </ui:VisualElement>
             <ui:VisualElement name="EventArea" style="background-color: rgb(92, 92, 92); border-left-width: 4px; visibility: visible; border-left-color: rgb(64, 64, 64);">
