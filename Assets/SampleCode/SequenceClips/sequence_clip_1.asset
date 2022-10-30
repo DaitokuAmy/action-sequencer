@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dff04690f8b94f2b9ffd9ec73c4f20d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 1.64
+  time: 2.18
   sampleText: "\u8D64_2"
 --- !u!114 &-4127662640881806784
 MonoBehaviour:
@@ -72,7 +72,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dff04690f8b94f2b9ffd9ec73c4f20d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 1.83
+  time: 3.87
   sampleText: "\u8D64_1"
 --- !u!114 &-3857750383462134678
 MonoBehaviour:
@@ -86,8 +86,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 422016eb4a50e48c68a24ae9ec7e20d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enterTime: 0.38000008
-  exitTime: 3.38
+  enterTime: 1.44
+  exitTime: 4.4399996
   sampleStartText: "\u9752_2[start]"
   sampleEndText: "\u9752_2[end]"
 --- !u!114 &11400000
@@ -103,8 +103,8 @@ MonoBehaviour:
   m_Name: sequence_clip_1
   m_EditorClassIdentifier: 
   tracks:
-  - {fileID: -7404237039909966439}
   - {fileID: -5300569301903977854}
+  - {fileID: -7404237039909966439}
   - {fileID: 5183147729983523529}
   - {fileID: -6183317359228009316}
 --- !u!114 &840472133548464784
@@ -119,8 +119,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 422016eb4a50e48c68a24ae9ec7e20d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enterTime: 2.04
-  exitTime: 3.48
+  enterTime: 1.58
+  exitTime: 4.6400003
   sampleStartText: "\u9752_1[start]"
   sampleEndText: "\u9752_1[end]"
 --- !u!114 &5183147729983523529

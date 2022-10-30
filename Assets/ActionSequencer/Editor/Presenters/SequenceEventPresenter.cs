@@ -7,21 +7,23 @@ namespace ActionSequencer.Editor
     /// <summary>
     /// SequenceEvent用のPresenter基底
     /// </summary>
-    public abstract class SequenceEventPresenter : Presenter<SerializedObjectModel, SequenceEventView>
+    public abstract class SequenceEventPresenter : Presenter<SequenceEventModel, SequenceEventView>
     {
         protected SequenceEditorModel EditorModel { get; private set; }
         
-        public SequenceEventPresenter(SerializedObjectModel model, SequenceEventView view, SequenceEditorModel editorModel)
+        public SequenceEventPresenter(SequenceEventModel model, SequenceEventView view, SequenceEditorModel editorModel)
             : base(model, view)
         {
             EditorModel = editorModel;
             
-            LabelView.RegisterCallback<MouseDownEvent>(OnMouseDownEvent);
+            View.RegisterCallback<MouseDownEvent>(OnMouseDownEvent);
+            View.style.backgroundColor = Model.ThemeColor;
+            
             EditorModel.OnChangedSelectedTargets += OnChangedSelectedTargets;
             
             // Drag監視
-            LabelView.Manipulator.OnDragStart += OnDragStart;
-            LabelView.Manipulator.OnDragging += OnDragging;
+            View.Manipulator.OnDragStart += OnDragStart;
+            View.Manipulator.OnDragging += OnDragging;
 
             EditorModel.OnEventDragStart += OnEventDragStart;
             EditorModel.OnEventDragging += OnEventDragging;
@@ -31,10 +33,10 @@ namespace ActionSequencer.Editor
         {
             base.Dispose();
             
-            LabelView.UnregisterCallback<MouseDownEvent>(OnMouseDownEvent);
+            View.UnregisterCallback<MouseDownEvent>(OnMouseDownEvent);
             
-            LabelView.Manipulator.OnDragStart -= OnDragStart;
-            LabelView.Manipulator.OnDragging -= OnDragging;
+            View.Manipulator.OnDragStart -= OnDragStart;
+            View.Manipulator.OnDragging -= OnDragging;
 
             EditorModel.OnEventDragStart -= OnEventDragStart;
             EditorModel.OnEventDragging -= OnEventDragging;
@@ -55,7 +57,7 @@ namespace ActionSequencer.Editor
 
         private void OnEventDragStart(Object target, SequenceEventManipulator.DragType dragType)
         {
-            if (target == Model.Target || !LabelView.Selected)
+            if (target == Model.Target || !View.Selected)
             {
                 return;
             }
@@ -65,7 +67,7 @@ namespace ActionSequencer.Editor
 
         private void OnEventDragging(Object target, SequenceEventManipulator.DragInfo info)
         {
-            if (target == Model.Target || !LabelView.Selected)
+            if (target == Model.Target || !View.Selected)
             {
                 return;
             }
@@ -93,7 +95,7 @@ namespace ActionSequencer.Editor
         private void OnChangedSelectedTargets(Object[] targets)
         {
             var selected = targets.Contains(Model.Target);
-            LabelView.Selected = selected;
+            View.Selected = selected;
         }
 
         /// <summary>

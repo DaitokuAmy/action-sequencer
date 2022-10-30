@@ -10,7 +10,12 @@
                 <ActionSequencer.Editor.VisualElements.Toolbar name="TrackToolbar">
                     <ActionSequencer.Editor.VisualElements.ToolbarMenu name="CreateMenu" text="Create" style="-unity-font-style: bold;" />
                 </ActionSequencer.Editor.VisualElements.Toolbar>
-                <ui:ListView focusable="true" name="TrackLabelList" reorder-mode="Animated" reorderable="true" />
+                <ui:ScrollView name="TrackLabelList">
+                    <ui:VisualElement name="TrackLabelBox" class="track_label__box">
+                        <ui:VisualElement name="TrackLabelTextField" class="track_label__textfield" />
+                        <ui:VisualElement name="TrackLabelSpacer" class="track_label__spacer" />
+                    </ui:VisualElement>
+                </ui:ScrollView>
             </ui:VisualElement>
             <ui:VisualElement name="TrackArea" style="background-color: rgb(92, 92, 92); border-left-width: 4px; visibility: visible; border-left-color: rgb(64, 64, 64);">
                 <ui:ScrollView name="TrackScrollView" vertical-scroller-visibility="Hidden" mode="Horizontal">
@@ -18,7 +23,16 @@
                         <ui:VisualElement name="TrackRuler" style="height: 20px; background-color: rgb(64, 64, 64);">
                             <ActionSequencer.Editor.VisualElements.RulerView name="RulerView" />
                         </ui:VisualElement>
-                        <ui:ListView focusable="true" name="TrackList" />
+                        <ui:ScrollView name="TrackList" horizontal-scroller-visibility="Hidden">
+                            <ui:VisualElement name="TrackBox" class="track__box">
+                                <ui:VisualElement name="RangeEvent" class="range_event" style="background-color: rgb(128, 128, 255);" />
+                                <ui:VisualElement name="RangeEvent" class="range_event" style="background-color: rgb(128, 128, 255);" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="TrackBox" class="track__box">
+                                <ui:VisualElement name="SignalEvent" class="signal_event" style="background-color: rgb(255, 128, 128);" />
+                                <ui:VisualElement name="SignalEvent" class="signal_event" style="background-color: rgb(255, 128, 128);" />
+                            </ui:VisualElement>
+                        </ui:ScrollView>
                     </ui:VisualElement>
                 </ui:ScrollView>
             </ui:VisualElement>
@@ -28,7 +42,7 @@
                 <ui:Label text="Inspector" display-tooltip-when-elided="true" style="-unity-font-style: bold; font-size: 12px; -unity-text-align: visible; height: 100%; margin-left: 0; padding-left: 6px;" />
             </ui:VisualElement>
             <ui:ScrollView name="InspectorScrollView">
-                <ActionSequencer.Editor.VisualElements.InspectorView />
+                <ActionSequencer.Editor.VisualElements.InspectorView text="Sample&#10;" />
             </ui:ScrollView>
         </ui:VisualElement>
     </ActionSequencer.Editor.VisualElements.SplitView>

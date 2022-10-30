@@ -14,7 +14,7 @@ namespace ActionSequencer.Editor
         /// コンストラクタ
         /// </summary>
         public SequenceTrackView() {
-            AddToClassList("track_box");
+            AddToClassList("track__box");
         }
     }
 }

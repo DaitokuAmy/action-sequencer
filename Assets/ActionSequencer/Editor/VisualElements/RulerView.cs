@@ -95,6 +95,9 @@ namespace ActionSequencer.Editor.VisualElements
             var totalRect = layout;
             var clipRect = MaskElement != null ? this.WorldToLocal(MaskElement.worldBound) : totalRect;
             var lineOffset = MemorySize;
+
+            clipRect.xMin = Mathf.Max(clipRect.xMin, totalRect.xMin);
+            clipRect.xMax = Mathf.Min(clipRect.xMax, totalRect.xMax);
             
             for (var i = 0;; i++)
             {

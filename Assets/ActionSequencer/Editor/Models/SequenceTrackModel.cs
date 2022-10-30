@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEngine;
 
 namespace ActionSequencer.Editor
 {
@@ -55,6 +56,9 @@ namespace ActionSequencer.Editor
             
             // Defaultのラベル名更新
             RefreshDefaultLabel();
+            
+            // 色を取得
+            
         }
 
         /// <summary>
@@ -214,6 +218,27 @@ namespace ActionSequencer.Editor
         /// Defaultのラベル名更新
         /// </summary>
         private void RefreshDefaultLabel()
+        {
+            var firstEvent = _signalEventModels.Select(x => x.Target as SequenceEvent).FirstOrDefault() ??
+                             _rangeEventModels.Select(x => x.Target as SequenceEvent).FirstOrDefault();
+            if (firstEvent != null)
+            {
+                var eventType = firstEvent.GetType();
+                var sequenceEventAttr = eventType.GetCustomAttribute(typeof(SequenceEventAttribute)) as SequenceEventAttribute;
+                _defaultLabel = sequenceEventAttr != null ? sequenceEventAttr.DisplayName : eventType.Name;
+            }
+            else
+            {
+                _defaultLabel = "Empty";
+            }
+            
+            OnChangedLabel?.Invoke(Label);
+        }
+
+        /// <summary>
+        /// 色の初期化
+        /// </summary>
+        private void SetupColor()
         {
             var firstEvent = _signalEventModels.Select(x => x.Target as SequenceEvent).FirstOrDefault() ??
                              _rangeEventModels.Select(x => x.Target as SequenceEvent).FirstOrDefault();

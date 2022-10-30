@@ -1,4 +1,4 @@
-.event_box {
+.track__box {
     border-left-width: 0;
     border-right-width: 0;
     border-top-width: 0;
@@ -19,7 +19,6 @@
     padding-right: 6px;
     padding-top: 1px;
     padding-bottom: 1px;
-    background-color: rgb(92, 128, 255);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -40,10 +39,10 @@
 }
 
 .range_event:hover {
-    border-left-color: rgb(192, 192, 255);
-    border-right-color: rgb(192, 192, 255);
-    border-top-color: rgb(192, 192, 255);
-    border-bottom-color: rgb(192, 192, 255);
+    border-left-color: rgba(255, 255, 255, 0.5);
+    border-right-color: rgba(255, 255, 255, 0.5);
+    border-top-color: rgba(255, 255, 255, 0.5);
+    border-bottom-color: rgba(255, 255, 255, 0.5);
 }
 
 .signal_event {
@@ -56,7 +55,6 @@
     padding-right: 0;
     padding-top: 1px;
     padding-bottom: 1px;
-    background-color: rgb(255, 128, 128);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
@@ -78,10 +76,10 @@
 }
 
 .signal_event:hover {
-    border-left-color: rgb(255, 192, 192);
-    border-right-color: rgb(255, 192, 192);
-    border-top-color: rgb(255, 192, 192);
-    border-bottom-color: rgb(255, 192, 192);
+    border-left-color: rgba(255, 255, 255, 0.5);
+    border-right-color: rgba(255, 255, 255, 0.5);
+    border-top-color: rgba(255, 255, 255, 0.5);
+    border-bottom-color: rgba(255, 255, 255, 0.5);
 }
 
 .event--selected {
@@ -91,7 +89,7 @@
     border-bottom-color: rgba(255, 255, 255, 0.5);
 }
 
-.track_box {
+.track_label__box {
     -unity-text-align: upper-left;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -113,7 +111,7 @@
     height: auto;
 }
 
-.track_textfield {
+.track_label__textfield {
     padding-left: 3px;
     padding-right: 3px;
     padding-top: 3px;
@@ -127,7 +125,7 @@
     height: 21px;
 }
 
-.track_spacer {
+.track_label__spacer {
     border-left-width: 0;
     border-right-width: 0;
     border-top-width: 0;
@@ -164,7 +162,7 @@
 .ruler_label {
     position: absolute;
     font-size: 10px;
-    color: rgba(192, 192, 192, 255);
+    color: rgb(192, 192, 192);
     padding-left: 3px;
     overflow: hidden;
 }

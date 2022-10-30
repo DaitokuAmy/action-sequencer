@@ -11,15 +11,15 @@ namespace ActionSequencer.Editor
         where TView : VisualElement
     {
         public TModel Model { get; private set; }
-        public TView LabelView { get; private set; }
+        public TView View { get; private set; }
         
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public Presenter(TModel model, TView labelView)
+        public Presenter(TModel model, TView view)
         {
             Model = model;
-            LabelView = labelView;
+            View = view;
         }
         
         /// <summary>

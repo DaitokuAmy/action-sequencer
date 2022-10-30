@@ -14,13 +14,15 @@ namespace ActionSequencer.Editor
         private SequenceEditorModel _editorModel;
         private List<SequenceSignalEventPresenter> _signalEventPresenters = new List<SequenceSignalEventPresenter>();
         private List<SequenceRangeEventPresenter> _rangeEventPresenters = new List<SequenceRangeEventPresenter>();
+        
+        public SequenceTrackView TrackView { get; private set; }
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public SequenceTrackPresenter(SequenceTrackModel model, SequenceTrackLabelView labelView, SequenceEditorModel editorModel)
-            : base(model, labelView)
-        {
+        public SequenceTrackPresenter(SequenceTrackModel model, SequenceTrackLabelView view, SequenceTrackView trackView, SequenceEditorModel editorModel)
+            : base(model, view) {
+            TrackView = trackView;
             _editorModel = editorModel;
 
             Model.OnAddedRangeEventModel += OnAddedRangeEventModel;
@@ -29,10 +31,10 @@ namespace ActionSequencer.Editor
             Model.OnRemoveRangeEventModel += OnRemoveRangeEventModel;
             Model.OnChangedLabel += OnChangedLabel;
 
-            LabelView.OnChangedLabel += OnChangedLabelView;
+            View.OnChangedLabel += OnChangedLabelView;
             
-            LabelView.Unbind();
-            LabelView.TrackSerializedObjectValue(Model.SerializedObject, obj =>
+            View.Unbind();
+            View.TrackSerializedObjectValue(Model.SerializedObject, obj =>
             {
                 //Model.RefreshEvents();
             });
@@ -65,7 +67,7 @@ namespace ActionSequencer.Editor
             Model.OnRemoveRangeEventModel -= OnRemoveRangeEventModel;
             Model.OnChangedLabel -= OnChangedLabel;
 
-            LabelView.OnChangedLabel -= OnChangedLabelView;
+            View.OnChangedLabel -= OnChangedLabelView;
 
             foreach (var presenter in _signalEventPresenters)
             {
@@ -90,7 +92,7 @@ namespace ActionSequencer.Editor
             }
             
             var eventList = new List<SequenceEvent>(sequenceTrack.sequenceEvents);
-            LabelView.Sort((a, b) =>
+            View.Sort((a, b) =>
             {
                 var sequenceEventA = a.userData as SequenceEvent;
                 var sequenceEventB = b.userData as SequenceEvent;
@@ -107,13 +109,13 @@ namespace ActionSequencer.Editor
         {
             var view = new SequenceSignalEventView();
             view.userData = model.Target;
-            LabelView.EventBox.Add(view);
+            TrackView.Add(view);
                     
             var presenter = new SequenceSignalEventPresenter(model, view, _editorModel);
             _signalEventPresenters.Add(presenter);
 
             // 行数変更
-            LabelView.LineCount = Model.EventCount;
+            View.LineCount = Model.EventCount;
         }
 
         /// <summary>
@@ -123,13 +125,13 @@ namespace ActionSequencer.Editor
         {
             var view = new SequenceRangeEventView();
             view.userData = model.Target;
-            LabelView.EventBox.Add(view);
+            TrackView.Add(view);
 
             var presenter = new SequenceRangeEventPresenter(model, view, _editorModel);
             _rangeEventPresenters.Add(presenter);
 
             // 行数変更
-            LabelView.LineCount = Model.EventCount;
+            View.LineCount = Model.EventCount;
         }
 
         /// <summary>
@@ -142,12 +144,12 @@ namespace ActionSequencer.Editor
             {
                 return;
             }
-            LabelView.EventBox.Remove(presenter.LabelView);
+            TrackView.Remove(presenter.View);
             presenter.Dispose();
             _signalEventPresenters.Remove(presenter);
 
             // 行数変更
-            LabelView.LineCount = Model.EventCount;
+            View.LineCount = Model.EventCount;
         }
 
         /// <summary>
@@ -160,12 +162,12 @@ namespace ActionSequencer.Editor
             {
                 return;
             }
-            LabelView.EventBox.Remove(presenter.LabelView);
+            TrackView.Remove(presenter.View);
             presenter.Dispose();
             _rangeEventPresenters.Remove(presenter);
 
             // 行数変更
-            LabelView.LineCount = Model.EventCount;
+            View.LineCount = Model.EventCount;
         }
 
         /// <summary>
@@ -173,7 +175,7 @@ namespace ActionSequencer.Editor
         /// </summary>
         private void OnChangedLabel(string label)
         {
-            LabelView.Label = label;
+            View.Label = label;
         }
 
         /// <summary>

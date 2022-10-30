@@ -14,9 +14,7 @@ namespace ActionSequencer.Editor
         private TextField _textFieldView;
         private List<VisualElement> _spacerViews = new List<VisualElement>();
 
-        public event Action<string> OnChangedLabel; 
-
-        public VisualElement EventBox { get; private set; }
+        public event Action<string> OnChangedLabel;
 
         // 表示ラベル
         public string Label
@@ -46,13 +44,11 @@ namespace ActionSequencer.Editor
         /// コンストラクタ
         /// </summary>
         public SequenceTrackLabelView(int lineCount) {
-            EventBox = new VisualElement();
-            EventBox.AddToClassList("event_box");
-            AddToClassList("track_box");
+            AddToClassList("track_label__box");
             
             // TextField作成
             _textFieldView = new TextField();
-            _textFieldView.AddToClassList("track_textfield");
+            _textFieldView.AddToClassList("track_label__textfield");
             Add(_textFieldView);
 
             // 値の変化監視
@@ -79,7 +75,7 @@ namespace ActionSequencer.Editor
             for (var i = 1; i < LineCount; i++)
             {
                 var spacer = new VisualElement();
-                spacer.AddToClassList("track_spacer");
+                spacer.AddToClassList("track_label__spacer");
                 Add(spacer);
                 _spacerViews.Add(spacer);
             }

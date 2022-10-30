@@ -57,39 +57,10 @@ namespace ActionSequencer.Editor
             titleContent = new GUIContent(clip != null ? clip.name : ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow)));
             
             var root = rootVisualElement;
-            var trackLabelList = root.Q<ListView>("TrackLabelList");
-            var trackList = root.Q<ListView>("TrackList");
-            trackLabelList.Bind(_editorModel.ClipModel.SerializedObject);
-            trackLabelList.makeItem = () => {
-                var trackLabelView = new SequenceTrackLabelView(0);
-                return trackLabelView;
-            };
-            trackLabelList.bindItem = (element, i) => {
-                var trackLabelView = (SequenceTrackLabelView)element;
-                var track = clip.tracks[i];
-                trackLabelView.Label = track.label;
-                trackLabelView.LineCount = track.sequenceEvents.Length;
-            };
-            trackList.Bind(_editorModel.ClipModel.SerializedObject);
-            trackList.makeItem = () => {
-                var trackView = new SequenceTrackView();
-                return trackView;
-            };
-            trackList.bindItem = (element, i) => {
-                var trackView = (SequenceTrackView)element;
-                var track = clip.tracks[i];
-                trackView.Clear();
-                foreach (var evt in track.sequenceEvents) {
-                    var eventView = default(SequenceEventView);
-                    if (evt is SequenceSignalEvent) {
-                        eventView = new SequenceSignalEventView();
-                    }
-                    else {
-                        eventView = new SequenceRangeEventView();
-                    }
-                    trackView.Add(eventView);
-                }
-            };
+            var trackLabelList = root.Q<ScrollView>("TrackLabelList");
+            var trackList = root.Q<ScrollView>("TrackList");
+            trackLabelList.Clear();
+            trackList.Clear();
             
             // Inspectorパネル初期化 ※InspectorElementはLayoutに不具合があったので未使用
             var inspectorView = root.Q<InspectorView>();
@@ -114,9 +85,11 @@ namespace ActionSequencer.Editor
             {
                 void OnAddedTrackModel(SequenceTrackModel model)
                 {
-                    var view = new SequenceTrackLabelView(model.EventCount);
-                    trackLabelList.Add(view);
-                    var presenter = new SequenceTrackPresenter(model, view, _editorModel);
+                    var labelView = new SequenceTrackLabelView(model.EventCount);
+                    trackLabelList.Add(labelView);
+                    var trackView = new SequenceTrackView();
+                    trackList.Add(trackView);
+                    var presenter = new SequenceTrackPresenter(model, labelView, trackView, _editorModel);
                     _trackPresenters.Add(presenter);
                 }
 
@@ -127,7 +100,8 @@ namespace ActionSequencer.Editor
                     {
                         return;
                     }
-                    trackLabelList.Remove(presenter.LabelView);
+                    trackLabelList.Remove(presenter.View);
+                    trackList.Remove(presenter.TrackView);
                     presenter.Dispose();
                     _trackPresenters.Remove(presenter);
                 }
@@ -159,20 +133,20 @@ namespace ActionSequencer.Editor
             root.styleSheets.Add(styleSheet);
 
             // Scroll位置の同期
-            var trackList = root.Q<ListView>("TrackList");
-            var eventList = root.Q<ListView>("EventList");
-            trackList.Q<ScrollView>().verticalScroller.valueChanged += x =>
+            var trackLabelList = root.Q<ScrollView>("TrackLabelList");
+            var trackList = root.Q<ScrollView>("TrackList");
+            trackLabelList.verticalScroller.valueChanged += x =>
             {
-                eventList.Q<ScrollView>().verticalScroller.value = x;
+                trackList.verticalScroller.value = x;
             };
-            eventList.Q<ScrollView>().verticalScroller.valueChanged += x =>
+            trackList.verticalScroller.valueChanged += x =>
             {
-                trackList.Q<ScrollView>().verticalScroller.value = x;
+                trackLabelList.verticalScroller.value = x;
             };
             
             // Timelineのクリップ範囲指定
-            var timelineScrollView = root.Q<ScrollView>("TimelineScrollView");
-            _rulerView = root.Q<RulerView>("TimelineRulerView");
+            var trackScrollView = root.Q<ScrollView>("TrackScrollView");
+            _rulerView = root.Q<RulerView>("RulerView");
             _rulerView.OnGetThickLabel += thickIndex =>
             {
                 if (thickIndex % 2 == 0)
@@ -183,7 +157,7 @@ namespace ActionSequencer.Editor
                 return "";
             };
             _rulerView.ThickCycle = 5;
-            _rulerView.MaskElement = timelineScrollView;
+            _rulerView.MaskElement = trackScrollView;
             
             // CreateMenu
             var createMenu = root.Q<ToolbarMenu>("CreateMenu");
