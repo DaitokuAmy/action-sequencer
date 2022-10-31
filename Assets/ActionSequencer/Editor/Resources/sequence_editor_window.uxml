@@ -41,8 +41,8 @@
             <ui:VisualElement name="InspectorHeader" style="height: 20px; background-color: rgb(64, 64, 64);">
                 <ui:Label text="Inspector" display-tooltip-when-elided="true" style="-unity-font-style: bold; font-size: 12px; -unity-text-align: visible; height: 100%; margin-left: 0; padding-left: 6px;" />
             </ui:VisualElement>
-            <ui:ScrollView name="InspectorScrollView">
-                <ActionSequencer.Editor.VisualElements.InspectorView text="Sample&#10;" />
+            <ui:ScrollView name="InspectorScrollView" style="padding-left: 4px; padding-right: 4px; padding-top: 4px; padding-bottom: 4px;">
+                <ActionSequencer.Editor.VisualElements.InspectorView text="Sample&#10;" style="height: 500px;" />
             </ui:ScrollView>
         </ui:VisualElement>
     </ActionSequencer.Editor.VisualElements.SplitView>

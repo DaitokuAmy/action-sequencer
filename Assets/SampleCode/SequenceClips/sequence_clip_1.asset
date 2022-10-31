@@ -119,8 +119,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 422016eb4a50e48c68a24ae9ec7e20d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enterTime: 1.94
-  exitTime: 5.000001
+  enterTime: 0.7900001
+  exitTime: 3.85
   sampleStartText: "\u9752_1[start]"
   sampleEndText: "\u9752_1[end]"
 --- !u!114 &5183147729983523529

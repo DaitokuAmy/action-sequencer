@@ -18,14 +18,6 @@ namespace ActionSequencer.Editor.VisualElements
         /// コンストラクタ
         /// </summary>
         public InspectorView() {
-            _container = new IMGUIContainer(() => {
-                if (_inspectorEditor == null) {
-                    return;
-                }
-                _inspectorEditor.OnInspectorGUI();
-            });
-            Add(_container);
-            
             RegisterCallback<DetachFromPanelEvent>(evt => {
                 ClearTarget();
             });
@@ -37,6 +29,7 @@ namespace ActionSequencer.Editor.VisualElements
         public void SetTarget(Object target) {
             ClearTarget();
             _inspectorEditor = UnityEditor.Editor.CreateEditor(target);
+            CreateContainer();
         }
 
         /// <summary>
@@ -45,6 +38,7 @@ namespace ActionSequencer.Editor.VisualElements
         public void SetTarget(Object[] targets) {
             ClearTarget();
             _inspectorEditor = UnityEditor.Editor.CreateEditor(targets);
+            CreateContainer();
         }
 
         /// <summary>
@@ -55,6 +49,25 @@ namespace ActionSequencer.Editor.VisualElements
                 Object.DestroyImmediate(_inspectorEditor);
                 _inspectorEditor = null;
             }
+        }
+
+        /// <summary>
+        /// Inspector用コンテナの生成
+        /// </summary>
+        private void CreateContainer()
+        {
+            if (_container != null)
+            {
+                return;
+            }
+
+            _container = new IMGUIContainer(() => {
+                    if (_inspectorEditor == null) {
+                        return;
+                    }
+                    _inspectorEditor.OnInspectorGUI();
+                });
+                Add(_container);
         }
     }
 }
