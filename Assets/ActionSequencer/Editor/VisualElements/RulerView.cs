@@ -44,7 +44,7 @@ namespace ActionSequencer.Editor.VisualElements
         }
 
         // Thickメモリに記述するラベルの取得
-        public event Func<int, string> OnGetThickLabel; 
+        public event Func<int, string> OnGetThickLabel;
 
         public Color LineColor { get; set; } = Color.gray;
         public Color ThickLineColor { get; set; } = Color.gray;
@@ -83,6 +83,14 @@ namespace ActionSequencer.Editor.VisualElements
             
             RegisterCallback<CustomStyleResolvedEvent>(OnCustomStyleResolved);
             RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+        }
+
+        /// <summary>
+        /// ラベル表記のリフレッシュ
+        /// </summary>
+        public void RefreshLabels()
+        {
+            SetupLabels(layout);
         }
 
         /// <summary>
@@ -174,7 +182,6 @@ namespace ActionSequencer.Editor.VisualElements
                 var label = GetOrCreateLabel();
                 label.style.left = i * labelUnitOffset;
                 label.text = OnGetThickLabel != null ? OnGetThickLabel(i) : $"{i:0.0}";
-                label.style.right = Mathf.Min(label.style.right.value.value, totalRect.xMax);
             }
         }
 

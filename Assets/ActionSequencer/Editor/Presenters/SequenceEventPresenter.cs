@@ -103,7 +103,7 @@ namespace ActionSequencer.Editor
         /// </summary>
         protected float SizeToTime(float position)
         {
-            return position / EditorModel.TimeToSize;
+            return position / EditorModel.TimeToSize.Value;
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace ActionSequencer.Editor
         /// </summary>
         protected float TimeToSize(float time)
         {
-            return time * EditorModel.TimeToSize;
+            return time * EditorModel.TimeToSize.Value;
         }
     }
 }

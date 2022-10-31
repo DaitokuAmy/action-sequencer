@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -5,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using ActionSequencer.Editor.VisualElements;
 using UnityEditor.UIElements;
+using UnityEngine.UI;
 using ObjectField = UnityEditor.UIElements.ObjectField;
 using ToolbarMenu = UnityEditor.UIElements.ToolbarMenu;
 using ToolbarToggle = UnityEditor.UIElements.ToolbarToggle;
@@ -75,12 +77,6 @@ namespace ActionSequencer.Editor
                 inspectorView.SetTarget(targets);
             };
 
-            _editorModel.OnChangedTimeToSize += timeToSize =>
-            {
-                _rulerView.MemorySize = timeToSize * 0.5f / _rulerView.ThickCycle;
-            };
-            _editorModel.TimeToSize = 100.0f;
-
             if (_editorModel.ClipModel != null)
             {
                 void OnAddedTrackModel(SequenceTrackModel model)
@@ -126,6 +122,7 @@ namespace ActionSequencer.Editor
             // EditorModel生成
             _editorModel = new SequenceEditorModel(rootVisualElement);
             
+            // Xml, Style読み込み
             var root = rootVisualElement;
             var uxml = Resources.Load<VisualTreeAsset>("sequence_editor_window");
             uxml.CloneTree(root);
@@ -146,18 +143,53 @@ namespace ActionSequencer.Editor
             
             // Timelineのクリップ範囲指定
             var trackScrollView = root.Q<ScrollView>("TrackScrollView");
+            var labelInterval = 1;
             _rulerView = root.Q<RulerView>("RulerView");
             _rulerView.OnGetThickLabel += thickIndex =>
             {
-                if (thickIndex % 2 == 0)
+                if (thickIndex % labelInterval != 0)
                 {
-                    return $"{thickIndex * 0.5f:0.0}";
+                    return "";
+                }
+                switch (_editorModel.CurrentTimeMode.Value)
+                {
+                    case SequenceEditorModel.TimeMode.Seconds:
+                        return $"{thickIndex * 0.5f:0.0}";
+                    case SequenceEditorModel.TimeMode.Frames30:
+                        return (thickIndex * 15).ToString();
+                    case SequenceEditorModel.TimeMode.Frames60:
+                        return (thickIndex * 30).ToString();
                 }
 
                 return "";
             };
-            _rulerView.ThickCycle = 5;
             _rulerView.MaskElement = trackScrollView;
+            _editorModel.TimeToSize
+                .Subscribe(timeToSize =>
+                {
+                    _rulerView.MemorySize = timeToSize * 0.5f / _rulerView.ThickCycle;
+                });
+            _editorModel.CurrentTimeMode
+                .Subscribe(timeMode =>
+                {
+                    switch (timeMode)
+                    {
+                        case SequenceEditorModel.TimeMode.Seconds:
+                            labelInterval = 2;
+                            _rulerView.ThickCycle = 10;
+                            break;
+                        case SequenceEditorModel.TimeMode.Frames30:
+                            labelInterval = 2;
+                            _rulerView.ThickCycle = 15;
+                            break;
+                        case SequenceEditorModel.TimeMode.Frames60:
+                            labelInterval = 2;
+                            _rulerView.ThickCycle = 15;
+                            break;
+                    }
+                    _rulerView.RefreshLabels();
+                    _rulerView.MemorySize = _editorModel.TimeToSize.Value * 0.5f / _rulerView.ThickCycle;
+                });
             
             // CreateMenu
             var createMenu = root.Q<ToolbarMenu>("CreateMenu");
@@ -230,6 +262,47 @@ namespace ActionSequencer.Editor
             {
                 Setup(evt.newValue as SequenceClip);
             });
+            
+            // RulerMode
+            var rulerMode = root.Q<DropdownField>("RulerMode");
+            rulerMode.choices = new List<string>(Enum.GetNames(typeof(SequenceEditorModel.TimeMode)));
+            rulerMode.RegisterValueChangedCallback(evt =>
+            {
+                switch (evt.newValue)
+                {
+                    case nameof(SequenceEditorModel.TimeMode.Seconds):
+                        _editorModel.CurrentTimeMode.Value = SequenceEditorModel.TimeMode.Seconds;
+                        break;
+                    case nameof(SequenceEditorModel.TimeMode.Frames30):
+                        _editorModel.CurrentTimeMode.Value = SequenceEditorModel.TimeMode.Frames30;
+                        break;
+                    case nameof(SequenceEditorModel.TimeMode.Frames60):
+                        _editorModel.CurrentTimeMode.Value = SequenceEditorModel.TimeMode.Frames60;
+                        break;
+                }
+            });
+            _editorModel.CurrentTimeMode
+                .Subscribe(timeMode =>
+                {
+                    rulerMode.value = timeMode.ToString();
+                });
+
+            // TimeFitToggle
+            var timeFitToggle = root.Q<ToolbarToggle>("TimeFitToggle");
+            timeFitToggle.RegisterValueChangedCallback(evt =>
+            {
+                _editorModel.TimeFit.Value = evt.newValue;
+            });
+            _editorModel.TimeFit
+                .Subscribe(timeFit =>
+                {
+                    timeFitToggle.value = timeFit;
+                });
+            timeFitToggle.value = true;
+
+            // EditorModelの状態初期化
+            _editorModel.TimeToSize.Value = 200.0f;
+            _editorModel.CurrentTimeMode.Value = SequenceEditorModel.TimeMode.Seconds;
             
             // 初期化
             Setup(_escapedClip);

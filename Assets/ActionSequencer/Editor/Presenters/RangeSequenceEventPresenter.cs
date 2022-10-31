@@ -71,13 +71,13 @@ namespace ActionSequencer.Editor
             {
                 // スライド
                 case SequenceEventManipulator.DragType.Middle:
-                    _model.MoveEnterTime(_dragStartEnterTime + deltaTime);
+                    _model.MoveEnterTime(EditorModel.GetAbsorptionTime(_dragStartEnterTime + deltaTime), exitTime => EditorModel.GetAbsorptionTime(exitTime));
                     break;
                 case SequenceEventManipulator.DragType.LeftSide:
-                    _model.EnterTime = _dragStartEnterTime + deltaTime;
+                    _model.EnterTime = EditorModel.GetAbsorptionTime(_dragStartEnterTime + deltaTime);
                     break;
                 case SequenceEventManipulator.DragType.RightSide:
-                    _model.ExitTime = _dragStartExitTime + deltaTime;
+                    _model.ExitTime = EditorModel.GetAbsorptionTime(_dragStartExitTime + deltaTime);
                     break;
             }
         }

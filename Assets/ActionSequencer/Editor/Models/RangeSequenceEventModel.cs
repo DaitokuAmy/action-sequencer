@@ -53,13 +53,14 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// Durationを変えずにEnterTimeを指定する
         /// </summary>
-        public void MoveEnterTime(float enterTime)
+        public void MoveEnterTime(float enterTime, Func<float, float> exitTimeFilter = null)
         {
             var duration = _exitTime.floatValue - _enterTime.floatValue;
             
             SerializedObject.Update();
             _enterTime.floatValue = Mathf.Max(0.0f, enterTime);
-            _exitTime.floatValue = _enterTime.floatValue + duration;
+            var exitTime = _enterTime.floatValue + duration;
+            _exitTime.floatValue = exitTimeFilter?.Invoke(exitTime) ?? exitTime;
             SerializedObject.ApplyModifiedProperties();
             OnChangedEnterTime?.Invoke(_enterTime.floatValue);
             OnChangedExitTime?.Invoke(_exitTime.floatValue);

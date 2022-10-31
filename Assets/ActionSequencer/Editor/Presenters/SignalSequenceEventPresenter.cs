@@ -43,7 +43,7 @@ namespace ActionSequencer.Editor
         protected override void OnDragging(SequenceEventManipulator.DragInfo info, bool otherEvent)
         {
             var deltaTime = SizeToTime(info.current - info.start);
-            _model.Time = _dragStartTime + deltaTime;
+            _model.Time = EditorModel.GetAbsorptionTime(_dragStartTime + deltaTime);
         }
 
         private void OnChangedTime(float time)

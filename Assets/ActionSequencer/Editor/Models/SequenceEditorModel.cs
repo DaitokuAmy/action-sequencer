@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ActionSequencer.Editor.Utils;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
@@ -11,13 +12,17 @@ namespace ActionSequencer.Editor
     /// </summary>
     public class SequenceEditorModel : Model
     {
+        // 時間モード
+        public enum TimeMode
+        {
+            Seconds,
+            Frames30,
+            Frames60,
+        }
+        
         private List<Object> _selectedTargets = new List<Object>();
-        private float _timeToSize = 100.0f;
-        private int _fps = 60;
         
         public event Action<Object[]> OnChangedSelectedTargets;
-        public event Action<float> OnChangedTimeToSize;
-        public event Action<int> OnChangedFPS;
 
         public event Action<Object, SequenceEventManipulator.DragType> OnEventDragStart;
         public event Action<Object, SequenceEventManipulator.DragInfo> OnEventDragging;
@@ -25,24 +30,10 @@ namespace ActionSequencer.Editor
         public Object[] SelectedTargets => _selectedTargets.ToArray();
         public VisualElement RootElement { get; private set; }
         public SequenceClipModel ClipModel { get; private set; }
-        public float TimeToSize
-        {
-            get => _timeToSize;
-            set
-            {
-                _timeToSize = Mathf.Max(1, value);
-                OnChangedTimeToSize?.Invoke(_timeToSize);
-            }
-        }
-        public float FPS
-        {
-            get => _fps;
-            set
-            {
-                _fps = (int)Mathf.Clamp(value, 10, 120);
-                OnChangedFPS?.Invoke(_fps);
-            }
-        }
+        
+        public ReactiveProperty<float> TimeToSize { get; private set; } = new ReactiveProperty<float>(100.0f, x => Mathf.Max(1.0f, x));
+        public ReactiveProperty<TimeMode> CurrentTimeMode { get; private set; } = new ReactiveProperty<TimeMode>(TimeMode.Seconds);
+        public ReactiveProperty<bool> TimeFit { get; private set; } = new ReactiveProperty<bool>(true);
 
         /// <summary>
         /// コンストラクタ
@@ -124,7 +115,22 @@ namespace ActionSequencer.Editor
         /// </summary>
         public float GetAbsorptionTime(float time)
         {
-            return Mathf.RoundToInt(time * FPS) / FPS;
+            if (!TimeFit.Value)
+            {
+                return time;
+            }
+            
+            switch (CurrentTimeMode.Value)
+            {
+                case TimeMode.Seconds:
+                    return Mathf.RoundToInt(time * 20) / 20.0f;
+                case TimeMode.Frames30:
+                    return Mathf.RoundToInt(time * 30) / 30.0f;
+                case TimeMode.Frames60:
+                    return Mathf.RoundToInt(time * 60) / 60.0f;
+            }
+
+            return time;
         }
     }
 }
