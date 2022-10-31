@@ -6,7 +6,7 @@ namespace ActionSequencer
     /// <summary>
     /// RangeEventの処理を記述するためのInterface
     /// </summary>
-    public interface ISequenceRangeEventHandler
+    public interface IRangeSequenceEventHandler
     {
         /// <summary>
         /// 開始済か
@@ -16,75 +16,75 @@ namespace ActionSequencer
         /// <summary>
         /// イベント開始時処理
         /// </summary>
-        /// <param name="sequenceEvent">対象のイベント</param>
-        void Enter(SequenceRangeEvent sequenceEvent);
+        /// <param name="rangeSequenceEvent">対象のイベント</param>
+        void Enter(RangeSequenceEvent rangeSequenceEvent);
         
         /// <summary>
         /// イベント終了時処理
         /// </summary>
-        /// <param name="sequenceEvent">対象のイベント</param>
-        void Exit(SequenceRangeEvent sequenceEvent);
+        /// <param name="rangeSequenceEvent">対象のイベント</param>
+        void Exit(RangeSequenceEvent rangeSequenceEvent);
 
         /// <summary>
         /// イベント中更新処理
         /// </summary>
-        /// <param name="sequenceEvent">対象のイベント</param>
+        /// <param name="rangeSequenceEvent">対象のイベント</param>
         /// <param name="elapsedTime">開始からの経過時間</param>
-        void Update(SequenceRangeEvent sequenceEvent, float elapsedTime);
+        void Update(RangeSequenceEvent rangeSequenceEvent, float elapsedTime);
         
         /// <summary>
         /// イベント途中キャンセル時処理(Enterした後、外的要因で止められた場合)
         /// </summary>
-        /// <param name="sequenceEvent">対象のイベント</param>
-        void Cancel(SequenceRangeEvent sequenceEvent);
+        /// <param name="rangeSequenceEvent">対象のイベント</param>
+        void Cancel(RangeSequenceEvent rangeSequenceEvent);
     }
     
     /// <summary>
     /// RangeEventの処理を記述するためのInterface
     /// </summary>
-    public abstract class SequenceRangeEventHandler<TEvent> : ISequenceRangeEventHandler
-        where TEvent : SequenceRangeEvent
+    public abstract class RangeSequenceEventHandler<TEvent> : IRangeSequenceEventHandler
+        where TEvent : RangeSequenceEvent
     {
         private bool _isEntered = false;
-        bool ISequenceRangeEventHandler.IsEntered => _isEntered;
+        bool IRangeSequenceEventHandler.IsEntered => _isEntered;
         
         /// <summary>
         /// イベント開始時処理
         /// </summary>
-        /// <param name="sequenceEvent">対象のイベント</param>
-        void ISequenceRangeEventHandler.Enter(SequenceRangeEvent sequenceEvent)
+        /// <param name="rangeSequenceEvent">対象のイベント</param>
+        void IRangeSequenceEventHandler.Enter(RangeSequenceEvent rangeSequenceEvent)
         {
             _isEntered = true;
-            OnEnter((TEvent)sequenceEvent);
+            OnEnter((TEvent)rangeSequenceEvent);
         }
 
         /// <summary>
         /// イベント終了時処理
         /// </summary>
-        /// <param name="sequenceEvent">対象のイベント</param>
-        void ISequenceRangeEventHandler.Exit(SequenceRangeEvent sequenceEvent)
+        /// <param name="rangeSequenceEvent">対象のイベント</param>
+        void IRangeSequenceEventHandler.Exit(RangeSequenceEvent rangeSequenceEvent)
         {
-            OnExit((TEvent)sequenceEvent);
+            OnExit((TEvent)rangeSequenceEvent);
             _isEntered = false;
         }
 
         /// <summary>
         /// イベント中更新処理
         /// </summary>
-        /// <param name="sequenceEvent">対象のイベント</param>
+        /// <param name="rangeSequenceEvent">対象のイベント</param>
         /// <param name="elapsedTime">開始からの経過時間</param>
-        void ISequenceRangeEventHandler.Update(SequenceRangeEvent sequenceEvent, float elapsedTime)
+        void IRangeSequenceEventHandler.Update(RangeSequenceEvent rangeSequenceEvent, float elapsedTime)
         {
-            OnUpdate((TEvent)sequenceEvent, elapsedTime);
+            OnUpdate((TEvent)rangeSequenceEvent, elapsedTime);
         }
 
         /// <summary>
         /// イベント途中キャンセル時処理(Enterした後、外的要因で止められた場合)
         /// </summary>
-        /// <param name="sequenceEvent">対象のイベント</param>
-        void ISequenceRangeEventHandler.Cancel(SequenceRangeEvent sequenceEvent)
+        /// <param name="rangeSequenceEvent">対象のイベント</param>
+        void IRangeSequenceEventHandler.Cancel(RangeSequenceEvent rangeSequenceEvent)
         {
-            OnCancel((TEvent)sequenceEvent);
+            OnCancel((TEvent)rangeSequenceEvent);
             _isEntered = false;
         }
 

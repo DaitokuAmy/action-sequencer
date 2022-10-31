@@ -3,16 +3,16 @@ using UnityEditor.UIElements;
 namespace ActionSequencer.Editor
 {
     /// <summary>
-    /// SequenceSignalEvent用のPresenter
+    /// SignalSequenceEvent用のPresenter
     /// </summary>
-    public class SequenceSignalEventPresenter : SequenceEventPresenter
+    public class SignalSequenceEventPresenter : SequenceEventPresenter
     {
-        private SequenceSignalEventModel _model;
-        private SequenceSignalEventView _view;
+        private SignalSequenceEventModel _model;
+        private SignalSequenceEventView _view;
 
         private float _dragStartTime;
         
-        public SequenceSignalEventPresenter(SequenceSignalEventModel model, SequenceSignalEventView view, SequenceEditorModel editorModel)
+        public SignalSequenceEventPresenter(SignalSequenceEventModel model, SignalSequenceEventView view, SequenceEditorModel editorModel)
             : base(model, view, editorModel)
         {
             _model = model;

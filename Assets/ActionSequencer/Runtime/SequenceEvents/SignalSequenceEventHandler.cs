@@ -3,26 +3,26 @@ namespace ActionSequencer
     /// <summary>
     /// SignalEventの処理を記述するためのInterface
     /// </summary>
-    public interface ISequenceSignalEventHandler
+    public interface ISignalSequenceEventHandler
     {
         /// <summary>
         /// イベント実行時処理
         /// </summary>
-        void Invoke(SequenceSignalEvent sequenceEvent);
+        void Invoke(SignalSequenceEvent signalSequenceEvent);
     }
     
     /// <summary>
     /// SignalEventの処理を記述するためのInterface
     /// </summary>
-    public abstract class SequenceSignalEventHandler<TEvent> : ISequenceSignalEventHandler
-        where TEvent : SequenceSignalEvent
+    public abstract class SignalSequenceEventHandler<TEvent> : ISignalSequenceEventHandler
+        where TEvent : SignalSequenceEvent
     {
         /// <summary>
         /// イベント実行時処理
         /// </summary>
-        void ISequenceSignalEventHandler.Invoke(SequenceSignalEvent sequenceEvent)
+        void ISignalSequenceEventHandler.Invoke(SignalSequenceEvent signalSequenceEvent)
         {
-            OnInvoke((TEvent)sequenceEvent);
+            OnInvoke((TEvent)signalSequenceEvent);
         }
 
         /// <summary>

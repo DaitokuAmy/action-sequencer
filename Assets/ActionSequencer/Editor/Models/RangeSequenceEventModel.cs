@@ -7,7 +7,7 @@ namespace ActionSequencer.Editor
     /// <summary>
     /// RangeEvent用Model
     /// </summary>
-    public class SequenceRangeEventModel : SequenceEventModel
+    public class RangeSequenceEventModel : SequenceEventModel
     {
         private SerializedProperty _enterTime;
         private SerializedProperty _exitTime;
@@ -43,7 +43,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public SequenceRangeEventModel(SequenceRangeEvent target)
+        public RangeSequenceEventModel(RangeSequenceEvent target)
             : base(target)
         {
             _enterTime = SerializedObject.FindProperty("enterTime");

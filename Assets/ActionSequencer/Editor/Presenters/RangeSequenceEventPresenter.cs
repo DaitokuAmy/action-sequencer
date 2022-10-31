@@ -4,12 +4,12 @@ using UnityEngine;
 namespace ActionSequencer.Editor
 {
     /// <summary>
-    /// SequenceRangeEvent用のPresenter
+    /// RangeSequenceEvent用のPresenter
     /// </summary>
-    public class SequenceRangeEventPresenter : SequenceEventPresenter
+    public class RangeSequenceEventPresenter : SequenceEventPresenter
     {
-        private SequenceRangeEventModel _model;
-        private SequenceRangeEventView _view;
+        private RangeSequenceEventModel _model;
+        private RangeSequenceEventView _view;
 
         private float _dragStartEnterTime;
         private float _dragStartExitTime;
@@ -17,7 +17,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public SequenceRangeEventPresenter(SequenceRangeEventModel model, SequenceRangeEventView view, SequenceEditorModel editorModel)
+        public RangeSequenceEventPresenter(RangeSequenceEventModel model, RangeSequenceEventView view, SequenceEditorModel editorModel)
             : base(model, view, editorModel)
         {
             _model = model;

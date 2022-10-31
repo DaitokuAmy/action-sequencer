@@ -7,7 +7,7 @@ namespace ActionSequencer.Editor
     /// <summary>
     /// SignalEvent用Model
     /// </summary>
-    public class SequenceSignalEventModel : SequenceEventModel
+    public class SignalSequenceEventModel : SequenceEventModel
     {
         private SerializedProperty _time;
 
@@ -29,7 +29,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public SequenceSignalEventModel(SequenceSignalEvent target)
+        public SignalSequenceEventModel(SignalSequenceEvent target)
             : base(target)
         {
             _time = SerializedObject.FindProperty("time");

@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dff04690f8b94f2b9ffd9ec73c4f20d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 2.18
+  time: 1.6800001
   sampleText: "\u8D64_2"
 --- !u!114 &-4127662640881806784
 MonoBehaviour:
@@ -119,8 +119,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 422016eb4a50e48c68a24ae9ec7e20d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enterTime: 1.58
-  exitTime: 4.6400003
+  enterTime: 1.94
+  exitTime: 5.000001
   sampleStartText: "\u9752_1[start]"
   sampleEndText: "\u9752_1[end]"
 --- !u!114 &5183147729983523529
@@ -150,5 +150,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dff04690f8b94f2b9ffd9ec73c4f20d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 1.18
+  time: 1.99
   sampleText: "\u8D64_3"

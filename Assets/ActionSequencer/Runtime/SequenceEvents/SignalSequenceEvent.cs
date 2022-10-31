@@ -5,7 +5,7 @@ namespace ActionSequencer
     /// <summary>
     /// 単発実行用イベント
     /// </summary>
-    public abstract class SequenceSignalEvent : SequenceEvent
+    public abstract class SignalSequenceEvent : SequenceEvent
     {
         [Tooltip("イベント発火時間")]
         public float time;

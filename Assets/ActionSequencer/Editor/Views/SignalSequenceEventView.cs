@@ -3,12 +3,12 @@ namespace ActionSequencer.Editor
     /// <summary>
     /// SignalEvent用のView
     /// </summary>
-    public class SequenceSignalEventView : SequenceEventView
+    public class SignalSequenceEventView : SequenceEventView
     {
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public SequenceSignalEventView()
+        public SignalSequenceEventView()
             : base(false)
         {
             AddToClassList("signal_event");

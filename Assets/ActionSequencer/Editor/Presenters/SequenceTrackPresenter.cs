@@ -12,8 +12,8 @@ namespace ActionSequencer.Editor
     public class SequenceTrackPresenter : Presenter<SequenceTrackModel, SequenceTrackLabelView>
     {
         private SequenceEditorModel _editorModel;
-        private List<SequenceSignalEventPresenter> _signalEventPresenters = new List<SequenceSignalEventPresenter>();
-        private List<SequenceRangeEventPresenter> _rangeEventPresenters = new List<SequenceRangeEventPresenter>();
+        private List<SignalSequenceEventPresenter> _signalEventPresenters = new List<SignalSequenceEventPresenter>();
+        private List<RangeSequenceEventPresenter> _rangeEventPresenters = new List<RangeSequenceEventPresenter>();
         
         public SequenceTrackView TrackView { get; private set; }
 
@@ -105,13 +105,13 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// SignalEventModel追加時
         /// </summary>
-        private void OnAddedSignalEventModel(SequenceSignalEventModel model)
+        private void OnAddedSignalEventModel(SignalSequenceEventModel model)
         {
-            var view = new SequenceSignalEventView();
+            var view = new SignalSequenceEventView();
             view.userData = model.Target;
             TrackView.Add(view);
                     
-            var presenter = new SequenceSignalEventPresenter(model, view, _editorModel);
+            var presenter = new SignalSequenceEventPresenter(model, view, _editorModel);
             _signalEventPresenters.Add(presenter);
 
             // 行数変更
@@ -121,13 +121,13 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// RangeEventModel追加時
         /// </summary>
-        private void OnAddedRangeEventModel(SequenceRangeEventModel model)
+        private void OnAddedRangeEventModel(RangeSequenceEventModel model)
         {
-            var view = new SequenceRangeEventView();
+            var view = new RangeSequenceEventView();
             view.userData = model.Target;
             TrackView.Add(view);
 
-            var presenter = new SequenceRangeEventPresenter(model, view, _editorModel);
+            var presenter = new RangeSequenceEventPresenter(model, view, _editorModel);
             _rangeEventPresenters.Add(presenter);
 
             // 行数変更
@@ -137,7 +137,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// SignalEventModel削除時
         /// </summary>
-        private void OnRemoveSignalEventModel(SequenceSignalEventModel model)
+        private void OnRemoveSignalEventModel(SignalSequenceEventModel model)
         {
             var presenter = _signalEventPresenters.FirstOrDefault(x => x.Model == model);
             if (presenter == null)
@@ -155,7 +155,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// RangeEventModel削除時
         /// </summary>
-        private void OnRemoveRangeEventModel(SequenceRangeEventModel model)
+        private void OnRemoveRangeEventModel(RangeSequenceEventModel model)
         {
             var presenter = _rangeEventPresenters.FirstOrDefault(x => x.Model == model);
             if (presenter == null)

@@ -5,7 +5,7 @@ namespace ActionSequencer
     /// <summary>
     /// 範囲実行用イベント
     /// </summary>
-    public abstract class SequenceRangeEvent : SequenceEvent
+    public abstract class RangeSequenceEvent : SequenceEvent
     {
         [Tooltip("開始時間")]
         public float enterTime;

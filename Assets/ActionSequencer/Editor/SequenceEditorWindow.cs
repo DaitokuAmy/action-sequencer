@@ -176,7 +176,7 @@ namespace ActionSequencer.Editor
                 var trackModel = _editorModel.ClipModel.AddTrack(track);
                 
                 // Event生成
-                var evt = CreateInstance<SampleSequenceSignalEvent>();
+                var evt = CreateInstance<SampleSignalSequenceEvent>();
                 AssetDatabase.AddObjectToAsset(evt, target);
                 Undo.RegisterCreatedObjectUndo(evt, "Created Event");
                 trackModel.AddSignalEvent(evt);
@@ -196,11 +196,11 @@ namespace ActionSequencer.Editor
                 var trackModel = _editorModel.ClipModel.AddTrack(track);
                 
                 // Event生成 x 2
-                var evt = CreateInstance<SampleSequenceRangeEvent>();
+                var evt = CreateInstance<SampleRangeSequenceEvent>();
                 AssetDatabase.AddObjectToAsset(evt, target);
                 Undo.RegisterCreatedObjectUndo(evt, "Created Event");
                 trackModel.AddRangeEvent(evt);
-                evt = CreateInstance<SampleSequenceRangeEvent>();
+                evt = CreateInstance<SampleRangeSequenceEvent>();
                 AssetDatabase.AddObjectToAsset(evt, target);
                 Undo.RegisterCreatedObjectUndo(evt, "Created Event");
                 trackModel.AddRangeEvent(evt);

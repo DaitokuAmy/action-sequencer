@@ -10,9 +10,9 @@ public class SampleScene : MonoBehaviour
     
     private void Start()
     {
-        SequenceController.BindGlobalSignalEventHandler<LogSequenceEvent, LogSequenceEventHandler>();
-        SequenceController.BindGlobalSignalEventHandler<SampleSequenceSignalEvent, SampleSequenceSignalEventHandler>();
-        SequenceController.BindGlobalRangeEventHandler<SampleSequenceRangeEvent, SampleSequenceRangeEventHandler>();
+        SequenceController.BindGlobalSignalEventHandler<LogSignalSequenceEvent, LogSignalSequenceEventHandler>();
+        SequenceController.BindGlobalSignalEventHandler<SampleSignalSequenceEvent, SampleSignalSequenceEventHandler>();
+        SequenceController.BindGlobalRangeEventHandler<SampleRangeSequenceEvent, SampleRangeSequenceEventHandler>();
         _controller = new SequenceController();
     }
 
