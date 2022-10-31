@@ -141,6 +141,14 @@ namespace ActionSequencer.Editor
                 trackLabelList.verticalScroller.value = x;
             };
             
+            // Track領域
+            var trackArea = root.Q<VisualElement>("TrackArea");
+            trackArea.RegisterCallback<WheelEvent>(evt =>
+            {
+                // WheelによってTimeToSize変更
+                _editorModel.TimeToSize.Value = Mathf.Clamp(_editorModel.TimeToSize.Value + evt.delta.y, 100, 500);
+            });
+            
             // Timelineのクリップ範囲指定
             var trackScrollView = root.Q<ScrollView>("TrackScrollView");
             var labelInterval = 1;

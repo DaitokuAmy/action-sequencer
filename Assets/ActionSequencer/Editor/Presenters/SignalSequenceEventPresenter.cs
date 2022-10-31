@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEditor.UIElements;
 
 namespace ActionSequencer.Editor
@@ -9,6 +11,7 @@ namespace ActionSequencer.Editor
     {
         private SignalSequenceEventModel _model;
         private SignalSequenceEventView _view;
+        private List<IDisposable> _disposables = new List<IDisposable>();
 
         private float _dragStartTime;
         
@@ -23,6 +26,9 @@ namespace ActionSequencer.Editor
             {
                 _model.Time = prop.floatValue;
             });
+
+            _disposables.Add(EditorModel.TimeToSize
+                .Subscribe(_ => OnChangedTime(_model.Time)));
             
             // Modelの時間変更監視
             _model.OnChangedTime += OnChangedTime;
@@ -34,6 +40,11 @@ namespace ActionSequencer.Editor
         {
             base.Dispose();
             _model.OnChangedTime -= OnChangedTime;
+            foreach (var disposable in _disposables)
+            {
+                disposable.Dispose();
+            }
+            _disposables.Clear();
         }
 
         protected override void OnDragStart(SequenceEventManipulator.DragType dragType, bool otherEvent)
