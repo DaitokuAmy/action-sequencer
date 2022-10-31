@@ -34,7 +34,7 @@ namespace ActionSequencer.Editor
             // 無ければ自動生成
             var prevState = Random.state;
             Random.InitState(Target.GetType().Name.GetHashCode());
-            ThemeColor = Random.ColorHSV(0.0f, 1.0f, 0.4f, 0.6f, 1.0f, 1.0f);
+            ThemeColor = Random.ColorHSV(0.0f, 1.0f, 0.4f, 0.4f, 0.9f, 0.9f);
             Random.state = prevState;
         }
     }
