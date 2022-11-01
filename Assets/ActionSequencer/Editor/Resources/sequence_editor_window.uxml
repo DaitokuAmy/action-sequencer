@@ -19,22 +19,22 @@
                     </ui:VisualElement>
                 </ui:ScrollView>
             </ui:VisualElement>
-            <ui:VisualElement name="TrackArea" style="background-color: rgb(92, 92, 92); border-left-width: 4px; visibility: visible; border-left-color: rgb(64, 64, 64);">
-                <ui:ScrollView name="TrackScrollView" vertical-scroller-visibility="Hidden" mode="Horizontal">
-                    <ui:VisualElement name="TrackContent" style="min-width: 300px;">
-                        <ui:VisualElement name="TrackRuler" style="height: 20px; background-color: rgb(64, 64, 64); max-height: 20px; min-height: 20px;">
-                            <ActionSequencer.Editor.VisualElements.RulerView name="RulerView" />
+            <ui:VisualElement name="TrackArea" style="background-color: rgb(92, 92, 92); border-left-width: 4px; visibility: visible; border-left-color: rgb(64, 64, 64); flex-direction: column; flex-shrink: 1;">
+                <ui:ScrollView name="TrackRulerScrollView" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" style="height: 20px; max-height: 20px; min-height: 20px; background-color: rgb(64, 64, 64);">
+                    <ui:VisualElement name="TrackRuler" style="background-color: rgb(64, 64, 64);">
+                        <ActionSequencer.Editor.VisualElements.RulerView name="RulerView" />
+                    </ui:VisualElement>
+                </ui:ScrollView>
+                <ui:ScrollView name="TrackScrollView" mode="Horizontal" style="flex-direction: column;">
+                    <ui:VisualElement name="TrackList">
+                        <ui:VisualElement name="TrackBox" class="track__box" style="flex-shrink: 0;">
+                            <ui:VisualElement name="SignalEvent" class="signal_event" style="background-color: rgb(255, 128, 128);" />
+                            <ui:VisualElement name="SignalEvent" class="signal_event" style="background-color: rgb(255, 128, 128);" />
                         </ui:VisualElement>
-                        <ui:ScrollView name="TrackList" horizontal-scroller-visibility="Hidden">
-                            <ui:VisualElement name="TrackBox" class="track__box">
-                                <ui:VisualElement name="RangeEvent" class="range_event" style="background-color: rgb(128, 128, 255);" />
-                                <ui:VisualElement name="RangeEvent" class="range_event" style="background-color: rgb(128, 128, 255);" />
-                            </ui:VisualElement>
-                            <ui:VisualElement name="TrackBox" class="track__box">
-                                <ui:VisualElement name="SignalEvent" class="signal_event" style="background-color: rgb(255, 128, 128);" />
-                                <ui:VisualElement name="SignalEvent" class="signal_event" style="background-color: rgb(255, 128, 128);" />
-                            </ui:VisualElement>
-                        </ui:ScrollView>
+                        <ui:VisualElement name="TrackBox" class="track__box" style="flex-shrink: 0;">
+                            <ui:VisualElement name="RangeEvent" class="range_event" style="background-color: rgb(128, 128, 255);" />
+                            <ui:VisualElement name="RangeEvent" class="range_event" style="background-color: rgb(128, 128, 255);" />
+                        </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:ScrollView>
             </ui:VisualElement>

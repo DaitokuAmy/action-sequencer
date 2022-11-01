@@ -5,8 +5,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ActionSequencer.Editor.VisualElements;
-using UnityEditor.UIElements;
-using UnityEngine.UI;
 using ObjectField = UnityEditor.UIElements.ObjectField;
 using ToolbarMenu = UnityEditor.UIElements.ToolbarMenu;
 using ToolbarToggle = UnityEditor.UIElements.ToolbarToggle;
@@ -59,8 +57,8 @@ namespace ActionSequencer.Editor
             titleContent = new GUIContent(clip != null ? clip.name : ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow)));
             
             var root = rootVisualElement;
-            var trackLabelList = root.Q<ScrollView>("TrackLabelList");
-            var trackList = root.Q<ScrollView>("TrackList");
+            var trackLabelList = root.Q<VisualElement>("TrackLabelList");
+            var trackList = root.Q<VisualElement>("TrackList");
             trackLabelList.Clear();
             trackList.Clear();
             
@@ -131,12 +129,13 @@ namespace ActionSequencer.Editor
 
             // Scroll位置の同期
             var trackLabelList = root.Q<ScrollView>("TrackLabelList");
-            var trackList = root.Q<ScrollView>("TrackList");
+            var trackScrollView = root.Q<ScrollView>("TrackScrollView");
+            var trackList = root.Q<VisualElement>("TrackList");
             trackLabelList.verticalScroller.valueChanged += x =>
             {
-                trackList.verticalScroller.value = x;
+                trackScrollView.verticalScroller.value = x;
             };
-            trackList.verticalScroller.valueChanged += x =>
+            trackScrollView.verticalScroller.valueChanged += x =>
             {
                 trackLabelList.verticalScroller.value = x;
             };
@@ -149,10 +148,18 @@ namespace ActionSequencer.Editor
                 _editorModel.TimeToSize.Value = Mathf.Clamp(_editorModel.TimeToSize.Value + evt.delta.y, 100, 500);
             });
             
-            // Timelineのクリップ範囲指定
-            var trackScrollView = root.Q<ScrollView>("TrackScrollView");
+            // Timeline用Rulerの初期化
+            var rulerScrollView = root.Q<ScrollView>("TrackRulerScrollView");
             var labelInterval = 1;
             _rulerView = root.Q<RulerView>("RulerView");
+            trackList.contentContainer.RegisterCallback<GeometryChangedEvent>(evt =>
+            {
+                _rulerView.style.width = evt.newRect.width;
+            });
+            trackScrollView.horizontalScroller.valueChanged += x =>
+            {
+                rulerScrollView.horizontalScroller.value = x;
+            };
             _rulerView.OnGetThickLabel += thickIndex =>
             {
                 if (thickIndex % labelInterval != 0)
@@ -171,7 +178,7 @@ namespace ActionSequencer.Editor
 
                 return "";
             };
-            _rulerView.MaskElement = trackScrollView;
+            _rulerView.MaskElement = rulerScrollView;
             _editorModel.TimeToSize
                 .Subscribe(timeToSize =>
                 {

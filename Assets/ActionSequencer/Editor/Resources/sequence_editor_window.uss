@@ -10,6 +10,7 @@
     background-color: rgb(100, 100, 100);
     margin-bottom: 4px;
     min-height: 21px;
+    flex-shrink: 0;
 }
 
 .range_event {
@@ -36,6 +37,8 @@
     border-top-color: rgba(0, 0, 0, 0.75);
     border-bottom-color: rgba(0, 0, 0, 0.75);
     min-width: 10px;
+    max-height: 19px;
+    min-height: 19px;
 }
 
 .range_event:hover {
@@ -73,6 +76,8 @@
     border-bottom-color: rgba(0, 0, 0, 0.75);
     max-width: 10px;
     min-width: 10px;
+    max-height: 19px;
+    min-height: 19px;
 }
 
 .signal_event:hover {
