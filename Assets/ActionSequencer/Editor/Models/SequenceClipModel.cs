@@ -60,18 +60,38 @@ namespace ActionSequencer.Editor
         }
 
         /// <summary>
-        /// Trackの追加
+        /// 該当の型を保持したTrackを検索
         /// </summary>
-        public SequenceTrackModel AddTrack(SequenceTrack track)
+        public SequenceTrackModel FindTrack(Type eventType)
         {
+            return _trackModels
+                .FirstOrDefault(x => ((SequenceTrack)x.Target).sequenceEvents.FirstOrDefault(evt => evt.GetType() == eventType) != null);
+        }
+
+        /// <summary>
+        /// Trackの取得 or 生成
+        /// </summary>
+        public SequenceTrackModel GetOrCreateTrack(Type eventType)
+        {
+            var trackModel = FindTrack(eventType);
+            if (trackModel != null)
+            {
+                return trackModel;
+            }
+            
+            // なければ生成
+            var track = ScriptableObject.CreateInstance<SequenceTrack>();
+            AssetDatabase.AddObjectToAsset(track, Target);
+            
+            // 要素に追加
             SerializedObject.Update();
             _tracks.arraySize++;
             _tracks.GetArrayElementAtIndex(_tracks.arraySize - 1).objectReferenceValue = track;
             SerializedObject.ApplyModifiedProperties();
-            var model = new SequenceTrackModel(track);
-            _trackModels.Add(model);
-            OnAddedTrackModel?.Invoke(model);
-            return model;
+            trackModel = new SequenceTrackModel(track);
+            _trackModels.Add(trackModel);
+            OnAddedTrackModel?.Invoke(trackModel);
+            return trackModel;
         }
         
         /// <summary>
@@ -85,6 +105,7 @@ namespace ActionSequencer.Editor
                 return;
             }
             
+            // Trackの除外
             SerializedObject.Update();
             for (var i = _tracks.arraySize - 1; i >= 0; i--)
             {
@@ -97,9 +118,25 @@ namespace ActionSequencer.Editor
                 element.DeleteArrayElementAtIndex(i);
             }
             SerializedObject.ApplyModifiedProperties();
-            
             OnRemoveTrackModel?.Invoke(model);
+            model.RemoveEvents();
+            model.Dispose();
             _trackModels.Remove(model);
+            
+            // Trackの削除
+            Undo.DestroyObjectImmediate(model.Target);
+        }
+
+        /// <summary>
+        /// 保持しているTrackを全て削除
+        /// </summary>
+        public void RemoveTracks()
+        {
+            var tracks = _trackModels.Select(x => (SequenceTrack)x.Target).ToArray();
+            foreach (var track in tracks)
+            {
+                RemoveTrack(track);
+            }
         }
 
         /// <summary>

@@ -208,50 +208,42 @@ namespace ActionSequencer.Editor
             
             // CreateMenu
             var createMenu = root.Q<ToolbarMenu>("CreateMenu");
-            createMenu.menu.AppendAction("Signal Event/Test 2", _ =>
+            var signalTypes = TypeCache.GetTypesDerivedFrom<SignalSequenceEvent>();
+            var rangeTypes = TypeCache.GetTypesDerivedFrom<RangeSequenceEvent>();
+            foreach (var signalType in signalTypes)
             {
-                var target = _editorModel.ClipModel?.Target;
-                if (target == null)
+                var t = signalType;
+                createMenu.menu.AppendAction($"Signal Event/{t.Name}", _ =>
                 {
-                    return;
-                }
+                    var target = _editorModel.ClipModel?.Target;
+                    if (target == null)
+                    {
+                        return;
+                    }
                 
-                // Track生成
-                var track = CreateInstance<SequenceTrack>();
-                AssetDatabase.AddObjectToAsset(track, target);
-                Undo.RegisterCreatedObjectUndo(track, "Created Track");
-                var trackModel = _editorModel.ClipModel.AddTrack(track);
-                
-                // Event生成
-                var evt = CreateInstance<SampleSignalSequenceEvent>();
-                AssetDatabase.AddObjectToAsset(evt, target);
-                Undo.RegisterCreatedObjectUndo(evt, "Created Event");
-                trackModel.AddSignalEvent(evt);
-            });
-            createMenu.menu.AppendAction("Range Event/Test 1", _ =>
+                    // Track取得/生成
+                    var trackModel = _editorModel.ClipModel.GetOrCreateTrack(signalType);
+                    // Event生成
+                    trackModel.AddSignalEvent(signalType);
+                });
+            }
+            foreach (var rangeType in rangeTypes)
             {
-                var target = _editorModel.ClipModel?.Target;
-                if (target == null)
+                var t = rangeType;
+                createMenu.menu.AppendAction($"Range Event/{t.Name}", _ =>
                 {
-                    return;
-                }
-                
-                // Track生成
-                var track = CreateInstance<SequenceTrack>();
-                AssetDatabase.AddObjectToAsset(track, target);
-                Undo.RegisterCreatedObjectUndo(track, "Created Track");
-                var trackModel = _editorModel.ClipModel.AddTrack(track);
-                
-                // Event生成 x 2
-                var evt = CreateInstance<SampleRangeSequenceEvent>();
-                AssetDatabase.AddObjectToAsset(evt, target);
-                Undo.RegisterCreatedObjectUndo(evt, "Created Event");
-                trackModel.AddRangeEvent(evt);
-                evt = CreateInstance<SampleRangeSequenceEvent>();
-                AssetDatabase.AddObjectToAsset(evt, target);
-                Undo.RegisterCreatedObjectUndo(evt, "Created Event");
-                trackModel.AddRangeEvent(evt);
-            });
+                    var target = _editorModel.ClipModel?.Target;
+                    if (target == null)
+                    {
+                        return;
+                    }
+                    
+                    // Track取得/生成
+                    var trackModel = _editorModel.ClipModel.GetOrCreateTrack(rangeType);
+                    // Event生成
+                    trackModel.AddRangeEvent(rangeType);
+                });
+            }
             
             // Play/Pause
             var playPauseToggle = root.Q<ToolbarToggle>("PlayPauseToggle");
