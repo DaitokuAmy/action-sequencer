@@ -75,22 +75,34 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// 選択対象の変更
         /// </summary>
-        public void SetTarget(Object target)
+        public void SetSelectedTarget(Object target)
         {
             _selectedTargets.Clear();
-            AddTarget(target);
+            AddSelectedTarget(target);
         }
 
         /// <summary>
         /// 選択対象の追加
         /// </summary>
-        public void AddTarget(Object target)
+        public void AddSelectedTarget(Object target)
         {
             if (_selectedTargets.Contains(target))
             {
                 return;
             }
             _selectedTargets.Add(target);
+            OnChangedSelectedTargets?.Invoke(SelectedTargets);
+        }
+
+        /// <summary>
+        /// 選択対象の削除
+        /// </summary>
+        public void RemoveSelectedTarget(Object target)
+        {
+            if (!_selectedTargets.Remove(target))
+            {
+                return;
+            }
             OnChangedSelectedTargets?.Invoke(SelectedTargets);
         }
 

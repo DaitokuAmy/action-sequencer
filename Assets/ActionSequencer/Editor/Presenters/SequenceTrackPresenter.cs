@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace ActionSequencer.Editor
@@ -32,12 +33,6 @@ namespace ActionSequencer.Editor
             Model.OnChangedLabel += OnChangedLabel;
 
             View.OnChangedLabel += OnChangedLabelView;
-            
-            View.Unbind();
-            View.TrackSerializedObjectValue(Model.SerializedObject, obj =>
-            {
-                //Model.RefreshEvents();
-            });
             
             // ラベル初期化
             OnChangedLabel(Model.Label);
@@ -83,7 +78,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// EventのViewをソートする
         /// </summary>
-        private void SortEvents()
+        private void SortEventViews()
         {
             var sequenceTrack = Model.Target as SequenceTrack;
             if (sequenceTrack == null)
@@ -92,7 +87,7 @@ namespace ActionSequencer.Editor
             }
             
             var eventList = new List<SequenceEvent>(sequenceTrack.sequenceEvents);
-            View.Sort((a, b) =>
+            TrackView.Sort((a, b) =>
             {
                 var sequenceEventA = a.userData as SequenceEvent;
                 var sequenceEventB = b.userData as SequenceEvent;
@@ -116,6 +111,9 @@ namespace ActionSequencer.Editor
 
             // 行数変更
             View.LineCount = Model.EventCount;
+            
+            // Viewのソート
+            SortEventViews();
         }
 
         /// <summary>
@@ -132,6 +130,9 @@ namespace ActionSequencer.Editor
 
             // 行数変更
             View.LineCount = Model.EventCount;
+            
+            // Viewのソート
+            SortEventViews();
         }
 
         /// <summary>
@@ -148,8 +149,8 @@ namespace ActionSequencer.Editor
             presenter.Dispose();
             _signalEventPresenters.Remove(presenter);
 
-            // 行数変更
-            View.LineCount = Model.EventCount;
+            // 行数変更(削除前なので-1)
+            View.LineCount = Model.EventCount - 1;
         }
 
         /// <summary>
@@ -166,8 +167,8 @@ namespace ActionSequencer.Editor
             presenter.Dispose();
             _rangeEventPresenters.Remove(presenter);
 
-            // 行数変更
-            View.LineCount = Model.EventCount;
+            // 行数変更(削除前なので-1)
+            View.LineCount = Model.EventCount - 1;
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace ActionSequencer.Editor
 {
@@ -117,13 +118,13 @@ namespace ActionSequencer.Editor
         /// </summary>
         public void RemoveEvent(SequenceEvent sequenceEvent)
         {
-            if (sequenceEvent is RangeSequenceEvent rangeSequenceEvent)
-            {
-                RemoveRangeEvent(rangeSequenceEvent);
-            }
-            else if (sequenceEvent is SignalSequenceEvent signalSequenceEvent)
+            if (sequenceEvent is SignalSequenceEvent signalSequenceEvent)
             {
                 RemoveSignalEvent(signalSequenceEvent);
+            }
+            else if (sequenceEvent is RangeSequenceEvent rangeSequenceEvent)
+            {
+                RemoveRangeEvent(rangeSequenceEvent);
             }
         }
 
@@ -132,7 +133,14 @@ namespace ActionSequencer.Editor
         /// </summary>
         public void DuplicateEvent(SequenceEvent sequenceEvent)
         {
-            
+            if (sequenceEvent is SignalSequenceEvent signalSequenceEvent)
+            {
+                DuplicateSignalEvent(signalSequenceEvent);
+            }
+            else if (sequenceEvent is RangeSequenceEvent rangeSequenceEvent)
+            {
+                DuplicateRangeEvent(rangeSequenceEvent);
+            }
         }
 
         /// <summary>
@@ -159,6 +167,22 @@ namespace ActionSequencer.Editor
                 RefreshDefaultLabel();
             }
             
+            return model;
+        }
+
+        /// <summary>
+        /// SignalEventの複製
+        /// </summary>
+        private SignalSequenceEventModel DuplicateSignalEvent(SignalSequenceEvent sequenceEvent)
+        {
+            // 要素の追加
+            var evt = DuplicateEventAsset(sequenceEvent);
+
+            // Modelの生成
+            var model = new SignalSequenceEventModel(evt, this);
+            _signalEventModels.Add(model);
+            OnAddedSignalEventModel?.Invoke(model);
+
             return model;
         }
 
@@ -200,6 +224,22 @@ namespace ActionSequencer.Editor
             {
                 RefreshDefaultLabel();
             }
+
+            return model;
+        }
+
+        /// <summary>
+        /// RangeEventの追加
+        /// </summary>
+        private RangeSequenceEventModel DuplicateRangeEvent(RangeSequenceEvent sequenceEvent)
+        {
+            // 要素の追加
+            var evt = DuplicateEventAsset(sequenceEvent);
+
+            // Modelの生成
+            var model = new RangeSequenceEventModel(evt, this);
+            _rangeEventModels.Add(model);
+            OnAddedRangeEventModel?.Invoke(model);
 
             return model;
         }
@@ -282,6 +322,41 @@ namespace ActionSequencer.Editor
             SerializedObject.Update();
             _sequenceEvents.arraySize++;
             _sequenceEvents.GetArrayElementAtIndex(_sequenceEvents.arraySize - 1).objectReferenceValue = evt;
+            SerializedObject.ApplyModifiedProperties();
+            
+            return evt;
+        }
+
+        /// <summary>
+        /// SequenceEventアセットの生成
+        /// </summary>
+        private TEvent DuplicateEventAsset<TEvent>(TEvent sourceEvent)
+            where TEvent : SequenceEvent
+        {
+            // Index検索
+            var index = -1;
+            for (var i = 0; i < _sequenceEvents.arraySize; i++)
+            {
+                if (_sequenceEvents.GetArrayElementAtIndex(i).objectReferenceValue == sourceEvent)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            if (index < 0)
+            {
+                return null;
+            }
+            
+            // Assetの生成
+            var evt = Object.Instantiate(sourceEvent);
+            AssetDatabase.AddObjectToAsset(evt, Target);
+            Undo.RegisterCreatedObjectUndo(evt, "Instantiate Event");
+            
+            // 要素の追加
+            SerializedObject.Update();
+            _sequenceEvents.InsertArrayElementAtIndex(index + 1);
+            _sequenceEvents.GetArrayElementAtIndex(index + 1).objectReferenceValue = evt;
             SerializedObject.ApplyModifiedProperties();
             
             return evt;

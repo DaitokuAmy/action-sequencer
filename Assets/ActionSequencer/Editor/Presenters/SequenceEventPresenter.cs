@@ -18,8 +18,6 @@ namespace ActionSequencer.Editor
         {
             EditorModel = editorModel;
             
-            View.RegisterCallback<MouseDownEvent>(OnMouseDownEvent);
-            
             EditorModel.OnChangedSelectedTargets += OnChangedSelectedTargets;
             
             // SerializedPropertyの変化監視
@@ -28,6 +26,10 @@ namespace ActionSequencer.Editor
             {
                 Model.Active = prop.boolValue;
             });
+            
+            // イベント監視
+            View.RegisterCallback<MouseDownEvent>(OnMouseDownEvent);
+            View.RegisterCallback<ValidateCommandEvent>(OnValidateCommandEvent);
             
             // アクティブ状態の監視
             Model.OnChangedActive += OnChangedActive;
@@ -64,7 +66,10 @@ namespace ActionSequencer.Editor
         {
             base.Dispose();
             
+            EditorModel.RemoveSelectedTarget(Model.Target);
+            
             View.UnregisterCallback<MouseDownEvent>(OnMouseDownEvent);
+            View.UnregisterCallback<ValidateCommandEvent>(OnValidateCommandEvent);
             
             View.OnOpenContextMenu -= OnOpenContextMenu;
             View.Manipulator.OnDragStart -= OnDragStart;
@@ -107,6 +112,9 @@ namespace ActionSequencer.Editor
             OnDragging(info, true);
         }
 
+        /// <summary>
+        /// マウス押下時処理
+        /// </summary>
         private void OnMouseDownEvent(MouseDownEvent evt)
         {
             if (evt.button != 0)
@@ -116,11 +124,26 @@ namespace ActionSequencer.Editor
 
             if (evt.commandKey || evt.ctrlKey)
             {
-                EditorModel.AddTarget(Model.Target);
+                EditorModel.AddSelectedTarget(Model.Target);
             }
             else
             {
-                EditorModel.SetTarget(Model.Target);
+                EditorModel.SetSelectedTarget(Model.Target);
+            }
+        }
+
+        /// <summary>
+        /// コマンド要求処理
+        /// </summary>
+        private void OnValidateCommandEvent(ValidateCommandEvent evt)
+        {
+            if (evt.commandName == "Duplicate")
+            {
+                Model.TrackModel.DuplicateEvent(Model.Target as SequenceEvent);
+            }
+            else if (evt.commandName == "Delete")
+            {
+                Model.TrackModel.RemoveEvent(Model.Target as SequenceEvent);
             }
         }
 

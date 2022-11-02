@@ -50,6 +50,11 @@ namespace ActionSequencer.Editor
         {
             _escapedClip = clip;
             
+            if (_editorModel.ClipModel?.Target == clip)
+            {
+                return;
+            }
+            
             // Clipの設定
             _editorModel.SetSequenceClip(clip);
 
