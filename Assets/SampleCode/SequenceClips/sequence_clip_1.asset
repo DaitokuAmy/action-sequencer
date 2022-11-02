@@ -14,6 +14,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 1
   time: 0.8
+--- !u!114 &-7948760779614498559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dff04690f8b94f2b9ffd9ec73c4f20d, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  active: 1
+  time: 1.05
+  sampleText: 
+--- !u!114 &-7745700782918233042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dff04690f8b94f2b9ffd9ec73c4f20d, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  active: 1
+  time: 0.5250001
+  sampleText: 
 --- !u!114 &-7565398752532883589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,7 +126,7 @@ MonoBehaviour:
   m_Name: (Clone)(Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   active: 1
-  time: 1.195
+  time: 0.74
   sampleText: 
 --- !u!114 &-2889596776824840793
 MonoBehaviour:
@@ -111,7 +141,7 @@ MonoBehaviour:
   m_Name: (Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   active: 1
-  time: 1.4350001
+  time: 0.9150001
   sampleText: 
 --- !u!114 &-1985935784611788944
 MonoBehaviour:
@@ -126,7 +156,7 @@ MonoBehaviour:
   m_Name: (Clone)(Clone)
   m_EditorClassIdentifier: 
   active: 1
-  time: 1.2
+  time: 0.73
   sampleText: 
 --- !u!114 &-1485392895608939580
 MonoBehaviour:
@@ -141,7 +171,7 @@ MonoBehaviour:
   m_Name: (Clone)(Clone)(Clone)
   m_EditorClassIdentifier: 
   active: 1
-  time: 0.2
+  time: 0.19532964
   sampleText: 
 --- !u!114 &11400000
 MonoBehaviour:
@@ -216,6 +246,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 1
   time: 0.8
+--- !u!114 &807893478036199727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dff04690f8b94f2b9ffd9ec73c4f20d, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  active: 1
+  time: 0.7149999
+  sampleText: 
 --- !u!114 &1194977396045891131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,12 +277,32 @@ MonoBehaviour:
   sequenceEvents:
   - {fileID: -1985935784611788944}
   - {fileID: -2889596776824840793}
+  - {fileID: -7745700782918233042}
   - {fileID: 590310859637545384}
   - {fileID: -4506205466115485654}
   - {fileID: 7662727738350230599}
   - {fileID: 5286611305506371075}
+  - {fileID: -7948760779614498559}
+  - {fileID: 6320341138215857039}
+  - {fileID: 1989777506244718349}
+  - {fileID: 807893478036199727}
   - {fileID: 4530501781540829264}
   - {fileID: -1485392895608939580}
+--- !u!114 &1989777506244718349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dff04690f8b94f2b9ffd9ec73c4f20d, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  active: 1
+  time: 0.56499994
+  sampleText: 
 --- !u!114 &3056601425086005864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -358,6 +423,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 1
   time: 0.7
+--- !u!114 &6320341138215857039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dff04690f8b94f2b9ffd9ec73c4f20d, type: 3}
+  m_Name: (Clone)(Clone)(Clone)(Clone)
+  m_EditorClassIdentifier: 
+  active: 1
+  time: 0.7099999
+  sampleText: 
 --- !u!114 &7662727738350230599
 MonoBehaviour:
   m_ObjectHideFlags: 0

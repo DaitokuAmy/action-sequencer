@@ -1,4 +1,3 @@
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -67,7 +66,7 @@ namespace ActionSequencer.Editor.VisualElements
                     }
                     _inspectorEditor.OnInspectorGUI();
                 });
-                Add(_container);
+            Add(_container);
         }
     }
 }

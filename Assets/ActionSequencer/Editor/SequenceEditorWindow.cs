@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using ActionSequencer.Editor.VisualElements;
 using UnityEditor.Callbacks;
+using Object = UnityEngine.Object;
 using ObjectField = UnityEditor.UIElements.ObjectField;
 using ToolbarMenu = UnityEditor.UIElements.ToolbarMenu;
 using ToolbarToggle = UnityEditor.UIElements.ToolbarToggle;
@@ -61,11 +62,11 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// 初期化処理
         /// </summary>
-        private void Setup(SequenceClip clip)
+        private void Setup(SequenceClip clip, bool force = false)
         {
             _escapedClip = clip;
             
-            if (_editorModel.ClipModel?.Target == clip)
+            if (!force && _editorModel.ClipModel?.Target == clip)
             {
                 return;
             }
@@ -84,7 +85,7 @@ namespace ActionSequencer.Editor
             
             // Inspectorパネル初期化 ※InspectorElementはLayoutに不具合があったので未使用
             var inspectorView = root.Q<InspectorView>();
-            inspectorView.Clear();
+            inspectorView.ClearTarget();
             
             // ObjectField初期化
             var objectField = root.Q<ObjectField>("TargetObjectField");
@@ -335,6 +336,8 @@ namespace ActionSequencer.Editor
             {
                 SetViewDataKey(element);
             }
+
+            Undo.undoRedoPerformed += OnUndoRedoPerformed;
             
             // 初期化
             Setup(_escapedClip);
@@ -345,8 +348,19 @@ namespace ActionSequencer.Editor
         /// </summary>
         private void OnDisable()
         {
+            Undo.undoRedoPerformed -= OnUndoRedoPerformed;
+            
             _editorModel?.Dispose();
             _editorModel = null;
+        }
+
+        /// <summary>
+        /// Undo/Redo通知
+        /// </summary>
+        private void OnUndoRedoPerformed()
+        {
+            // 本来はプロパティの変更を監視したいが、監視ができないので強引だが開き直す
+            Setup(_escapedClip, true);
         }
     }
 }
