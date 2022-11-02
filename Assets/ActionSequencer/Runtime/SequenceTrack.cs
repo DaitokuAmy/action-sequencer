@@ -12,5 +12,10 @@ namespace ActionSequencer
         public string label = "";
         [Tooltip("配置されたイベントリスト")]
         public SequenceEvent[] sequenceEvents = Array.Empty<SequenceEvent>();
+
+        private void OnValidate()
+        {
+            hideFlags |= HideFlags.HideInHierarchy;
+        }
     }
 }

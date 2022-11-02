@@ -194,7 +194,7 @@ namespace ActionSequencer.Editor
                     return "";
                 }
 
-                var thickSeconds = RulerUtility.GetThickSeconds(_editorModel.CurrentTimeMode.Value);
+                var thickSeconds = SequenceEditorUtility.GetThickSeconds(_editorModel.CurrentTimeMode.Value);
                 var seconds = thickIndex * thickSeconds;
                 switch (_editorModel.CurrentTimeMode.Value)
                 {
@@ -212,31 +212,24 @@ namespace ActionSequencer.Editor
             _editorModel.TimeToSize
                 .Subscribe(_ =>
                 {
-                    _rulerView.MemorySize = RulerUtility.CalcMemorySize(_editorModel);
+                    _rulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
                 });
             _editorModel.CurrentTimeMode
                 .Subscribe(timeMode =>
                 {
-                    _rulerView.ThickCycle = RulerUtility.GetThickCycle(timeMode);
-                    _rulerView.MemorySize = RulerUtility.CalcMemorySize(_editorModel);
+                    _rulerView.ThickCycle = SequenceEditorUtility.GetThickCycle(timeMode);
+                    _rulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
                     _rulerView.RefreshLabels();
                 });
             
             // CreateMenu
-            string GetDisplayName(Type type)
-            {
-                var attr = type.GetCustomAttribute(typeof(SequenceEventAttribute)) as SequenceEventAttribute;
-                var displayName = attr != null ? attr.DisplayName : "";
-                displayName = string.IsNullOrWhiteSpace(displayName) ? type.Name : displayName;
-                return displayName;
-            }
             var createMenu = root.Q<ToolbarMenu>("CreateMenu");
             var signalTypes = TypeCache.GetTypesDerivedFrom<SignalSequenceEvent>();
             var rangeTypes = TypeCache.GetTypesDerivedFrom<RangeSequenceEvent>();
             foreach (var signalType in signalTypes)
             {
                 var t = signalType;
-                var displayName = GetDisplayName(t);
+                var displayName = SequenceEditorUtility.GetDisplayName(t);
                 createMenu.menu.AppendAction($"Signal Event/{displayName}", _ =>
                 {
                     var target = _editorModel.ClipModel?.Target;
@@ -254,7 +247,7 @@ namespace ActionSequencer.Editor
             foreach (var rangeType in rangeTypes)
             {
                 var t = rangeType;
-                var displayName = GetDisplayName(t);
+                var displayName = SequenceEditorUtility.GetDisplayName(t);
                 createMenu.menu.AppendAction($"Range Event/{displayName}", _ =>
                 {
                     var target = _editorModel.ClipModel?.Target;

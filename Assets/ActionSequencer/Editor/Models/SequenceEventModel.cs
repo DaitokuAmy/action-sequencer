@@ -27,6 +27,7 @@ namespace ActionSequencer.Editor
             }
         }
 
+        // アクティブ状態変化時
         public event Action<bool> OnChangedActive;
 
         // 親のTrackModel
@@ -43,26 +44,7 @@ namespace ActionSequencer.Editor
             _active = SerializedObject.FindProperty("active");
             
             TrackModel = trackModel;
-            SetupThemeColor();
-        }
-
-        /// <summary>
-        /// テーマカラーの初期化
-        /// </summary>
-        private void SetupThemeColor() {
-            // Attributeチェック
-            if (Target.GetType().GetCustomAttribute(typeof(SequenceEventAttribute)) is SequenceEventAttribute attr) {
-                if (attr.ThemeColor.a > float.Epsilon) {
-                    ThemeColor = attr.ThemeColor;
-                    return;
-                }
-            }
-            
-            // 無ければ自動生成
-            var prevState = Random.state;
-            Random.InitState(Target.GetType().Name.GetHashCode());
-            ThemeColor = Random.ColorHSV(0.0f, 1.0f, 0.4f, 0.4f, 0.9f, 0.9f);
-            Random.state = prevState;
+            ThemeColor = SequenceEditorUtility.GetThemeColor(Target.GetType());
         }
     }
 }

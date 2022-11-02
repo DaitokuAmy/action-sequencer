@@ -43,13 +43,13 @@ namespace ActionSequencer.Editor
             _disposables.Add(_editorModel.TimeToSize
                 .Subscribe(_ =>
                 {
-                    TrackView.RulerView.MemorySize = RulerUtility.CalcMemorySize(_editorModel);
+                    TrackView.RulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
                 }));
             _disposables.Add(_editorModel.CurrentTimeMode
                 .Subscribe(timeMode =>
                 {
-                    TrackView.RulerView.ThickCycle = RulerUtility.GetThickCycle(timeMode);
-                    TrackView.RulerView.MemorySize = RulerUtility.CalcMemorySize(_editorModel);
+                    TrackView.RulerView.ThickCycle = SequenceEditorUtility.GetThickCycle(timeMode);
+                    TrackView.RulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
                 }));
             
             // ラベル初期化
