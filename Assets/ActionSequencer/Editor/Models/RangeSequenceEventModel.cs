@@ -43,8 +43,8 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public RangeSequenceEventModel(RangeSequenceEvent target)
-            : base(target)
+        public RangeSequenceEventModel(RangeSequenceEvent target, SequenceTrackModel trackModel)
+            : base(target, trackModel)
         {
             _enterTime = SerializedObject.FindProperty("enterTime");
             _exitTime = SerializedObject.FindProperty("exitTime");

@@ -278,6 +278,12 @@ namespace ActionSequencer
 
             foreach (var ev in events)
             {
+                // 無効状態のEventは処理しない
+                if (!ev.active)
+                {
+                    continue;
+                }
+                
                 if (ev is RangeSequenceEvent rangeEvent)
                 {
                     // Handlerの生成

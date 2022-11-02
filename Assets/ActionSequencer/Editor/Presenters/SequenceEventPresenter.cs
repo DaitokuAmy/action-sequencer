@@ -1,4 +1,5 @@
 using System.Linq;
+using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
@@ -21,12 +22,31 @@ namespace ActionSequencer.Editor
             
             EditorModel.OnChangedSelectedTargets += OnChangedSelectedTargets;
             
+            // 右クリック監視
+            View.OnOpenContextMenu += OnOpenContextMenu;
+            
             // Drag監視
             View.Manipulator.OnDragStart += OnDragStart;
             View.Manipulator.OnDragging += OnDragging;
 
             EditorModel.OnEventDragStart += OnEventDragStart;
             EditorModel.OnEventDragging += OnEventDragging;
+        }
+
+        private void OnOpenContextMenu(ContextualMenuPopulateEvent evt)
+        {
+            evt.menu.AppendAction("Duplicate", action =>
+            {
+                Model.TrackModel.DuplicateEvent(Model.Target as SequenceEvent);
+            });
+            evt.menu.AppendAction("Delete", action =>
+            {
+                Model.TrackModel.RemoveEvent(Model.Target as SequenceEvent);
+            });
+            evt.menu.AppendAction(Model.Active ? "Deactivate" : "Activate", action =>
+            {
+                Model.Active ^= true;
+            });
         }
         
         public override void Dispose()
@@ -35,6 +55,7 @@ namespace ActionSequencer.Editor
             
             View.UnregisterCallback<MouseDownEvent>(OnMouseDownEvent);
             
+            View.OnOpenContextMenu -= OnOpenContextMenu;
             View.Manipulator.OnDragStart -= OnDragStart;
             View.Manipulator.OnDragging -= OnDragging;
 

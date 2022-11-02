@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace ActionSequencer.Editor
 {
@@ -83,13 +82,13 @@ namespace ActionSequencer.Editor
                 var sequenceEvent = _sequenceEvents.GetArrayElementAtIndex(i).objectReferenceValue as SequenceEvent;
                 if (sequenceEvent is SignalSequenceEvent signalEvent)
                 {
-                    var model = new SignalSequenceEventModel(signalEvent);
+                    var model = new SignalSequenceEventModel(signalEvent, this);
                     _signalEventModels.Add(model);
                     OnAddedSignalEventModel?.Invoke(model);
                 }
                 else if (sequenceEvent is RangeSequenceEvent rangeEvent)
                 {
-                    var model = new RangeSequenceEventModel(rangeEvent);
+                    var model = new RangeSequenceEventModel(rangeEvent, this);
                     _rangeEventModels.Add(model);
                     OnAddedRangeEventModel?.Invoke(model);
                 }
@@ -97,57 +96,49 @@ namespace ActionSequencer.Editor
         }
 
         /// <summary>
-        /// SequenceEventの生成
+        /// Eventの追加
         /// </summary>
-        private TEvent CreateEvent<TEvent>(Type eventType)
-            where TEvent : SequenceEvent
+        public SequenceEventModel AddEvent(Type eventType)
         {
-            if (!eventType.IsSubclassOf(typeof(TEvent)))
+            if (eventType.IsSubclassOf(typeof(SignalSequenceEvent)))
             {
-                return null;
+                return AddSignalEvent(eventType);
             }
-            
-            // Assetの生成
-            var evt = ScriptableObject.CreateInstance(eventType) as TEvent;
-            AssetDatabase.AddObjectToAsset(evt, Target);
-            Undo.RegisterCreatedObjectUndo(evt, "Created Event");
-            
-            // 要素の追加
-            SerializedObject.Update();
-            _sequenceEvents.arraySize++;
-            _sequenceEvents.GetArrayElementAtIndex(_sequenceEvents.arraySize - 1).objectReferenceValue = evt;
-            SerializedObject.ApplyModifiedProperties();
-            
-            return evt;
+            if (eventType.IsSubclassOf(typeof(RangeSequenceEvent)))
+            {
+                return AddRangeEvent(eventType);
+            }
+
+            return null;
         }
 
         /// <summary>
-        /// SequenceEventの削除
+        /// Eventの削除
         /// </summary>
-        private void DeleteEvent(SequenceEvent sequenceEvent)
+        public void RemoveEvent(SequenceEvent sequenceEvent)
         {
-            // 要素から除外
-            SerializedObject.Update();
-            for (var i = _sequenceEvents.arraySize - 1; i >= 0; i--)
+            if (sequenceEvent is RangeSequenceEvent rangeSequenceEvent)
             {
-                var element = _sequenceEvents.GetArrayElementAtIndex(i);
-                if (element.objectReferenceValue != sequenceEvent)
-                {
-                    continue;
-                }
-                
-                element.DeleteArrayElementAtIndex(i);
+                RemoveRangeEvent(rangeSequenceEvent);
             }
-            SerializedObject.ApplyModifiedProperties();
+            else if (sequenceEvent is SignalSequenceEvent signalSequenceEvent)
+            {
+                RemoveSignalEvent(signalSequenceEvent);
+            }
+        }
+
+        /// <summary>
+        /// Eventの複製
+        /// </summary>
+        public void DuplicateEvent(SequenceEvent sequenceEvent)
+        {
             
-            // Asset削除
-            Undo.DestroyObjectImmediate(sequenceEvent);
         }
 
         /// <summary>
         /// SignalEventの追加
         /// </summary>
-        public SignalSequenceEventModel AddSignalEvent(Type eventType)
+        private SignalSequenceEventModel AddSignalEvent(Type eventType)
         {
             if (!eventType.IsSubclassOf(typeof(SignalSequenceEvent)))
             {
@@ -155,10 +146,10 @@ namespace ActionSequencer.Editor
             }
             
             // 要素の追加
-            var evt = CreateEvent<SignalSequenceEvent>(eventType);
+            var evt = CreateEventAsset<SignalSequenceEvent>(eventType);
 
             // Modelの生成
-            var model = new SignalSequenceEventModel(evt);
+            var model = new SignalSequenceEventModel(evt, this);
             _signalEventModels.Add(model);
             OnAddedSignalEventModel?.Invoke(model);
 
@@ -174,7 +165,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// SignalEventの削除
         /// </summary>
-        public void RemoveSignalEvent(SignalSequenceEvent sequenceEvent)
+        private void RemoveSignalEvent(SignalSequenceEvent sequenceEvent)
         {
             var model = _signalEventModels.FirstOrDefault(x => x.Target == sequenceEvent);
             if (model == null)
@@ -188,19 +179,19 @@ namespace ActionSequencer.Editor
             model.Dispose();
 
             // 要素削除
-            DeleteEvent(sequenceEvent);
+            DeleteEventAsset(sequenceEvent);
         }
 
         /// <summary>
         /// RangeEventの追加
         /// </summary>
-        public RangeSequenceEventModel AddRangeEvent(Type eventType)
+        private RangeSequenceEventModel AddRangeEvent(Type eventType)
         {
             // 要素の追加
-            var evt = CreateEvent<RangeSequenceEvent>(eventType);
+            var evt = CreateEventAsset<RangeSequenceEvent>(eventType);
 
             // Modelの生成
-            var model = new RangeSequenceEventModel(evt);
+            var model = new RangeSequenceEventModel(evt, this);
             _rangeEventModels.Add(model);
             OnAddedRangeEventModel?.Invoke(model);
 
@@ -216,7 +207,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// RangeEventの削除
         /// </summary>
-        public void RemoveRangeEvent(RangeSequenceEvent sequenceEvent)
+        private void RemoveRangeEvent(RangeSequenceEvent sequenceEvent)
         {
             var model = _rangeEventModels.FirstOrDefault(x => x.Target == sequenceEvent);
             if (model == null)
@@ -230,7 +221,7 @@ namespace ActionSequencer.Editor
             model.Dispose();
 
             // 要素削除
-            DeleteEvent(sequenceEvent);
+            DeleteEventAsset(sequenceEvent);
         }
 
         /// <summary>
@@ -269,6 +260,54 @@ namespace ActionSequencer.Editor
             
             _signalEventModels.Clear();
             _rangeEventModels.Clear();
+        }
+
+        /// <summary>
+        /// SequenceEventアセットの生成
+        /// </summary>
+        private TEvent CreateEventAsset<TEvent>(Type eventType)
+            where TEvent : SequenceEvent
+        {
+            if (!eventType.IsSubclassOf(typeof(TEvent)))
+            {
+                return null;
+            }
+            
+            // Assetの生成
+            var evt = ScriptableObject.CreateInstance(eventType) as TEvent;
+            AssetDatabase.AddObjectToAsset(evt, Target);
+            Undo.RegisterCreatedObjectUndo(evt, "Created Event");
+            
+            // 要素の追加
+            SerializedObject.Update();
+            _sequenceEvents.arraySize++;
+            _sequenceEvents.GetArrayElementAtIndex(_sequenceEvents.arraySize - 1).objectReferenceValue = evt;
+            SerializedObject.ApplyModifiedProperties();
+            
+            return evt;
+        }
+
+        /// <summary>
+        /// SequenceEventアセットの削除
+        /// </summary>
+        private void DeleteEventAsset(SequenceEvent sequenceEvent)
+        {
+            // 要素から除外
+            SerializedObject.Update();
+            for (var i = _sequenceEvents.arraySize - 1; i >= 0; i--)
+            {
+                var element = _sequenceEvents.GetArrayElementAtIndex(i);
+                if (element.objectReferenceValue != sequenceEvent)
+                {
+                    continue;
+                }
+                
+                _sequenceEvents.DeleteArrayElementAtIndex(i);
+            }
+            SerializedObject.ApplyModifiedProperties();
+            
+            // Asset削除
+            Undo.DestroyObjectImmediate(sequenceEvent);
         }
 
         /// <summary>

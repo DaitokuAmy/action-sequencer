@@ -115,7 +115,7 @@ namespace ActionSequencer.Editor
                     continue;
                 }
                 
-                element.DeleteArrayElementAtIndex(i);
+                _tracks.DeleteArrayElementAtIndex(i);
             }
             SerializedObject.ApplyModifiedProperties();
             OnRemoveTrackModel?.Invoke(model);

@@ -29,8 +29,8 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public SignalSequenceEventModel(SignalSequenceEvent target)
-            : base(target)
+        public SignalSequenceEventModel(SignalSequenceEvent target, SequenceTrackModel trackModel)
+            : base(target, trackModel)
         {
             _time = SerializedObject.FindProperty("time");
         }

@@ -9,7 +9,7 @@ namespace ActionSequencer.Editor.Utils
     {
         private T _value;
         private bool _initialized;
-        private Func<T, T> _filterFunc;
+        private Func<T, T> _preprocess;
 
         /// <summary>
         /// 廃棄時の処理記述用
@@ -31,16 +31,16 @@ namespace ActionSequencer.Editor.Utils
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public ReactiveProperty(Func<T, T> filterFunc = null)
+        public ReactiveProperty(Func<T, T> preprocess = null)
         {
-            _filterFunc = filterFunc;
+            _preprocess = preprocess;
         }
 
         /// <summary>
         /// コンストラクタ(初期値あり)
         /// </summary>
-        public ReactiveProperty(T initValue, Func<T, T> filterFunc = null)
-            : this(filterFunc)
+        public ReactiveProperty(T initValue, Func<T, T> preprocess = null)
+            : this(preprocess)
         {
             _value = initValue;
             _initialized = true;
@@ -60,7 +60,7 @@ namespace ActionSequencer.Editor.Utils
                 }
 
                 _initialized = true;
-                _value = value;
+                _value = _preprocess != null ? _preprocess.Invoke(value) : value;
                 OnChangedValue?.Invoke(_value);
             }
         }

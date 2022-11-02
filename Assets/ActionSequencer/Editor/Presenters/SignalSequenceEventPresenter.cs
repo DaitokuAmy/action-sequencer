@@ -39,6 +39,7 @@ namespace ActionSequencer.Editor
         public override void Dispose()
         {
             base.Dispose();
+            //_view.UnregisterCallback();
             _model.OnChangedTime -= OnChangedTime;
             foreach (var disposable in _disposables)
             {

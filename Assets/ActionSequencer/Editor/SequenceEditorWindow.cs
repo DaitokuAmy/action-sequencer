@@ -224,7 +224,7 @@ namespace ActionSequencer.Editor
                     // Track取得/生成
                     var trackModel = _editorModel.ClipModel.GetOrCreateTrack(signalType);
                     // Event生成
-                    trackModel.AddSignalEvent(signalType);
+                    trackModel.AddEvent(signalType);
                 });
             }
             foreach (var rangeType in rangeTypes)
@@ -241,7 +241,7 @@ namespace ActionSequencer.Editor
                     // Track取得/生成
                     var trackModel = _editorModel.ClipModel.GetOrCreateTrack(rangeType);
                     // Event生成
-                    trackModel.AddRangeEvent(rangeType);
+                    trackModel.AddEvent(rangeType);
                 });
             }
             

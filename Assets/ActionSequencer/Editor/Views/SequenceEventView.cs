@@ -1,3 +1,4 @@
+using System;
 using UnityEngine.UIElements;
 
 namespace ActionSequencer.Editor
@@ -8,8 +9,11 @@ namespace ActionSequencer.Editor
     public abstract class SequenceEventView : VisualElement
     {
         private bool _selected;
+        private ContextualMenuManipulator _contextualMenuManipulator;
+        
+        public event Action<ContextualMenuPopulateEvent> OnOpenContextMenu;
 
-        public SequenceEventManipulator Manipulator { get; private set; }
+        public SequenceEventManipulator Manipulator { get; private set; } 
 
         // 選択状態
         public bool Selected
@@ -42,7 +46,17 @@ namespace ActionSequencer.Editor
         {
             focusable = true;
             Manipulator = new SequenceEventManipulator(resizable);
+            _contextualMenuManipulator = new ContextualMenuManipulator(OnOpenContextMenuInternal);
             this.AddManipulator(Manipulator);
+            this.AddManipulator(_contextualMenuManipulator);
+        }
+
+        /// <summary>
+        /// 右クリックメニュー開いた時の処理
+        /// </summary>
+        private void OnOpenContextMenuInternal(ContextualMenuPopulateEvent evt)
+        {
+            OnOpenContextMenu?.Invoke(evt);
         }
     }
 }

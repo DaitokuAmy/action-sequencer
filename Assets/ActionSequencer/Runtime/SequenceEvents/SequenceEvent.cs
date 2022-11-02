@@ -5,6 +5,9 @@ namespace ActionSequencer
     /// <summary>
     /// SequenceTrackに配置するイベント
     /// </summary>
-    public abstract class SequenceEvent : ScriptableObject {
+    public abstract class SequenceEvent : ScriptableObject
+    {
+        [Tooltip("有効なイベントか")]
+        public bool active = true;
     }
 }
