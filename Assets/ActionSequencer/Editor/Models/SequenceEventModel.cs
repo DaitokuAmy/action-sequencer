@@ -20,11 +20,6 @@ namespace ActionSequencer.Editor
             get => _active.boolValue;
             set
             {
-                if (_active.boolValue == value)
-                {
-                    return;
-                }
-                
                 SerializedObject.Update();
                 _active.boolValue = value;
                 SerializedObject.ApplyModifiedProperties();

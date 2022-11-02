@@ -21,7 +21,6 @@ namespace ActionSequencer.Editor
             _model = model;
             _view = view;
             
-            _view.Unbind();
             _view.TrackPropertyValue(Model.SerializedObject.FindProperty("time"), prop =>
             {
                 _model.Time = prop.floatValue;

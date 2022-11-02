@@ -185,8 +185,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 422016eb4a50e48c68a24ae9ec7e20d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  active: 1
-  enterTime: 0.75
+  active: 0
+  enterTime: 0.9
   exitTime: 2
   sampleStartText: 
   sampleEndText: 

@@ -1,4 +1,5 @@
 using System.Linq;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
@@ -18,9 +19,19 @@ namespace ActionSequencer.Editor
             EditorModel = editorModel;
             
             View.RegisterCallback<MouseDownEvent>(OnMouseDownEvent);
-            View.style.backgroundColor = Model.ThemeColor;
             
             EditorModel.OnChangedSelectedTargets += OnChangedSelectedTargets;
+            
+            // SerializedPropertyの変化監視
+            View.Unbind();
+            View.TrackPropertyValue(Model.SerializedObject.FindProperty("active"), prop =>
+            {
+                Model.Active = prop.boolValue;
+            });
+            
+            // アクティブ状態の監視
+            Model.OnChangedActive += OnChangedActive;
+            OnChangedActive(Model.Active);
             
             // 右クリック監視
             View.OnOpenContextMenu += OnOpenContextMenu;
@@ -113,10 +124,21 @@ namespace ActionSequencer.Editor
             }
         }
 
+        /// <summary>
+        /// 選択対象の変更通知
+        /// </summary>
         private void OnChangedSelectedTargets(Object[] targets)
         {
             var selected = targets.Contains(Model.Target);
             View.Selected = selected;
+        }
+
+        /// <summary>
+        /// アクティブ状態の切り替え通知
+        /// </summary>
+        private void OnChangedActive(bool active)
+        {
+            View.style.backgroundColor = active ? Model.ThemeColor : Color.gray;
         }
 
         /// <summary>

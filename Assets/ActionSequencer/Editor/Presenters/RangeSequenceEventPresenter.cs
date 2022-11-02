@@ -25,8 +25,7 @@ namespace ActionSequencer.Editor
         {
             _model = model;
             _view = view;
-            
-            _view.Unbind();
+
             _view.TrackPropertyValue(Model.SerializedObject.FindProperty("enterTime"), prop =>
             {
                 _model.EnterTime = prop.floatValue;
