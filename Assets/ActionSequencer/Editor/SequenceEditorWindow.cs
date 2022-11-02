@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ActionSequencer.Editor.VisualElements;
+using UnityEditor.Callbacks;
 using ObjectField = UnityEditor.UIElements.ObjectField;
 using ToolbarMenu = UnityEditor.UIElements.ToolbarMenu;
 using ToolbarToggle = UnityEditor.UIElements.ToolbarToggle;
@@ -41,6 +42,18 @@ namespace ActionSequencer.Editor
         {
             var window = GetWindow<SequenceEditorWindow>(ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow)));
             window.Setup(null);
+        }
+        
+        [OnOpenAsset(0)]
+        public static bool OnOpenAsset(int instanceID, int line)
+        {
+            var asset = EditorUtility.InstanceIDToObject(instanceID);
+            if (asset is SequenceClip clip)
+            {
+                Open(clip);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
