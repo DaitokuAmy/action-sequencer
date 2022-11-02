@@ -118,6 +118,14 @@ namespace ActionSequencer.Editor
         }
 
         /// <summary>
+        /// ViewDataKeyの設定
+        /// </summary>
+        private void SetViewDataKey(VisualElement element)
+        {
+            element.viewDataKey = $"{nameof(SequenceEditorWindow)}_{nameof(element.name)}";
+        }
+
+        /// <summary>
         /// アクティブ時処理
         /// </summary>
         private void OnEnable()
@@ -280,18 +288,7 @@ namespace ActionSequencer.Editor
             rulerMode.choices = new List<string>(Enum.GetNames(typeof(SequenceEditorModel.TimeMode)));
             rulerMode.RegisterValueChangedCallback(evt =>
             {
-                switch (evt.newValue)
-                {
-                    case nameof(SequenceEditorModel.TimeMode.Seconds):
-                        _editorModel.CurrentTimeMode.Value = SequenceEditorModel.TimeMode.Seconds;
-                        break;
-                    case nameof(SequenceEditorModel.TimeMode.Frames30):
-                        _editorModel.CurrentTimeMode.Value = SequenceEditorModel.TimeMode.Frames30;
-                        break;
-                    case nameof(SequenceEditorModel.TimeMode.Frames60):
-                        _editorModel.CurrentTimeMode.Value = SequenceEditorModel.TimeMode.Frames60;
-                        break;
-                }
+                _editorModel.CurrentTimeMode.Value = (SequenceEditorModel.TimeMode)rulerMode.index;
             });
             _editorModel.CurrentTimeMode
                 .Subscribe(timeMode =>
@@ -310,11 +307,23 @@ namespace ActionSequencer.Editor
                 {
                     timeFitToggle.value = timeFit;
                 });
-            timeFitToggle.value = true;
-
+            
             // EditorModelの状態初期化
             _editorModel.TimeToSize.Value = 200.0f;
-            _editorModel.CurrentTimeMode.Value = SequenceEditorModel.TimeMode.Seconds;
+            _editorModel.CurrentTimeMode.Value = (SequenceEditorModel.TimeMode)rulerMode.index;
+            _editorModel.TimeFit.Value = timeFitToggle.value;
+            
+            // ViewDataKey
+            // SetViewDataKey(trackLabelList);
+            // SetViewDataKey(rulerScrollView);
+            // SetViewDataKey(trackScrollView);
+            SetViewDataKey(rulerMode);
+            SetViewDataKey(timeFitToggle);
+            var splitViews = root.Query<SplitView>().ToList();
+            foreach (var element in splitViews)
+            {
+                SetViewDataKey(element);
+            }
             
             // 初期化
             Setup(_escapedClip);
