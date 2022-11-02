@@ -9,7 +9,7 @@
     <ActionSequencer.Editor.VisualElements.SplitView fixed-pane-index="1" fixed-pane-initial-dimension="360" name="EditorArea">
         <ActionSequencer.Editor.VisualElements.SplitView fixed-pane-initial-dimension="150" name="ContentArea">
             <ui:VisualElement name="TrackLabelArea" style="background-color: rgb(92, 92, 92);">
-                <ActionSequencer.Editor.VisualElements.Toolbar name="TrackToolbar">
+                <ActionSequencer.Editor.VisualElements.Toolbar name="TrackToolbar" style="height: 20px;">
                     <ActionSequencer.Editor.VisualElements.ToolbarMenu name="CreateMenu" text="Create" style="-unity-font-style: bold;" />
                 </ActionSequencer.Editor.VisualElements.Toolbar>
                 <ui:ScrollView name="TrackLabelList" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
