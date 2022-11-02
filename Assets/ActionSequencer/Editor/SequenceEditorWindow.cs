@@ -189,8 +189,7 @@ namespace ActionSequencer.Editor
             };
             _rulerView.OnGetThickLabel += thickIndex =>
             {
-                if (thickIndex % 2 != 0)
-                {
+                if (thickIndex % 2 != 0) {
                     return "";
                 }
 

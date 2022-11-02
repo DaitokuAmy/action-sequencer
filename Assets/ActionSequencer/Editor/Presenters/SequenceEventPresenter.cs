@@ -1,4 +1,5 @@
 using System.Linq;
+using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -44,22 +45,6 @@ namespace ActionSequencer.Editor
 
             EditorModel.OnEventDragStart += OnEventDragStart;
             EditorModel.OnEventDragging += OnEventDragging;
-        }
-
-        private void OnOpenContextMenu(ContextualMenuPopulateEvent evt)
-        {
-            evt.menu.AppendAction("Duplicate", action =>
-            {
-                Model.TrackModel.DuplicateEvent(Model.Target as SequenceEvent);
-            });
-            evt.menu.AppendAction("Delete", action =>
-            {
-                Model.TrackModel.RemoveEvent(Model.Target as SequenceEvent);
-            });
-            evt.menu.AppendAction(Model.Active ? "Deactivate" : "Activate", action =>
-            {
-                Model.Active ^= true;
-            });
         }
         
         public override void Dispose()
@@ -139,11 +124,11 @@ namespace ActionSequencer.Editor
         {
             if (evt.commandName == "Duplicate")
             {
-                Model.TrackModel.DuplicateEvent(Model.Target as SequenceEvent);
+                DuplicateSelectedEvents();
             }
             else if (evt.commandName == "Delete")
             {
-                Model.TrackModel.RemoveEvent(Model.Target as SequenceEvent);
+                DeleteSelectedEvents();
             }
         }
 
@@ -178,6 +163,67 @@ namespace ActionSequencer.Editor
         protected float TimeToSize(float time)
         {
             return time * EditorModel.TimeToSize.Value;
+        }
+
+        /// <summary>
+        /// コンテキストメニューを開いた時の処理
+        /// </summary>
+        private void OnOpenContextMenu(ContextualMenuPopulateEvent evt)
+        {
+            evt.menu.AppendAction("Duplicate", action =>
+            {
+                DuplicateSelectedEvents();
+            });
+            evt.menu.AppendAction("Delete", action =>
+            {
+                DeleteSelectedEvents();
+            });
+            evt.menu.AppendAction(Model.Active ? "Deactivate" : "Activate", action =>
+            {
+                SetActiveSelectedEvents(!Model.Active);
+            });
+        }
+
+        /// <summary>
+        /// 選択中のEventを複製
+        /// </summary>
+        private void DuplicateSelectedEvents()
+        {
+            var events = EditorModel.SelectedTargets
+                .OfType<SequenceEvent>();
+            foreach (var evt in events)
+            {
+                Model.TrackModel.DuplicateEvent(evt);
+            }
+        }
+
+        /// <summary>
+        /// 選択中のEventを削除
+        /// </summary>
+        private void DeleteSelectedEvents()
+        {
+            var events = EditorModel.SelectedTargets
+                .OfType<SequenceEvent>();
+            foreach (var evt in events)
+            {
+                Model.TrackModel.RemoveEvent(evt);
+            }
+        }
+
+        /// <summary>
+        /// 選択中のEventのアクティブ状態を設定
+        /// </summary>
+        private void SetActiveSelectedEvents(bool active)
+        {
+            var events = EditorModel.SelectedTargets
+                .OfType<SequenceEvent>();
+            foreach (var evt in events)
+            {
+                var serializedObj = new SerializedObject(evt);
+                serializedObj.Update();
+                serializedObj.FindProperty("active").boolValue = active;
+                serializedObj.ApplyModifiedProperties();
+            }
         }
     }
 }
