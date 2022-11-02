@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace ActionSequencer
 {
@@ -14,13 +13,17 @@ namespace ActionSequencer
         // Editorテーマカラー(α:0だと自動生成)
         public Color ThemeColor { get; private set; }
         
-        public SequenceEventAttribute(string displayName, Color themeColor)
+        public SequenceEventAttribute(string displayName, string colorCode)
         {
             DisplayName = displayName;
-            ThemeColor = themeColor;
+            if (!ColorUtility.TryParseHtmlString(colorCode, out var color))
+            {
+                color = Color.clear;
+            }
+            ThemeColor = color;
         }
         public SequenceEventAttribute(string displayName)
-            : this(displayName, UnityEngine.Color.clear)
+            : this(displayName, "")
         {
         }
     }

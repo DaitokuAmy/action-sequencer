@@ -11,8 +11,7 @@ public class SampleScene : MonoBehaviour
     private void Start()
     {
         SequenceController.BindGlobalSignalEventHandler<LogSignalSequenceEvent, LogSignalSequenceEventHandler>();
-        SequenceController.BindGlobalSignalEventHandler<SampleSignalSequenceEvent, SampleSignalSequenceEventHandler>();
-        SequenceController.BindGlobalRangeEventHandler<SampleRangeSequenceEvent, SampleRangeSequenceEventHandler>();
+        SequenceController.BindGlobalRangeEventHandler<TimerRangeSequenceEvent, TimerRangeSequenceEventHandler>();
         _controller = new SequenceController();
     }
 
