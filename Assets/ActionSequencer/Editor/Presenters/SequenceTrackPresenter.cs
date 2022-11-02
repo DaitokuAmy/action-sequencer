@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using ActionSequencer.Editor.Utils;
+using PlasticPipe.Server;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -15,7 +18,8 @@ namespace ActionSequencer.Editor
         private SequenceEditorModel _editorModel;
         private List<SignalSequenceEventPresenter> _signalEventPresenters = new List<SignalSequenceEventPresenter>();
         private List<RangeSequenceEventPresenter> _rangeEventPresenters = new List<RangeSequenceEventPresenter>();
-        
+        private List<IDisposable> _disposables = new List<IDisposable>();
+
         public SequenceTrackView TrackView { get; private set; }
 
         /// <summary>
@@ -33,6 +37,20 @@ namespace ActionSequencer.Editor
             Model.OnChangedLabel += OnChangedLabel;
 
             View.OnChangedLabel += OnChangedLabelView;
+            
+            // Rulerの情報反映
+            TrackView.RulerView.MaskElement = TrackView.parent.parent.parent;
+            _disposables.Add(_editorModel.TimeToSize
+                .Subscribe(_ =>
+                {
+                    TrackView.RulerView.MemorySize = RulerUtility.CalcMemorySize(_editorModel);
+                }));
+            _disposables.Add(_editorModel.CurrentTimeMode
+                .Subscribe(timeMode =>
+                {
+                    TrackView.RulerView.ThickCycle = RulerUtility.GetThickCycle(timeMode);
+                    TrackView.RulerView.MemorySize = RulerUtility.CalcMemorySize(_editorModel);
+                }));
             
             // ラベル初期化
             OnChangedLabel(Model.Label);
@@ -56,6 +74,12 @@ namespace ActionSequencer.Editor
         public override void Dispose()
         {
             base.Dispose();
+            foreach (var disposable in _disposables)
+            {
+                disposable.Dispose();
+            }
+            _disposables.Clear();
+            
             Model.OnAddedRangeEventModel -= OnAddedRangeEventModel;
             Model.OnAddedSignalEventModel -= OnAddedSignalEventModel;
             Model.OnRemoveSignalEventModel -= OnRemoveSignalEventModel;
@@ -93,7 +117,7 @@ namespace ActionSequencer.Editor
                 var sequenceEventB = b.userData as SequenceEvent;
                 var indexA = eventList.IndexOf(sequenceEventA);
                 var indexB = eventList.IndexOf(sequenceEventB);
-                return indexB - indexA;
+                return indexA - indexB;
             });
         }
 

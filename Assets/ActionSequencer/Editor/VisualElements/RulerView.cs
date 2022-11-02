@@ -78,7 +78,8 @@ namespace ActionSequencer.Editor.VisualElements
         public RulerView()
         {
             pickingMode = PickingMode.Ignore;
-            
+            style.position = new StyleEnum<Position>(Position.Absolute);
+
             this.StretchToParentSize();
             
             RegisterCallback<CustomStyleResolvedEvent>(OnCustomStyleResolved);
@@ -181,7 +182,7 @@ namespace ActionSequencer.Editor.VisualElements
             {
                 var label = GetOrCreateLabel();
                 label.style.left = i * labelUnitOffset;
-                label.text = OnGetThickLabel != null ? OnGetThickLabel(i) : $"{i:0.0}";
+                label.text = OnGetThickLabel != null ? OnGetThickLabel(i) : "";
             }
         }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -176,7 +177,6 @@ namespace ActionSequencer.Editor
             
             // Timeline用Rulerの初期化
             var rulerScrollView = root.Q<ScrollView>("TrackRulerScrollView");
-            var labelInterval = 1;
             _rulerView = root.Q<RulerView>("RulerView");
             trackList.contentContainer.RegisterCallback<GeometryChangedEvent>(evt =>
             {
@@ -188,48 +188,37 @@ namespace ActionSequencer.Editor
             };
             _rulerView.OnGetThickLabel += thickIndex =>
             {
-                if (thickIndex % labelInterval != 0)
+                if (thickIndex % 2 != 0)
                 {
                     return "";
                 }
+
+                var thickSeconds = RulerUtility.GetThickSeconds(_editorModel.CurrentTimeMode.Value);
+                var seconds = thickIndex * thickSeconds;
                 switch (_editorModel.CurrentTimeMode.Value)
                 {
                     case SequenceEditorModel.TimeMode.Seconds:
-                        return $"{thickIndex * 0.5f:0.0}";
+                        return $"{seconds:0.0}";
                     case SequenceEditorModel.TimeMode.Frames30:
-                        return (thickIndex * 15).ToString();
+                        return $"{seconds * 30:0}";
                     case SequenceEditorModel.TimeMode.Frames60:
-                        return (thickIndex * 30).ToString();
+                        return $"{seconds * 60:0}";
                 }
 
                 return "";
             };
             _rulerView.MaskElement = rulerScrollView;
             _editorModel.TimeToSize
-                .Subscribe(timeToSize =>
+                .Subscribe(_ =>
                 {
-                    _rulerView.MemorySize = timeToSize * 0.5f / _rulerView.ThickCycle;
+                    _rulerView.MemorySize = RulerUtility.CalcMemorySize(_editorModel);
                 });
             _editorModel.CurrentTimeMode
                 .Subscribe(timeMode =>
                 {
-                    switch (timeMode)
-                    {
-                        case SequenceEditorModel.TimeMode.Seconds:
-                            labelInterval = 2;
-                            _rulerView.ThickCycle = 10;
-                            break;
-                        case SequenceEditorModel.TimeMode.Frames30:
-                            labelInterval = 2;
-                            _rulerView.ThickCycle = 15;
-                            break;
-                        case SequenceEditorModel.TimeMode.Frames60:
-                            labelInterval = 2;
-                            _rulerView.ThickCycle = 15;
-                            break;
-                    }
+                    _rulerView.ThickCycle = RulerUtility.GetThickCycle(timeMode);
+                    _rulerView.MemorySize = RulerUtility.CalcMemorySize(_editorModel);
                     _rulerView.RefreshLabels();
-                    _rulerView.MemorySize = _editorModel.TimeToSize.Value * 0.5f / _rulerView.ThickCycle;
                 });
             
             // CreateMenu

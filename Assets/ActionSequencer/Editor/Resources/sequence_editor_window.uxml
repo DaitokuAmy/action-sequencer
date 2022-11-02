@@ -30,6 +30,7 @@
                         <ui:VisualElement name="TrackBox" class="track__box" style="flex-shrink: 0;">
                             <ui:VisualElement name="SignalEvent" class="signal_event" style="background-color: rgb(255, 128, 128);" />
                             <ui:VisualElement name="SignalEvent" class="signal_event" style="background-color: rgb(255, 128, 128);" />
+                            <ActionSequencer.Editor.VisualElements.RulerView />
                         </ui:VisualElement>
                         <ui:VisualElement name="TrackBox" class="track__box" style="flex-shrink: 0;">
                             <ui:VisualElement name="RangeEvent" class="range_event" style="background-color: rgb(128, 128, 255);" />
