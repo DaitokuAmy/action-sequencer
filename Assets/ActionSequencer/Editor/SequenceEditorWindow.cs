@@ -333,7 +333,7 @@ namespace ActionSequencer.Editor
             Undo.undoRedoPerformed += OnUndoRedoPerformed;
             
             // 初期化
-            Setup(_escapedClip);
+            Setup(_escapedClip, true);
         }
 
         /// <summary>
