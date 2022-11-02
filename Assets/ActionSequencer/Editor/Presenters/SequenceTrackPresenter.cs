@@ -39,7 +39,7 @@ namespace ActionSequencer.Editor
             View.OnChangedLabel += OnChangedLabelView;
             
             // Rulerの情報反映
-            TrackView.RulerView.MaskElement = TrackView.parent.parent.parent;
+            TrackView.RulerView.MaskElement = TrackView.parent.parent;
             _disposables.Add(_editorModel.TimeToSize
                 .Subscribe(_ =>
                 {

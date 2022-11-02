@@ -107,6 +107,8 @@ namespace ActionSequencer.Editor.VisualElements
 
             clipRect.xMin = Mathf.Max(clipRect.xMin, totalRect.xMin);
             clipRect.xMax = Mathf.Min(clipRect.xMax, totalRect.xMax);
+            clipRect.yMin = Mathf.Max(clipRect.yMin, totalRect.yMin);
+            clipRect.yMax = Mathf.Max(clipRect.yMax, totalRect.yMax);
             
             for (var i = 0;; i++)
             {
@@ -128,6 +130,8 @@ namespace ActionSequencer.Editor.VisualElements
                 // Clip
                 rect.xMin = Mathf.Clamp(rect.xMin, clipRect.xMin, clipRect.xMax);
                 rect.xMax = Mathf.Clamp(rect.xMax, clipRect.xMin, clipRect.xMax);
+                rect.yMin = Mathf.Clamp(rect.yMin, clipRect.yMin, clipRect.yMax);
+                rect.yMax = Mathf.Clamp(rect.yMax, clipRect.yMin, clipRect.yMax);
                 
                 // ThickStyle
                 var color = thick ? ThickLineColor : LineColor;
