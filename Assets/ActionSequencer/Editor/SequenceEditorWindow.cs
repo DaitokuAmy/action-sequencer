@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -222,13 +223,21 @@ namespace ActionSequencer.Editor
                 });
             
             // CreateMenu
+            string GetDisplayName(Type type)
+            {
+                var attr = type.GetCustomAttribute(typeof(SequenceEventAttribute)) as SequenceEventAttribute;
+                var displayName = attr != null ? attr.DisplayName : "";
+                displayName = string.IsNullOrWhiteSpace(displayName) ? type.Name : displayName;
+                return displayName;
+            }
             var createMenu = root.Q<ToolbarMenu>("CreateMenu");
             var signalTypes = TypeCache.GetTypesDerivedFrom<SignalSequenceEvent>();
             var rangeTypes = TypeCache.GetTypesDerivedFrom<RangeSequenceEvent>();
             foreach (var signalType in signalTypes)
             {
                 var t = signalType;
-                createMenu.menu.AppendAction($"Signal Event/{t.Name}", _ =>
+                var displayName = GetDisplayName(t);
+                createMenu.menu.AppendAction($"Signal Event/{displayName}", _ =>
                 {
                     var target = _editorModel.ClipModel?.Target;
                     if (target == null)
@@ -245,7 +254,8 @@ namespace ActionSequencer.Editor
             foreach (var rangeType in rangeTypes)
             {
                 var t = rangeType;
-                createMenu.menu.AppendAction($"Range Event/{t.Name}", _ =>
+                var displayName = GetDisplayName(t);
+                createMenu.menu.AppendAction($"Range Event/{displayName}", _ =>
                 {
                     var target = _editorModel.ClipModel?.Target;
                     if (target == null)
