@@ -23,8 +23,8 @@ namespace ActionSequencer.Editor
         public event Action<string> OnChangedLabel;
         public event Action<SignalSequenceEventModel> OnAddedSignalEventModel;
         public event Action<RangeSequenceEventModel> OnAddedRangeEventModel;
-        public event Action<SignalSequenceEventModel> OnRemoveSignalEventModel;
-        public event Action<RangeSequenceEventModel> OnRemoveRangeEventModel;
+        public event Action<SignalSequenceEventModel> OnRemovedSignalEventModel;
+        public event Action<RangeSequenceEventModel> OnRemovedRangeEventModel;
         
         public string Label
         {
@@ -58,9 +58,6 @@ namespace ActionSequencer.Editor
             
             // Defaultのラベル名更新
             RefreshDefaultLabel();
-            
-            // 色を取得
-            
         }
 
         /// <summary>
@@ -199,12 +196,14 @@ namespace ActionSequencer.Editor
             }
             
             // Modelの削除
-            OnRemoveSignalEventModel?.Invoke(model);
             _signalEventModels.Remove(model);
-            model.Dispose();
 
             // 要素削除
             DeleteEventAsset(sequenceEvent);
+            
+            // 通知
+            OnRemovedSignalEventModel?.Invoke(model);
+            model.Dispose();
         }
 
         /// <summary>
@@ -257,12 +256,14 @@ namespace ActionSequencer.Editor
             }
             
             // Modelの削除
-            OnRemoveRangeEventModel?.Invoke(model);
             _rangeEventModels.Remove(model);
-            model.Dispose();
 
             // 要素削除
             DeleteEventAsset(sequenceEvent);
+            
+            // 通知
+            OnRemovedRangeEventModel?.Invoke(model);
+            model.Dispose();
         }
 
         /// <summary>
@@ -289,13 +290,13 @@ namespace ActionSequencer.Editor
         {
             foreach (var model in _signalEventModels)
             {
-                OnRemoveSignalEventModel?.Invoke(model);
+                OnRemovedSignalEventModel?.Invoke(model);
                 model.Dispose();
             }
 
             foreach (var model in _rangeEventModels)
             {
-                OnRemoveRangeEventModel?.Invoke(model);
+                OnRemovedRangeEventModel?.Invoke(model);
                 model.Dispose();
             }
             

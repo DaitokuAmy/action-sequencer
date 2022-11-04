@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace ActionSequencer.Editor
@@ -47,6 +48,8 @@ namespace ActionSequencer.Editor
             focusable = true;
             Manipulator = new SequenceEventManipulator(resizable);
             _contextualMenuManipulator = new ContextualMenuManipulator(OnOpenContextMenuInternal);
+            _contextualMenuManipulator.activators.Add(new ManipulatorActivationFilter { button = MouseButton.RightMouse, modifiers = EventModifiers.Command});
+            _contextualMenuManipulator.activators.Add(new ManipulatorActivationFilter { button = MouseButton.RightMouse, modifiers = EventModifiers.Control});
             this.AddManipulator(Manipulator);
             this.AddManipulator(_contextualMenuManipulator);
         }

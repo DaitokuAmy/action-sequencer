@@ -102,7 +102,7 @@ namespace ActionSequencer.Editor
         /// </summary>
         private void OnMouseDownEvent(MouseDownEvent evt)
         {
-            if (evt.button != 0)
+            if (evt.button != 0 && evt.button != 1)
             {
                 return;
             }

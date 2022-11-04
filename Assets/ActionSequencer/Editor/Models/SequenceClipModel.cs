@@ -16,7 +16,7 @@ namespace ActionSequencer.Editor
         private List<SequenceTrackModel> _trackModels = new List<SequenceTrackModel>();
         
         public event Action<SequenceTrackModel> OnAddedTrackModel;
-        public event Action<SequenceTrackModel> OnRemoveTrackModel;
+        public event Action<SequenceTrackModel> OnRemovedTrackModel;
 
         public IReadOnlyList<SequenceTrackModel> TrackModels => _trackModels;
 
@@ -118,13 +118,15 @@ namespace ActionSequencer.Editor
                 _tracks.DeleteArrayElementAtIndex(i);
             }
             SerializedObject.ApplyModifiedProperties();
-            OnRemoveTrackModel?.Invoke(model);
-            model.RemoveEvents();
-            model.Dispose();
             _trackModels.Remove(model);
             
             // Trackの削除
             Undo.DestroyObjectImmediate(model.Target);
+            
+            // 通知
+            OnRemovedTrackModel?.Invoke(model);
+            model.RemoveEvents();
+            model.Dispose();
         }
 
         /// <summary>
@@ -146,7 +148,7 @@ namespace ActionSequencer.Editor
         {
             foreach (var model in _trackModels)
             {
-                OnRemoveTrackModel?.Invoke(model);
+                OnRemovedTrackModel?.Invoke(model);
                 model.Dispose();
             }
             _trackModels.Clear();

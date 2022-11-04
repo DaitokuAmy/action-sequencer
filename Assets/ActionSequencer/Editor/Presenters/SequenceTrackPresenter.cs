@@ -2,11 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ActionSequencer.Editor.Utils;
-using PlasticPipe.Server;
-using UnityEditor;
-using UnityEditor.UIElements;
-using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace ActionSequencer.Editor
 {
@@ -32,8 +27,8 @@ namespace ActionSequencer.Editor
 
             Model.OnAddedRangeEventModel += OnAddedRangeEventModel;
             Model.OnAddedSignalEventModel += OnAddedSignalEventModel;
-            Model.OnRemoveSignalEventModel += OnRemoveSignalEventModel;
-            Model.OnRemoveRangeEventModel += OnRemoveRangeEventModel;
+            Model.OnRemovedSignalEventModel += RemovedSignalEventModel;
+            Model.OnRemovedRangeEventModel += RemovedRangeEventModel;
             Model.OnChangedLabel += OnChangedLabel;
 
             View.OnChangedLabel += OnChangedLabelView;
@@ -82,8 +77,8 @@ namespace ActionSequencer.Editor
             
             Model.OnAddedRangeEventModel -= OnAddedRangeEventModel;
             Model.OnAddedSignalEventModel -= OnAddedSignalEventModel;
-            Model.OnRemoveSignalEventModel -= OnRemoveSignalEventModel;
-            Model.OnRemoveRangeEventModel -= OnRemoveRangeEventModel;
+            Model.OnRemovedSignalEventModel -= RemovedSignalEventModel;
+            Model.OnRemovedRangeEventModel -= RemovedRangeEventModel;
             Model.OnChangedLabel -= OnChangedLabel;
 
             View.OnChangedLabel -= OnChangedLabelView;
@@ -162,7 +157,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// SignalEventModel削除時
         /// </summary>
-        private void OnRemoveSignalEventModel(SignalSequenceEventModel model)
+        private void RemovedSignalEventModel(SignalSequenceEventModel model)
         {
             var presenter = _signalEventPresenters.FirstOrDefault(x => x.Model == model);
             if (presenter == null)
@@ -173,14 +168,20 @@ namespace ActionSequencer.Editor
             presenter.Dispose();
             _signalEventPresenters.Remove(presenter);
 
-            // 行数変更(削除前なので-1)
-            View.LineCount = Model.EventCount - 1;
+            // 行数変更
+            View.LineCount = Model.EventCount;
+            
+            // Eventがなくなった場合、自身を削除
+            if (Model.EventCount <= 0)
+            {
+                _editorModel.ClipModel.RemoveTrack(Model.Target as SequenceTrack);
+            }
         }
 
         /// <summary>
         /// RangeEventModel削除時
         /// </summary>
-        private void OnRemoveRangeEventModel(RangeSequenceEventModel model)
+        private void RemovedRangeEventModel(RangeSequenceEventModel model)
         {
             var presenter = _rangeEventPresenters.FirstOrDefault(x => x.Model == model);
             if (presenter == null)
@@ -191,8 +192,14 @@ namespace ActionSequencer.Editor
             presenter.Dispose();
             _rangeEventPresenters.Remove(presenter);
 
-            // 行数変更(削除前なので-1)
-            View.LineCount = Model.EventCount - 1;
+            // 行数変更
+            View.LineCount = Model.EventCount;
+            
+            // Eventがなくなった場合、自身を削除
+            if (Model.EventCount <= 0)
+            {
+                _editorModel.ClipModel.RemoveTrack(Model.Target as SequenceTrack);
+            }
         }
 
         /// <summary>

@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ActionSequencer.Editor.VisualElements;
 using UnityEditor.Callbacks;
-using Object = UnityEngine.Object;
 using ObjectField = UnityEditor.UIElements.ObjectField;
 using ToolbarMenu = UnityEditor.UIElements.ToolbarMenu;
 using ToolbarToggle = UnityEditor.UIElements.ToolbarToggle;
@@ -122,7 +120,7 @@ namespace ActionSequencer.Editor
                 }
 
                 _editorModel.ClipModel.OnAddedTrackModel += OnAddedTrackModel;
-                _editorModel.ClipModel.OnRemoveTrackModel += OnRemoveTrackModel;
+                _editorModel.ClipModel.OnRemovedTrackModel += OnRemoveTrackModel;
             
                 // 既に登録済のModelを解釈
                 for (var i = 0; i < _editorModel.ClipModel.TrackModels.Count; i++)
