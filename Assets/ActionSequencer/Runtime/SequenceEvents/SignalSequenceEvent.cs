@@ -7,7 +7,7 @@ namespace ActionSequencer
     /// </summary>
     public abstract class SignalSequenceEvent : SequenceEvent
     {
-        [Tooltip("イベント発火時間")]
+        [Tooltip("イベント発火時間"), FrameTime("frame")]
         public float time;
     }
 }

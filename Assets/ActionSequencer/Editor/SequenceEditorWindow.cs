@@ -28,6 +28,8 @@ namespace ActionSequencer.Editor
         private readonly List<SequenceTrackPresenter> _trackPresenters = new List<SequenceTrackPresenter>();
         // ルーラー表示用View
         private RulerView _rulerView;
+        // OnDisableで廃棄されるDisposablesのリスト
+        private List<IDisposable> _disposables = new List<IDisposable>();
 
         /// <summary>
         /// Windowを開く処理
@@ -207,18 +209,18 @@ namespace ActionSequencer.Editor
                 return "";
             };
             _rulerView.MaskElement = rulerScrollView;
-            _editorModel.TimeToSize
+            _disposables.Add(_editorModel.TimeToSize
                 .Subscribe(_ =>
                 {
                     _rulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
-                });
-            _editorModel.CurrentTimeMode
+                }));
+            _disposables.Add(_editorModel.CurrentTimeMode
                 .Subscribe(timeMode =>
                 {
                     _rulerView.ThickCycle = SequenceEditorUtility.GetThickCycle(timeMode);
                     _rulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
                     _rulerView.RefreshLabels();
-                });
+                }));
             
             // CreateMenu
             var createMenu = root.Q<ToolbarMenu>("CreateMenu");
@@ -293,11 +295,11 @@ namespace ActionSequencer.Editor
             {
                 _editorModel.CurrentTimeMode.Value = (SequenceEditorModel.TimeMode)rulerMode.index;
             });
-            _editorModel.CurrentTimeMode
+            _disposables.Add(_editorModel.CurrentTimeMode
                 .Subscribe(timeMode =>
                 {
                     rulerMode.value = timeMode.ToString();
-                });
+                }));
 
             // TimeFitToggle
             var timeFitToggle = root.Q<ToolbarToggle>("TimeFitToggle");
@@ -305,11 +307,19 @@ namespace ActionSequencer.Editor
             {
                 _editorModel.TimeFit.Value = evt.newValue;
             });
-            _editorModel.TimeFit
+            _disposables.Add(_editorModel.TimeFit
                 .Subscribe(timeFit =>
                 {
                     timeFitToggle.value = timeFit;
-                });
+                }));
+
+            // InspectorView
+            var inspectorView = root.Q<InspectorView>();
+            _disposables.Add(_editorModel.CurrentTimeMode
+                .Subscribe(timeMode =>
+                {
+                    inspectorView.TimeMode = timeMode;
+                }));
             
             // EditorModelの状態初期化
             _editorModel.TimeToSize.Value = 200.0f;
@@ -340,7 +350,12 @@ namespace ActionSequencer.Editor
         private void OnDisable()
         {
             Undo.undoRedoPerformed -= OnUndoRedoPerformed;
-            
+
+            foreach (var disposable in _disposables)
+            {
+                disposable.Dispose();
+            }
+            _disposables.Clear();
             _editorModel?.Dispose();
             _editorModel = null;
         }

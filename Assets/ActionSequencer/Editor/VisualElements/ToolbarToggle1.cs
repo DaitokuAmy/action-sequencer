@@ -13,6 +13,8 @@ namespace ActionSequencer.Editor.VisualElements
         private IMGUIContainer _container;
         private UnityEditor.Editor _inspectorEditor;
 
+        public SequenceEditorModel.TimeMode TimeMode { get; set; } = SequenceEditorModel.TimeMode.Seconds;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -64,7 +66,11 @@ namespace ActionSequencer.Editor.VisualElements
                     if (_inspectorEditor == null) {
                         return;
                     }
+
+                    var prevMode = SequenceEditorGUI.TimeMode;
+                    SequenceEditorGUI.TimeMode = TimeMode;
                     _inspectorEditor.OnInspectorGUI();
+                    SequenceEditorGUI.TimeMode = prevMode;
                 });
             Add(_container);
         }

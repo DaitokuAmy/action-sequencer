@@ -27,7 +27,7 @@ MonoBehaviour:
   m_Name: (Clone)(Clone)
   m_EditorClassIdentifier: 
   active: 1
-  time: 1.4
+  time: 1.6000001
   text: Log_2
 --- !u!114 &-3074484869949592474
 MonoBehaviour:
@@ -87,8 +87,8 @@ MonoBehaviour:
   m_Name: (Clone)
   m_EditorClassIdentifier: 
   active: 1
-  enterTime: 0.665
-  exitTime: 0.965
+  enterTime: 0.40000004
+  exitTime: 0.70000005
 --- !u!114 &4012031256556040023
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -146,5 +146,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   active: 0
-  enterTime: 0.5
-  exitTime: 1.1
+  enterTime: 0.53333336
+  exitTime: 1.3000001
