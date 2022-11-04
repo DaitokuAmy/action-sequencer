@@ -31,8 +31,14 @@ namespace ActionSequencer.Editor
             get => string.IsNullOrEmpty(_label.stringValue) ? _defaultLabel : _label.stringValue;
             set
             {
+                var newValue = value;
+                if (newValue == null || newValue == _defaultLabel)
+                {
+                    newValue = "";
+                }
+                
                 SerializedObject.Update();
-                _label.stringValue = value ?? "";
+                _label.stringValue = newValue;
                 SerializedObject.ApplyModifiedProperties();
                 OnChangedLabel?.Invoke(Label);
                 SetDirty();

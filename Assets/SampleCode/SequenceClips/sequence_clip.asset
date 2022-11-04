@@ -1,5 +1,48 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5361583746136260716
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f3dc1b502acd48ad9608fc38cadbbcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  label: 
+  sequenceEvents: []
+--- !u!114 &-4278898767805857007
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: (Clone)(Clone)
+  m_EditorClassIdentifier: 
+  active: 1
+  time: 1.4
+  text: Log_2
+--- !u!114 &-3074484869949592474
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f3dc1b502acd48ad9608fc38cadbbcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  label: 
+  sequenceEvents: []
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12,4 +55,96 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ec08f2e03b1d49a8aa03fbf2f4ddcce, type: 3}
   m_Name: sequence_clip
   m_EditorClassIdentifier: 
-  tracks: []
+  tracks:
+  - {fileID: 5939678616884139499}
+  - {fileID: 352264326061353183}
+--- !u!114 &352264326061353183
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f3dc1b502acd48ad9608fc38cadbbcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  label: 
+  sequenceEvents:
+  - {fileID: 8948681731341290434}
+  - {fileID: 1357589655935701421}
+--- !u!114 &1357589655935701421
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc24e13f709b247bbba00cef11701e68, type: 3}
+  m_Name: (Clone)
+  m_EditorClassIdentifier: 
+  active: 1
+  enterTime: 0.665
+  exitTime: 0.965
+--- !u!114 &4012031256556040023
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f3dc1b502acd48ad9608fc38cadbbcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  label: 
+  sequenceEvents: []
+--- !u!114 &5939678616884139499
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f3dc1b502acd48ad9608fc38cadbbcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  label: 
+  sequenceEvents:
+  - {fileID: -4278898767805857007}
+--- !u!114 &6364802336524514179
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  active: 1
+  time: 0.53333336
+  text: 
+--- !u!114 &8948681731341290434
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc24e13f709b247bbba00cef11701e68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  active: 0
+  enterTime: 0.5
+  exitTime: 1.1
