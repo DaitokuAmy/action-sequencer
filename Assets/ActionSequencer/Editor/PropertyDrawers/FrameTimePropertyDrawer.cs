@@ -19,8 +19,16 @@ namespace ActionSequencer.Editor.PropertyDrawers
                 var val = Mathf.RoundToInt(property.floatValue * frameRate);
                 var frameLabel = new GUIContent(label);
                 frameLabel.text = $"{ObjectNames.NicifyVariableName(((FrameTimeAttribute)attribute).FrameLabel)}({frameRate})";
-                val = EditorGUI.IntField(position, frameLabel, val);
-                property.floatValue = val * (1.0f / frameRate);
+                EditorGUI.showMixedValue = property.hasMultipleDifferentValues;
+                using (var scope = new EditorGUI.ChangeCheckScope())
+                {
+                    val = EditorGUI.IntField(position, frameLabel, val);
+                    if (scope.changed)
+                    {
+                        property.floatValue = val * (1.0f / frameRate);
+                    }
+                }
+                EditorGUI.showMixedValue = false;
             }
             
             switch (SequenceEditorGUI.TimeMode)

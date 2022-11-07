@@ -20,11 +20,11 @@
                 </ui:ScrollView>
             </ui:VisualElement>
             <ui:VisualElement name="TrackArea" style="background-color: rgb(92, 92, 92); border-left-width: 4px; visibility: visible; border-left-color: rgb(64, 64, 64); flex-direction: column; flex-shrink: 1;">
-                <ui:ScrollView name="TrackRulerScrollView" mode="Horizontal" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" style="height: 20px; max-height: 20px; min-height: 20px; background-color: rgb(64, 64, 64);">
-                    <ui:VisualElement name="TrackRuler" style="background-color: rgb(64, 64, 64);">
-                        <ActionSequencer.Editor.VisualElements.RulerView name="RulerView" />
+                <ui:VisualElement name="TrackRulerArea" style="height: 20px; background-color: rgb(64, 64, 64); max-height: 20px; min-height: 20px;">
+                    <ui:VisualElement name="TrackRuler" style="background-color: rgb(64, 64, 64); height: 100%;">
+                        <ActionSequencer.Editor.VisualElements.RulerView name="RulerView" style="width: 360px;" />
                     </ui:VisualElement>
-                </ui:ScrollView>
+                </ui:VisualElement>
                 <ui:ScrollView name="TrackScrollView" mode="Horizontal" style="flex-direction: column;">
                     <ui:VisualElement name="TrackList">
                         <ui:VisualElement name="TrackBox" class="track__box" style="flex-shrink: 0;">

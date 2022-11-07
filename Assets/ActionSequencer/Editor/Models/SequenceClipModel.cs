@@ -81,6 +81,7 @@ namespace ActionSequencer.Editor
             
             // なければ生成
             var track = ScriptableObject.CreateInstance<SequenceTrack>();
+            track.name = nameof(SequenceTrack);
             AssetDatabase.AddObjectToAsset(track, Target);
             
             // 要素に追加

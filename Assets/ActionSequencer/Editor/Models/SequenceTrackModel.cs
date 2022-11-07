@@ -323,6 +323,7 @@ namespace ActionSequencer.Editor
             
             // Assetの生成
             var evt = ScriptableObject.CreateInstance(eventType) as TEvent;
+            evt.name = eventType.Name;
             AssetDatabase.AddObjectToAsset(evt, Target);
             Undo.RegisterCreatedObjectUndo(evt, "Created Event");
             
@@ -358,6 +359,7 @@ namespace ActionSequencer.Editor
             
             // Assetの生成
             var evt = Object.Instantiate(sourceEvent);
+            evt.name = sourceEvent.name;
             AssetDatabase.AddObjectToAsset(evt, Target);
             Undo.RegisterCreatedObjectUndo(evt, "Instantiate Event");
             

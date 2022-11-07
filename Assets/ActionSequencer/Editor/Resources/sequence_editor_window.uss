@@ -88,10 +88,10 @@
 }
 
 .event--selected {
-    border-left-color: rgba(255, 255, 255, 0.5);
-    border-right-color: rgba(255, 255, 255, 0.5);
-    border-top-color: rgba(255, 255, 255, 0.5);
-    border-bottom-color: rgba(255, 255, 255, 0.5);
+    border-left-color: rgba(255, 255, 255, 0.75);
+    border-right-color: rgba(255, 255, 255, 0.75);
+    border-top-color: rgba(255, 255, 255, 0.75);
+    border-bottom-color: rgba(255, 255, 255, 0.75);
 }
 
 .track_label__box {

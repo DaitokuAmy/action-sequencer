@@ -169,16 +169,8 @@ namespace ActionSequencer.Editor
                 trackLabelList.verticalScroller.value = x;
             };
             
-            // Track領域
-            var trackArea = root.Q<VisualElement>("TrackArea");
-            trackArea.RegisterCallback<WheelEvent>(evt =>
-            {
-                // WheelによってTimeToSize変更
-                _editorModel.TimeToSize.Value = Mathf.Clamp(_editorModel.TimeToSize.Value + evt.delta.y, 100, 500);
-            });
-            
             // Timeline用Rulerの初期化
-            var rulerScrollView = root.Q<ScrollView>("TrackRulerScrollView");
+            var rulerArea = root.Q<VisualElement>("TrackRulerArea");
             _rulerView = root.Q<RulerView>("RulerView");
             trackList.contentContainer.RegisterCallback<GeometryChangedEvent>(evt =>
             {
@@ -186,8 +178,15 @@ namespace ActionSequencer.Editor
             });
             trackScrollView.horizontalScroller.valueChanged += x =>
             {
-                rulerScrollView.horizontalScroller.value = x;
+                var pos = _rulerView.transform.position;
+                pos.x = -x;
+                _rulerView.transform.position = pos;
             };
+            rulerArea.RegisterCallback<WheelEvent>(evt =>
+            {
+                // WheelによってTimeToSize変更
+                _editorModel.TimeToSize.Value = Mathf.Clamp(_editorModel.TimeToSize.Value + evt.delta.y, 100, 500);
+            });
             _rulerView.OnGetThickLabel += thickIndex =>
             {
                 if (thickIndex % 2 != 0) {
@@ -208,7 +207,7 @@ namespace ActionSequencer.Editor
 
                 return "";
             };
-            _rulerView.MaskElement = rulerScrollView;
+            _rulerView.MaskElement = rulerArea;
             _disposables.Add(_editorModel.TimeToSize
                 .Subscribe(_ =>
                 {
