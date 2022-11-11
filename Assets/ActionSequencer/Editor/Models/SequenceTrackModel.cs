@@ -28,17 +28,11 @@ namespace ActionSequencer.Editor
         
         public string Label
         {
-            get => string.IsNullOrEmpty(_label.stringValue) ? _defaultLabel : _label.stringValue;
+            get => _label.stringValue;
             set
             {
-                var newValue = value;
-                if (newValue == null || newValue == _defaultLabel)
-                {
-                    newValue = "";
-                }
-                
                 SerializedObject.Update();
-                _label.stringValue = newValue;
+                _label.stringValue = value;
                 SerializedObject.ApplyModifiedProperties();
                 OnChangedLabel?.Invoke(Label);
                 SetDirty();
@@ -311,6 +305,14 @@ namespace ActionSequencer.Editor
         }
 
         /// <summary>
+        /// デフォルトラベルの適用
+        /// </summary>
+        public void SetDefaultLabel()
+        {
+            Label = _defaultLabel;
+        }
+
+        /// <summary>
         /// SequenceEventアセットの生成
         /// </summary>
         private TEvent CreateEventAsset<TEvent>(Type eventType)
@@ -405,14 +407,18 @@ namespace ActionSequencer.Editor
             if (firstEvent != null)
             {
                 var eventType = firstEvent.GetType();
-                _defaultLabel = SequenceEditorUtility.GetDisplayName(firstEvent.GetType());
+                _defaultLabel = SequenceEditorUtility.GetDisplayName(eventType);
             }
             else
             {
                 _defaultLabel = "Empty";
             }
             
-            OnChangedLabel?.Invoke(Label);
+            // 現在の設定値が空出会った場合、デフォルトラベルを適用
+            if (string.IsNullOrEmpty(Label) || Label == "Empty")
+            {
+                Label = _defaultLabel;
+            }
         }
     }
 }

@@ -11,10 +11,13 @@ namespace ActionSequencer.Editor
     public class SequenceTrackLabelView : VisualElement
     {
         private int _lineCount = -1;
+        private VisualElement _headerView;
         private TextField _textFieldView;
+        private Button _resetButton;
         private List<VisualElement> _spacerViews = new List<VisualElement>();
 
         public event Action<string> OnChangedLabel;
+        public event Action OnClickedDefaultLabel;
 
         // 表示ラベル
         public string Label
@@ -46,16 +49,30 @@ namespace ActionSequencer.Editor
         public SequenceTrackLabelView(int lineCount) {
             AddToClassList("track_label__box");
             
+            // Header作成
+            _headerView = new VisualElement();
+            _headerView.style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
+            Add(_headerView);
+                
             // TextField作成
             _textFieldView = new TextField();
             _textFieldView.AddToClassList("track_label__textfield");
-            Add(_textFieldView);
+            _headerView.Add(_textFieldView);
+            
+            // ResetButton作成
+            _resetButton = new Button();
+            _resetButton.AddToClassList("track_label__reset");
+            _resetButton.focusable = false;
+            _headerView.Add(_resetButton);
 
             // 値の変化監視
             _textFieldView.RegisterValueChangedCallback(evt =>
             {
                 OnChangedLabel?.Invoke(evt.newValue);
             });
+            
+            // ボタンの押下監視
+            _resetButton.clicked += OnClickedDefaultLabel;
             
             // 行数の設定
             LineCount = lineCount;

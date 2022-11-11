@@ -27,7 +27,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f3dc1b502acd48ad9608fc38cadbbcb, type: 3}
   m_Name: SequenceTrack
   m_EditorClassIdentifier: 
-  label: 
+  label: a
   sequenceEvents:
   - {fileID: 2263921517145972788}
   - {fileID: 781591580148257376}
@@ -48,21 +48,6 @@ MonoBehaviour:
   active: 1
   enterTime: 0.18333334
   exitTime: 1.3666667
---- !u!114 &-2409223297125653508
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
-  m_Name: LogSignalSequenceEvent
-  m_EditorClassIdentifier: 
-  active: 1
-  time: 0
-  text: 
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,10 +75,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f3dc1b502acd48ad9608fc38cadbbcb, type: 3}
   m_Name: SequenceTrack
   m_EditorClassIdentifier: 
-  label: 
+  label: "\u30ED\u30B0\u51FA\u529B"
   sequenceEvents:
   - {fileID: 9048122560447118058}
-  - {fileID: -2409223297125653508}
+  - {fileID: 2114785150828004308}
 --- !u!114 &781591580148257376
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -107,8 +92,23 @@ MonoBehaviour:
   m_Name: TimerRangeSequenceEvent
   m_EditorClassIdentifier: 
   active: 1
-  enterTime: 0.16666667
-  exitTime: 0.9666667
+  enterTime: 1.9333333
+  exitTime: 2.7333333
+--- !u!114 &2114785150828004308
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: LogSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  active: 1
+  time: 1.1833333
+  text: 
 --- !u!114 &2263921517145972788
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -122,8 +122,8 @@ MonoBehaviour:
   m_Name: TimerRangeSequenceEvent
   m_EditorClassIdentifier: 
   active: 1
-  enterTime: 0.16666667
-  exitTime: 0.9666667
+  enterTime: 0.6
+  exitTime: 2.2
 --- !u!114 &9048122560447118058
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -137,5 +137,5 @@ MonoBehaviour:
   m_Name: LogSignalSequenceEvent
   m_EditorClassIdentifier: 
   active: 1
-  time: 0
-  text: 
+  time: 1.4666667
+  text: test

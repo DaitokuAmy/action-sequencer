@@ -32,6 +32,7 @@ namespace ActionSequencer.Editor
             Model.OnChangedLabel += OnChangedLabel;
 
             View.OnChangedLabel += OnChangedLabelView;
+            View.OnClickedDefaultLabel += OnClickedDefaultLabel;
             
             // Rulerの情報反映
             TrackView.RulerView.MaskElement = TrackView.parent.parent;
@@ -49,6 +50,7 @@ namespace ActionSequencer.Editor
             
             // ラベル初期化
             OnChangedLabel(Model.Label);
+ 
 
             // 既に登録済のModelを解釈
             for (var i = 0; i < Model.SignalEventModels.Count; i++)
@@ -82,6 +84,7 @@ namespace ActionSequencer.Editor
             Model.OnChangedLabel -= OnChangedLabel;
 
             View.OnChangedLabel -= OnChangedLabelView;
+            View.OnClickedDefaultLabel -= OnClickedDefaultLabel;
 
             foreach (var presenter in _signalEventPresenters)
             {
@@ -216,6 +219,14 @@ namespace ActionSequencer.Editor
         private void OnChangedLabelView(string label)
         {
             Model.Label = label;
+        }
+
+        /// <summary>
+        /// View経由でのDefaultLabelボタン押下通知
+        /// </summary>
+        private void OnClickedDefaultLabel()
+        {
+            Model.SetDefaultLabel();
         }
     }
 }
