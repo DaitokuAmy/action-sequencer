@@ -50,7 +50,6 @@ namespace ActionSequencer.Editor
             
             // ラベル初期化
             OnChangedLabel(Model.Label);
- 
 
             // 既に登録済のModelを解釈
             for (var i = 0; i < Model.SignalEventModels.Count; i++)

@@ -72,7 +72,7 @@ namespace ActionSequencer.Editor
             });
             
             // ボタンの押下監視
-            _resetButton.clicked += OnClickedDefaultLabel;
+            _resetButton.clicked += () => OnClickedDefaultLabel?.Invoke();
             
             // 行数の設定
             LineCount = lineCount;
