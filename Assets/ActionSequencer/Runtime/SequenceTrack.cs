@@ -15,8 +15,7 @@ namespace ActionSequencer
 
         private void OnValidate()
         {
-            //hideFlags |= HideFlags.HideInHierarchy;
-            hideFlags = HideFlags.None;
+            hideFlags |= HideFlags.HideInHierarchy;
         }
     }
 }
