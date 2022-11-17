@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using ActionSequencer.Editor.Utils;
 using UnityEditor;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -123,6 +124,23 @@ namespace ActionSequencer.Editor
             else if (sequenceEvent is RangeSequenceEvent rangeSequenceEvent)
             {
                 RemoveRangeEvent(rangeSequenceEvent);
+            }
+        }
+
+        /// <summary>
+        /// 保持しているEventを全部削除
+        /// </summary>
+        public void RemoveEvents()
+        {
+            var signalSequenceEvents = _signalEventModels.Select(x => (SignalSequenceEvent)x.Target).ToArray();
+            foreach (var sequenceEvent in signalSequenceEvents)
+            {
+                RemoveSignalEvent(sequenceEvent);
+            }
+            var rangeSequenceEvents = _rangeEventModels.Select(x => (RangeSequenceEvent)x.Target).ToArray();
+            foreach (var sequenceEvent in rangeSequenceEvents)
+            {
+                RemoveRangeEvent(sequenceEvent);
             }
         }
 
@@ -267,23 +285,6 @@ namespace ActionSequencer.Editor
         }
 
         /// <summary>
-        /// 保持しているEventを全部削除
-        /// </summary>
-        public void RemoveEvents()
-        {
-            var signalSequenceEvents = _signalEventModels.Select(x => (SignalSequenceEvent)x.Target).ToArray();
-            foreach (var sequenceEvent in signalSequenceEvents)
-            {
-                RemoveSignalEvent(sequenceEvent);
-            }
-            var rangeSequenceEvents = _rangeEventModels.Select(x => (RangeSequenceEvent)x.Target).ToArray();
-            foreach (var sequenceEvent in rangeSequenceEvents)
-            {
-                RemoveRangeEvent(sequenceEvent);
-            }
-        }
-
-        /// <summary>
         /// SequenceEvent用のModelを削除する(SerializedObjectからは除外しない)
         /// </summary>
         private void ClearEventModels()
@@ -377,8 +378,11 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// SequenceEventアセットの削除
         /// </summary>
-        private void DeleteEventAsset(SequenceEvent sequenceEvent)
-        {
+        private void DeleteEventAsset(SequenceEvent sequenceEvent) {
+            // 同時に複数削除した際にReferenceが復帰しない不具合があったため、Undoを個別に登録
+            var groupId = Undo.GetCurrentGroup();
+            Undo.IncrementCurrentGroup();
+            
             // 要素から除外
             SerializedObject.Update();
             for (var i = _sequenceEvents.arraySize - 1; i >= 0; i--)
@@ -395,6 +399,8 @@ namespace ActionSequencer.Editor
             
             // Asset削除
             Undo.DestroyObjectImmediate(sequenceEvent);
+            
+            Undo.CollapseUndoOperations(groupId);
         }
 
         /// <summary>

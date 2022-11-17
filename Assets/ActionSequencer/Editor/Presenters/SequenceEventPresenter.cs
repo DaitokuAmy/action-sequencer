@@ -126,7 +126,7 @@ namespace ActionSequencer.Editor
             {
                 DuplicateSelectedEvents();
             }
-            else if (evt.commandName == "Delete")
+            else if (evt.commandName == "Delete" || evt.commandName == "SoftDelete")
             {
                 DeleteSelectedEvents();
             }
