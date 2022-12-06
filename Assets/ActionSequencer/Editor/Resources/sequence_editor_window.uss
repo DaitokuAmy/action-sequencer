@@ -185,3 +185,7 @@
     padding-left: 3px;
     overflow: hidden;
 }
+
+.track_seekbar {
+    background-color: rgba(255, 0, 0, 0.75);
+}

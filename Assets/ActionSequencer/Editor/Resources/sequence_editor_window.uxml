@@ -38,6 +38,7 @@
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:ScrollView>
+                <ui:VisualElement name="TrackSeekbar" class="track_seekbar" style="position: absolute; height: 100%; width: 2px;" />
             </ui:VisualElement>
         </ActionSequencer.Editor.VisualElements.SplitView>
         <ui:VisualElement name="InspectorArea">

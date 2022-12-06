@@ -28,8 +28,15 @@ namespace ActionSequencer.Editor
         private readonly List<SequenceTrackPresenter> _trackPresenters = new List<SequenceTrackPresenter>();
         // ルーラー表示用View
         private RulerView _rulerView;
+        // シークバー表示用View
+        private VisualElement _seekbarView;
+        // スクロールオフセット値
+        private float _trackScrollOffsetX;
         // OnDisableで廃棄されるDisposablesのリスト
         private List<IDisposable> _disposables = new List<IDisposable>();
+        // 再生主
+        private GameObject _controllerProviderOwner;
+        private ISequenceControllerProvider _controllerProvider;
 
         /// <summary>
         /// Windowを開く処理
@@ -70,7 +77,7 @@ namespace ActionSequencer.Editor
             {
                 return;
             }
-            
+
             // Clipの設定
             _editorModel.SetSequenceClip(clip);
 
@@ -142,6 +149,28 @@ namespace ActionSequencer.Editor
         }
 
         /// <summary>
+        /// ControllerProviderを更新
+        /// </summary>
+        private void UpdateControllerProvider() {
+            if (!Application.isPlaying) {
+                _controllerProviderOwner = null;
+                _controllerProvider = null;
+                return;
+            }
+            
+            var activeObject = Selection.activeGameObject;
+            if (activeObject != null && activeObject != _controllerProviderOwner) {
+                var provider = activeObject.GetComponent<ISequenceControllerProvider>();
+                if (provider == null) {
+                    return;
+                }
+
+                _controllerProviderOwner = activeObject;
+                _controllerProvider = provider;
+            }
+        }
+
+        /// <summary>
         /// アクティブ時処理
         /// </summary>
         private void OnEnable()
@@ -181,6 +210,7 @@ namespace ActionSequencer.Editor
                 var pos = _rulerView.transform.position;
                 pos.x = -x;
                 _rulerView.transform.position = pos;
+                _trackScrollOffsetX = x;
             };
             rulerArea.RegisterCallback<WheelEvent>(evt =>
             {
@@ -320,17 +350,13 @@ namespace ActionSequencer.Editor
                     inspectorView.TimeMode = timeMode;
                 }));
             
-            // EditorModelの状態初期化
-            _editorModel.TimeToSize.Value = 200.0f;
-            _editorModel.CurrentTimeMode.Value = (SequenceEditorModel.TimeMode)rulerMode.index;
-            _editorModel.TimeFit.Value = timeFitToggle.value;
+            // Seekbar
+            _seekbarView = root.Q<VisualElement>("TrackSeekbar");
             
             // ViewDataKey
             // SetViewDataKey(trackLabelList);
             // SetViewDataKey(rulerScrollView);
             // SetViewDataKey(trackScrollView);
-            SetViewDataKey(rulerMode);
-            SetViewDataKey(timeFitToggle);
             var splitViews = root.Query<SplitView>().ToList();
             foreach (var element in splitViews)
             {
@@ -357,6 +383,44 @@ namespace ActionSequencer.Editor
             _disposables.Clear();
             _editorModel?.Dispose();
             _editorModel = null;
+        }
+
+        /// <summary>
+        /// GUI描画処理
+        /// </summary>
+        private void OnGUI() {
+            if (_editorModel?.ClipModel == null) {
+                return;
+            }
+            
+            UpdateControllerProvider();
+            
+            // Seekbarの調整
+            var clip = _editorModel.ClipModel.Target as SequenceClip;
+            if (_seekbarView != null) {
+                var sequenceController = _controllerProvider?.SequenceController;
+                var time = sequenceController != null ? sequenceController.GetSequenceTime(clip) : -1.0f;
+                _seekbarView.visible = time >= 0.0f;
+                if (_seekbarView.visible) {
+                    // 時間をSeekbarに反映
+                    var left = time * _editorModel.TimeToSize.Value - _trackScrollOffsetX;
+                    _seekbarView.style.marginLeft = left;
+                    
+                    // ちょっと強引だけどleftが負の数なら非表示
+                    if (left < 0.0f) {
+                        _seekbarView.visible = false;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 更新処理
+        /// </summary>
+        private void Update() {
+            if (_controllerProvider != null) {
+                Repaint();
+            }
         }
 
         /// <summary>

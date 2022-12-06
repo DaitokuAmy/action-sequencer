@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using ActionSequencer.Editor.Utils;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
@@ -19,6 +20,13 @@ namespace ActionSequencer.Editor
             Frames30,
             Frames60,
         }
+
+        // 保存用ユーザーデータ
+        private class UserData {
+            public float timeToSize;
+            public TimeMode timeMode;
+            public bool timeFit;
+        }
         
         private List<Object> _selectedTargets = new List<Object>();
         
@@ -31,7 +39,7 @@ namespace ActionSequencer.Editor
         public VisualElement RootElement { get; private set; }
         public SequenceClipModel ClipModel { get; private set; }
         
-        public ReactiveProperty<float> TimeToSize { get; private set; } = new ReactiveProperty<float>(100.0f, x => Mathf.Max(1.0f, x));
+        public ReactiveProperty<float> TimeToSize { get; private set; } = new ReactiveProperty<float>(200.0f, x => Mathf.Max(1.0f, x));
         public ReactiveProperty<TimeMode> CurrentTimeMode { get; private set; } = new ReactiveProperty<TimeMode>(TimeMode.Seconds);
         public ReactiveProperty<bool> TimeFit { get; private set; } = new ReactiveProperty<bool>(true);
 
@@ -41,6 +49,12 @@ namespace ActionSequencer.Editor
         public SequenceEditorModel(VisualElement rootElement)
         {
             RootElement = rootElement;
+            LoadUserData();
+            
+            // ユーザーデータ関連の更新を常に保存
+            TimeToSize.Subscribe(_ => SaveUserData());
+            CurrentTimeMode.Subscribe(_ => SaveUserData());
+            TimeFit.Subscribe(_ => SaveUserData());
         }
 
         /// <summary>
@@ -49,7 +63,7 @@ namespace ActionSequencer.Editor
         public override void Dispose()
         {
             base.Dispose();
-            
+            SaveUserData();
             SetSequenceClip(null);
         }
 
@@ -143,6 +157,35 @@ namespace ActionSequencer.Editor
             }
 
             return time;
+        }
+        
+        /// <summary>
+        /// ユーザーデータの読み込み
+        /// </summary>
+        private void LoadUserData() {
+            var key = $"{nameof(SequenceEditorModel)}_UserData";
+            var json = EditorPrefs.GetString(key, "");
+            if (string.IsNullOrEmpty(json)) {
+                return;
+            }
+
+            var userData = JsonUtility.FromJson<UserData>(json);
+            TimeToSize.Value = userData.timeToSize;
+            CurrentTimeMode.Value = userData.timeMode;
+            TimeFit.Value = userData.timeFit;
+        }
+
+        /// <summary>
+        /// ユーザーデータの保存
+        /// </summary>
+        private void SaveUserData() {
+            var key = $"{nameof(SequenceEditorModel)}_UserData";
+            var userData = new UserData {
+                timeToSize = TimeToSize.Value,
+                timeMode = CurrentTimeMode.Value,
+                timeFit = TimeFit.Value
+            };
+            EditorPrefs.SetString(key, JsonUtility.ToJson(userData));
         }
     }
 }

@@ -1,12 +1,14 @@
 using ActionSequencer;
 using UnityEngine;
 
-public class SampleScene : MonoBehaviour
+public class SampleScene : MonoBehaviour, ISequenceControllerProvider
 {
     [SerializeField]
     private SequenceClip _clip;
 
     private SequenceController _controller;
+
+    SequenceController ISequenceControllerProvider.SequenceController => _controller;
     
     private void Start()
     {
