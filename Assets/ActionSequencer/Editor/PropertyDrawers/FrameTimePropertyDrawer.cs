@@ -30,17 +30,18 @@ namespace ActionSequencer.Editor.PropertyDrawers
                 }
                 EditorGUI.showMixedValue = false;
             }
-
-            if (property.serializedObject.targetObject is SequenceClip clip) {
-                if (clip.frameRate < 0) {
+            
+            switch (SequenceEditorGUI.TimeMode)
+            {
+                case SequenceEditorModel.TimeMode.Seconds:
                     EditorGUI.PropertyField(position, property, label);
-                }
-                else {
-                    DrawFrameField(clip.frameRate);
-                }
-            }
-            else {
-                EditorGUI.PropertyField(position, property, label);
+                    break;
+                case SequenceEditorModel.TimeMode.Frames30:
+                    DrawFrameField(30);
+                    break;
+                case SequenceEditorModel.TimeMode.Frames60:
+                    DrawFrameField(60);
+                    break;
             }
         }
     }
