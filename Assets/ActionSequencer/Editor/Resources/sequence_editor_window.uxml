@@ -8,15 +8,13 @@
     </ActionSequencer.Editor.VisualElements.Toolbar>
     <ActionSequencer.Editor.VisualElements.SplitView fixed-pane-index="1" fixed-pane-initial-dimension="360" name="EditorArea">
         <ActionSequencer.Editor.VisualElements.SplitView fixed-pane-initial-dimension="150" name="ContentArea">
-            <ui:VisualElement name="TrackLabelArea" style="background-color: rgb(92, 92, 92);">
+            <ui:VisualElement name="TrackLabelArea" style="background-color: rgb(92, 92, 92); min-width: 100px;">
                 <ActionSequencer.Editor.VisualElements.Toolbar name="TrackToolbar" style="height: 20px;">
                     <ActionSequencer.Editor.VisualElements.ToolbarMenu name="CreateMenu" text="Create" style="-unity-font-style: bold;" />
                 </ActionSequencer.Editor.VisualElements.Toolbar>
                 <ui:ScrollView name="TrackLabelList" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
-                    <ui:VisualElement name="TrackLabelBox" class="track_label__box">
-                        <ui:VisualElement name="TrackLabelTextField" class="track_label__textfield" />
-                        <ui:VisualElement name="TrackLabelSpacer" class="track_label__spacer" />
-                    </ui:VisualElement>
+                    <ActionSequencer.Editor.SequenceTrackLabelView />
+                    <ActionSequencer.Editor.SequenceTrackLabelElementView class="track_label__element_box" />
                 </ui:ScrollView>
             </ui:VisualElement>
             <ui:VisualElement name="TrackArea" style="background-color: rgb(92, 92, 92); border-left-width: 4px; visibility: visible; border-left-color: rgb(64, 64, 64); flex-direction: column; flex-shrink: 1;">
@@ -28,11 +26,12 @@
                 <ui:ScrollView name="TrackScrollView" mode="Horizontal" style="flex-direction: column;">
                     <ui:VisualElement name="TrackList">
                         <ui:VisualElement name="TrackBox" class="track__box" style="flex-shrink: 0;">
-                            <ui:VisualElement name="SignalEvent" class="signal_event" style="background-color: rgb(255, 128, 128);" />
-                            <ui:VisualElement name="SignalEvent" class="signal_event" style="background-color: rgb(255, 128, 128);" />
                             <ActionSequencer.Editor.VisualElements.RulerView />
+                            <ui:VisualElement name="SignalEvent" class="signal_event" style="background-color: rgb(255, 128, 128);" />
+                            <ui:VisualElement name="SignalEvent" class="signal_event" style="background-color: rgb(255, 128, 128);" />
                         </ui:VisualElement>
-                        <ui:VisualElement name="TrackBox" class="track__box" style="flex-shrink: 0;">
+                        <ui:VisualElement name="TrackBox" class="track__box">
+                            <ActionSequencer.Editor.VisualElements.RulerView />
                             <ui:VisualElement name="RangeEvent" class="range_event" style="background-color: rgb(128, 128, 255);" />
                             <ui:VisualElement name="RangeEvent" class="range_event" style="background-color: rgb(128, 128, 255);" />
                         </ui:VisualElement>
@@ -41,7 +40,7 @@
                 <ui:VisualElement name="TrackSeekbar" class="track_seekbar" style="position: absolute; height: 100%; width: 2px;" />
             </ui:VisualElement>
         </ActionSequencer.Editor.VisualElements.SplitView>
-        <ui:VisualElement name="InspectorArea">
+        <ui:VisualElement name="InspectorArea" style="min-width: 100px;">
             <ui:VisualElement name="InspectorHeader" style="height: 20px; background-color: rgb(64, 64, 64);">
                 <ui:Label text="Inspector" display-tooltip-when-elided="true" style="-unity-font-style: bold; font-size: 12px; -unity-text-align: visible; height: 100%; margin-left: 0; padding-left: 6px;" />
             </ui:VisualElement>

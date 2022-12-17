@@ -11,12 +11,11 @@ namespace ActionSequencer.Editor
     {
         private SignalSequenceEventModel _model;
         private SignalSequenceEventView _view;
-        private List<IDisposable> _disposables = new List<IDisposable>();
 
         private float _dragStartTime;
         
-        public SignalSequenceEventPresenter(SignalSequenceEventModel model, SignalSequenceEventView view, SequenceEditorModel editorModel)
-            : base(model, view, editorModel)
+        public SignalSequenceEventPresenter(SignalSequenceEventModel model, SignalSequenceEventView view, SequenceTrackLabelElementView labelElementView, SequenceEditorModel editorModel)
+            : base(model, view, labelElementView, editorModel)
         {
             _model = model;
             _view = view;
@@ -26,7 +25,9 @@ namespace ActionSequencer.Editor
                 _model.Time = prop.floatValue;
             });
 
-            _disposables.Add(EditorModel.TimeToSize
+            labelElementView.LabelColor = model.ThemeColor;
+
+            AddDisposable(EditorModel.TimeToSize
                 .Subscribe(_ => OnChangedTime(_model.Time)));
             
             // Modelの時間変更監視
@@ -40,11 +41,6 @@ namespace ActionSequencer.Editor
             base.Dispose();
             //_view.UnregisterCallback();
             _model.OnChangedTime -= OnChangedTime;
-            foreach (var disposable in _disposables)
-            {
-                disposable.Dispose();
-            }
-            _disposables.Clear();
         }
 
         protected override void OnDragStart(SequenceEventManipulator.DragType dragType, bool otherEvent)

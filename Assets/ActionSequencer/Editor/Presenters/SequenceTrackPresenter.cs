@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ActionSequencer.Editor.Utils;
+using UnityEditor;
+using UnityEngine;
 
 namespace ActionSequencer.Editor
 {
@@ -13,7 +15,6 @@ namespace ActionSequencer.Editor
         private SequenceEditorModel _editorModel;
         private List<SignalSequenceEventPresenter> _signalEventPresenters = new List<SignalSequenceEventPresenter>();
         private List<RangeSequenceEventPresenter> _rangeEventPresenters = new List<RangeSequenceEventPresenter>();
-        private List<IDisposable> _disposables = new List<IDisposable>();
 
         public SequenceTrackView TrackView { get; private set; }
 
@@ -30,26 +31,31 @@ namespace ActionSequencer.Editor
             Model.OnRemovedSignalEventModel += RemovedSignalEventModel;
             Model.OnRemovedRangeEventModel += RemovedRangeEventModel;
             Model.OnChangedLabel += OnChangedLabel;
+            Model.OnChangedEventTime += OnChangedEventTime;
 
             View.OnChangedLabel += OnChangedLabelView;
-            View.OnClickedDefaultLabel += OnClickedDefaultLabel;
+            View.OnClickedOption += OnClickedOption;
+            View.OnChangedFoldout += OnChangedFoldout;
+
+            // TimeToSize監視
+            AddDisposable(_editorModel.TimeToSize
+                .Subscribe(x => {
+                    OnChangedEventTime();
+                }));
             
             // Rulerの情報反映
             TrackView.RulerView.MaskElement = TrackView.parent.parent;
-            _disposables.Add(_editorModel.TimeToSize
+            AddDisposable(_editorModel.TimeToSize
                 .Subscribe(_ =>
                 {
                     TrackView.RulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
                 }));
-            _disposables.Add(_editorModel.CurrentTimeMode
+            AddDisposable(_editorModel.CurrentTimeMode
                 .Subscribe(timeMode =>
                 {
                     TrackView.RulerView.ThickCycle = SequenceEditorUtility.GetThickCycle(timeMode);
                     TrackView.RulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
                 }));
-            
-            // ラベル初期化
-            OnChangedLabel(Model.Label);
 
             // 既に登録済のModelを解釈
             for (var i = 0; i < Model.SignalEventModels.Count; i++)
@@ -62,6 +68,10 @@ namespace ActionSequencer.Editor
                 var eventModel = Model.RangeEventModels[i];
                 OnAddedRangeEventModel(eventModel);
             }
+            
+            OnChangedLabel(Model.Label);
+            OnChangedFoldout(View.Foldout);
+            OnChangedEventTime();
         }
         
         /// <summary>
@@ -70,20 +80,16 @@ namespace ActionSequencer.Editor
         public override void Dispose()
         {
             base.Dispose();
-            foreach (var disposable in _disposables)
-            {
-                disposable.Dispose();
-            }
-            _disposables.Clear();
             
             Model.OnAddedRangeEventModel -= OnAddedRangeEventModel;
             Model.OnAddedSignalEventModel -= OnAddedSignalEventModel;
             Model.OnRemovedSignalEventModel -= RemovedSignalEventModel;
             Model.OnRemovedRangeEventModel -= RemovedRangeEventModel;
             Model.OnChangedLabel -= OnChangedLabel;
+            Model.OnChangedEventTime -= OnChangedEventTime;
 
             View.OnChangedLabel -= OnChangedLabelView;
-            View.OnClickedDefaultLabel -= OnClickedDefaultLabel;
+            View.OnClickedOption -= OnClickedOption;
 
             foreach (var presenter in _signalEventPresenters)
             {
@@ -123,18 +129,23 @@ namespace ActionSequencer.Editor
         /// </summary>
         private void OnAddedSignalEventModel(SignalSequenceEventModel model)
         {
+            // EventView作成
             var view = new SignalSequenceEventView();
             view.userData = model.Target;
-            TrackView.Add(view);
-                    
-            var presenter = new SignalSequenceEventPresenter(model, view, _editorModel);
-            _signalEventPresenters.Add(presenter);
+            TrackView.AddEventView(view);
+            
+            // TrackLabelの要素を追加
+            var element = View.AddElement();
 
-            // 行数変更
-            View.LineCount = Model.EventCount;
+            // Presenter作成
+            var presenter = new SignalSequenceEventPresenter(model, view, element, _editorModel);
+            _signalEventPresenters.Add(presenter);
             
             // Viewのソート
             SortEventViews();
+            
+            // Track幅計算しなおし
+            OnChangedEventTime();
         }
 
         /// <summary>
@@ -142,18 +153,23 @@ namespace ActionSequencer.Editor
         /// </summary>
         private void OnAddedRangeEventModel(RangeSequenceEventModel model)
         {
+            // EventView作成
             var view = new RangeSequenceEventView();
             view.userData = model.Target;
-            TrackView.Add(view);
+            TrackView.AddEventView(view);
+            
+            // TrackLabelの要素を追加
+            var element = View.AddElement();
 
-            var presenter = new RangeSequenceEventPresenter(model, view, _editorModel);
+            // Presenter作成
+            var presenter = new RangeSequenceEventPresenter(model, view, element, _editorModel);
             _rangeEventPresenters.Add(presenter);
-
-            // 行数変更
-            View.LineCount = Model.EventCount;
             
             // Viewのソート
             SortEventViews();
+            
+            // Track幅計算しなおし
+            OnChangedEventTime();
         }
 
         /// <summary>
@@ -166,18 +182,25 @@ namespace ActionSequencer.Editor
             {
                 return;
             }
-            TrackView.Remove(presenter.View);
+            
+            // EventView削除
+            TrackView.RemoveEventView(presenter.View);
+            
+            // Label要素を削除
+            View.RemoveElement(presenter.LabelElementView);
+            
+            // Presenter削除
             presenter.Dispose();
             _signalEventPresenters.Remove(presenter);
-
-            // 行数変更
-            View.LineCount = Model.EventCount;
             
             // Eventがなくなった場合、自身を削除
             if (Model.EventCount <= 0)
             {
                 _editorModel.ClipModel.RemoveTrack(Model.Target as SequenceTrack);
             }
+            
+            // Track幅計算しなおし
+            OnChangedEventTime();
         }
 
         /// <summary>
@@ -190,18 +213,25 @@ namespace ActionSequencer.Editor
             {
                 return;
             }
-            TrackView.Remove(presenter.View);
+            
+            // EventView削除
+            TrackView.RemoveEventView(presenter.View);
+            
+            // Label要素を削除
+            View.RemoveElement(presenter.LabelElementView);
+            
+            // Presenter削除
             presenter.Dispose();
             _rangeEventPresenters.Remove(presenter);
-
-            // 行数変更
-            View.LineCount = Model.EventCount;
             
             // Eventがなくなった場合、自身を削除
             if (Model.EventCount <= 0)
             {
                 _editorModel.ClipModel.RemoveTrack(Model.Target as SequenceTrack);
             }
+            
+            // Track幅計算しなおし
+            OnChangedEventTime();
         }
 
         /// <summary>
@@ -213,6 +243,26 @@ namespace ActionSequencer.Editor
         }
 
         /// <summary>
+        /// Track内部のEventの時間変化時通知
+        /// </summary>
+        private void OnChangedEventTime() {
+            var maxTime = 0.0f;
+            foreach (var presenter in _signalEventPresenters) {
+                if (presenter.Model is SignalSequenceEventModel model) {
+                    maxTime = Mathf.Max(maxTime, model.Time);
+                }
+            }
+            foreach (var presenter in _rangeEventPresenters) {
+                if (presenter.Model is RangeSequenceEventModel model) {
+                    maxTime = Mathf.Max(maxTime, model.ExitTime);
+                }
+            }
+
+            var width = maxTime * _editorModel.TimeToSize.Value;
+            TrackView.SetTrackWidth(width);
+        }
+
+        /// <summary>
         /// View経由でのLabel変更通知
         /// </summary>
         private void OnChangedLabelView(string label)
@@ -221,11 +271,26 @@ namespace ActionSequencer.Editor
         }
 
         /// <summary>
+        /// フォルダリング状態の変化通知
+        /// </summary>
+        private void OnChangedFoldout(bool foldout)
+        {
+            TrackView.SetFoldout(foldout);
+        }
+
+        /// <summary>
         /// View経由でのDefaultLabelボタン押下通知
         /// </summary>
-        private void OnClickedDefaultLabel()
+        private void OnClickedOption()
         {
-            Model.SetDefaultLabel();
+            var menu = new GenericMenu();
+            menu.AddItem(new GUIContent("Up"), false, () => {
+                // todo:並び順変更
+            });
+            menu.AddItem(new GUIContent("Down"), false, () => {
+                // todo:並び順変更
+            });
+            menu.ShowAsContext();
         }
     }
 }

@@ -55,6 +55,14 @@ namespace ActionSequencer.Editor
             TimeToSize.Subscribe(_ => SaveUserData());
             CurrentTimeMode.Subscribe(_ => SaveUserData());
             TimeFit.Subscribe(_ => SaveUserData());
+            
+            // TimeModeとFrameRateの同期
+            AddDisposable(CurrentTimeMode
+                .Subscribe(x => {
+                    if (ClipModel != null) {
+                        ClipModel.SetFrameRate(x);
+                    }
+                }));
         }
 
         /// <summary>
@@ -81,6 +89,9 @@ namespace ActionSequencer.Editor
             if (clip != null)
             {
                 ClipModel = new SequenceClipModel(clip);
+                
+                // TimeModeをFrameRateに反映
+                CurrentTimeMode.Value = ClipModel.GetTimeMode();
             }
             
             return ClipModel;

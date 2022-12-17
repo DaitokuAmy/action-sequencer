@@ -107,7 +107,7 @@ namespace ActionSequencer.Editor
             {
                 void OnAddedTrackModel(SequenceTrackModel model)
                 {
-                    var labelView = new SequenceTrackLabelView(model.EventCount);
+                    var labelView = new SequenceTrackLabelView();
                     trackLabelList.Add(labelView);
                     var trackView = new SequenceTrackView();
                     trackList.Add(trackView);
@@ -160,7 +160,7 @@ namespace ActionSequencer.Editor
             
             var activeObject = Selection.activeGameObject;
             if (activeObject != null && activeObject != _controllerProviderOwner) {
-                var provider = activeObject.GetComponent<ISequenceControllerProvider>();
+                var provider = activeObject.GetComponentInParent<ISequenceControllerProvider>();
                 if (provider == null) {
                     return;
                 }

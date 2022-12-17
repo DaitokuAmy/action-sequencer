@@ -94,5 +94,7 @@ namespace ActionSequencer.Editor.Utils
     {
         T Value { get; }
         event Action<T> OnChangedValue;
+        
+        IDisposable Subscribe(Action<T> func);
     }
 }

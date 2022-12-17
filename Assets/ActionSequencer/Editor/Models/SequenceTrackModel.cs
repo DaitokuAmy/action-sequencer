@@ -26,6 +26,7 @@ namespace ActionSequencer.Editor
         public event Action<RangeSequenceEventModel> OnAddedRangeEventModel;
         public event Action<SignalSequenceEventModel> OnRemovedSignalEventModel;
         public event Action<RangeSequenceEventModel> OnRemovedRangeEventModel;
+        public event Action OnChangedEventTime;
         
         public string Label
         {
@@ -53,6 +54,15 @@ namespace ActionSequencer.Editor
         {
             _label = SerializedObject.FindProperty("label");
             _sequenceEvents = SerializedObject.FindProperty("sequenceEvents");
+            
+            // 時間系の変化監視
+            OnAddedSignalEventModel += x => {
+                x.OnChangedTime += _ => OnChangedEventTime?.Invoke();
+            };
+            OnAddedRangeEventModel += x => {
+                x.OnChangedEnterTime += _ => OnChangedEventTime?.Invoke();
+                x.OnChangedExitTime += _ => OnChangedEventTime?.Invoke();
+            };
             
             // モデルの生成
             RefreshEvents();

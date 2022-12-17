@@ -12,12 +12,14 @@ namespace ActionSequencer.Editor
     /// </summary>
     public abstract class SequenceEventPresenter : Presenter<SequenceEventModel, SequenceEventView>
     {
+        public SequenceTrackLabelElementView LabelElementView { get; private set; }
         protected SequenceEditorModel EditorModel { get; private set; }
         
-        public SequenceEventPresenter(SequenceEventModel model, SequenceEventView view, SequenceEditorModel editorModel)
+        public SequenceEventPresenter(SequenceEventModel model, SequenceEventView view, SequenceTrackLabelElementView labelElementView, SequenceEditorModel editorModel)
             : base(model, view)
         {
             EditorModel = editorModel;
+            LabelElementView = labelElementView;
             
             EditorModel.OnChangedSelectedTargets += OnChangedSelectedTargets;
             
@@ -27,6 +29,12 @@ namespace ActionSequencer.Editor
             {
                 Model.Active = prop.boolValue;
             });
+
+            // Label要素のイベント監視
+            LabelElementView.LabelColor = model.ThemeColor;
+            LabelElementView.Label = Model.Label;
+            LabelElementView.OnChangedLabel += OnChangedViewLabel;
+            LabelElementView.OnClickedOption += OnClickedOption;
             
             // イベント監視
             View.RegisterCallback<MouseDownEvent>(OnMouseDownEvent);
@@ -34,6 +42,7 @@ namespace ActionSequencer.Editor
             
             // アクティブ状態の監視
             Model.OnChangedActive += OnChangedActive;
+            Model.OnChangedLabel += OnChangedLabel;
             OnChangedActive(Model.Active);
             
             // 右クリック監視
@@ -53,8 +62,14 @@ namespace ActionSequencer.Editor
             
             EditorModel.RemoveSelectedTarget(Model.Target);
             
+            LabelElementView.OnChangedLabel -= OnChangedViewLabel;
+            LabelElementView.OnClickedOption -= OnClickedOption;
+            
             View.UnregisterCallback<MouseDownEvent>(OnMouseDownEvent);
             View.UnregisterCallback<ValidateCommandEvent>(OnValidateCommandEvent);
+            
+            Model.OnChangedActive -= OnChangedActive;
+            Model.OnChangedLabel -= OnChangedLabel;
             
             View.OnOpenContextMenu -= OnOpenContextMenu;
             View.Manipulator.OnDragStart -= OnDragStart;
@@ -147,6 +162,38 @@ namespace ActionSequencer.Editor
         private void OnChangedActive(bool active)
         {
             View.style.backgroundColor = active ? Model.ThemeColor : Color.gray;
+        }
+        
+        /// <summary>
+        /// ラベル変更時
+        /// </summary>
+        private void OnChangedViewLabel(string label) {
+            Model.Label = label;
+        }
+        
+        /// <summary>
+        /// ラベル変更時
+        /// </summary>
+        private void OnChangedLabel(string label) {
+            LabelElementView.Label = label;
+        }
+        
+        /// <summary>
+        /// オプション押下時
+        /// </summary>
+        private void OnClickedOption() {
+            var menu = new GenericMenu();
+            menu.AddItem(new GUIContent("Reset Label"), false, () => {
+                // ラベルのリセット
+                Model.ResetLabel();
+            });
+            menu.AddItem(new GUIContent("Up"), false, () => {
+                // todo:並び順変更
+            });
+            menu.AddItem(new GUIContent("Down"), false, () => {
+                // todo:並び順変更
+            });
+            menu.ShowAsContext();
         }
 
         /// <summary>

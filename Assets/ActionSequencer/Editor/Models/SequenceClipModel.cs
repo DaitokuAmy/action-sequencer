@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -13,6 +14,7 @@ namespace ActionSequencer.Editor
     public class SequenceClipModel : SerializedObjectModel
     {
         private SerializedProperty _tracks;
+        private SerializedProperty _frameRate;
         private List<SequenceTrackModel> _trackModels = new List<SequenceTrackModel>();
         
         public event Action<SequenceTrackModel> OnAddedTrackModel;
@@ -27,6 +29,7 @@ namespace ActionSequencer.Editor
             : base(target)
         {
             _tracks = SerializedObject.FindProperty("tracks");
+            _frameRate = SerializedObject.FindProperty("frameRate");
             
             RefreshTracks();
         }
@@ -57,6 +60,44 @@ namespace ActionSequencer.Editor
                     OnAddedTrackModel?.Invoke(model);
                 }
             }
+        }
+
+        /// <summary>
+        /// TimeModeを元にフレームレートを設定
+        /// </summary>
+        public void SetFrameRate(SequenceEditorModel.TimeMode timeMode) {
+            SerializedObject.Update();
+            switch (timeMode) {
+                case SequenceEditorModel.TimeMode.Seconds:
+                    _frameRate.intValue = -1;
+                    break;
+                case SequenceEditorModel.TimeMode.Frames30:
+                    _frameRate.intValue = 30;
+                    break;
+                case SequenceEditorModel.TimeMode.Frames60:
+                    _frameRate.intValue = 60;
+                    break;
+            }
+            SerializedObject.ApplyModifiedProperties();
+        }
+
+        /// <summary>
+        /// フレームレートを元にTimeModeを取得
+        /// </summary>
+        public SequenceEditorModel.TimeMode GetTimeMode() {
+            if (_frameRate.intValue < 0) {
+                return SequenceEditorModel.TimeMode.Seconds;
+            }
+
+            if (_frameRate.intValue == 30) {
+                return SequenceEditorModel.TimeMode.Frames30;
+            }
+
+            if (_frameRate.intValue == 60) {
+                return SequenceEditorModel.TimeMode.Frames60;
+            }
+
+            return SequenceEditorModel.TimeMode.Seconds;
         }
 
         /// <summary>

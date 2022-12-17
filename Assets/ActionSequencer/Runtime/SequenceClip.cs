@@ -11,5 +11,7 @@ namespace ActionSequencer
     {
         [Tooltip("Trackリスト")]
         public SequenceTrack[] tracks = Array.Empty<SequenceTrack>();
+        [Tooltip("フレームレート")]
+        public int frameRate = 30;
     }
 }

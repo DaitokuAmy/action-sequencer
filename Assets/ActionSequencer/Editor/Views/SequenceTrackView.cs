@@ -8,11 +8,12 @@ namespace ActionSequencer.Editor
     /// <summary>
     /// Track用のView
     /// </summary>
-    public class SequenceTrackView : VisualElement
-    {
+    public class SequenceTrackView : VisualElement {
+        private VisualElement _eventViewContainer;
         private List<SequenceEventView> _eventViews = new List<SequenceEventView>();
         
         public RulerView RulerView { get; private set; }
+        public SequenceEventSpacerView SpacerView { get; private set; }
 
         /// <summary>
         /// コンストラクタ
@@ -27,6 +28,46 @@ namespace ActionSequencer.Editor
             RulerView.LineHeightRate = 1.0f;
             RulerView.ThickLineHeightRate = 1.0f;
             Add(RulerView);
+            
+            // Spacerを追加
+            SpacerView = new SequenceEventSpacerView();
+            Add(SpacerView);
+            
+            // 子要素の追加用コンテナ
+            _eventViewContainer = new VisualElement();
+            _eventViewContainer.name = "EventViewContainer";
+            _eventViewContainer.AddToClassList("track__container");
+            Add(_eventViewContainer);
+        }
+
+        /// <summary>
+        /// Track全体の幅を設定
+        /// </summary>
+        public void SetTrackWidth(float width) {
+            SpacerView.style.width = width;
+        }
+
+        /// <summary>
+        /// EventView追加
+        /// </summary>
+        public void AddEventView(SequenceEventView eventView) {
+            _eventViews.Add(eventView);
+            _eventViewContainer.Add(eventView);
+        }
+
+        /// <summary>
+        /// EventView削除
+        /// </summary>
+        public void RemoveEventView(SequenceEventView eventView) {
+            _eventViews.Remove(eventView);
+            _eventViewContainer.Remove(eventView);
+        }
+
+        /// <summary>
+        /// イベントのフォルダリング状態反映
+        /// </summary>
+        public void SetFoldout(bool foldout) {
+            _eventViewContainer.style.display = foldout ? DisplayStyle.Flex : DisplayStyle.None;
         }
     }
 }

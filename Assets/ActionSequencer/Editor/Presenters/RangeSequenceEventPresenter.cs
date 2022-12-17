@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 
@@ -15,13 +14,12 @@ namespace ActionSequencer.Editor
 
         private float _dragStartEnterTime;
         private float _dragStartExitTime;
-        private List<IDisposable> _disposables = new List<IDisposable>();
         
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public RangeSequenceEventPresenter(RangeSequenceEventModel model, RangeSequenceEventView view, SequenceEditorModel editorModel)
-            : base(model, view, editorModel)
+        public RangeSequenceEventPresenter(RangeSequenceEventModel model, RangeSequenceEventView view, SequenceTrackLabelElementView labelElementView, SequenceEditorModel editorModel)
+            : base(model, view, labelElementView, editorModel)
         {
             _model = model;
             _view = view;
@@ -35,7 +33,7 @@ namespace ActionSequencer.Editor
                 _model.ExitTime = prop.floatValue;
             });
 
-            _disposables.Add(EditorModel.TimeToSize
+            AddDisposable(EditorModel.TimeToSize
                 .Subscribe(_ => SetStyleByTime(_model.EnterTime, _model.ExitTime)));
 
             // Modelの時間変更監視
@@ -54,11 +52,6 @@ namespace ActionSequencer.Editor
             base.Dispose();
             _model.OnChangedEnterTime -= OnChangedEnterTime;
             _model.OnChangedExitTime -= OnChangedExitTime;
-            foreach (var disposable in _disposables)
-            {
-                disposable.Dispose();
-            }
-            _disposables.Clear();
         }
 
         /// <summary>
