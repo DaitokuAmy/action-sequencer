@@ -30,6 +30,7 @@ namespace ActionSequencer.Editor {
         // フォルダリング状態
         public bool Foldout {
             get => _foldout.value;
+            set => _foldout.value = value;
         }
 
         // コンテナ

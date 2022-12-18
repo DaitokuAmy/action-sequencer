@@ -42,6 +42,9 @@ namespace ActionSequencer.Editor {
                 .Subscribe(ClickedOptionSubject));
             AddDisposable(View.ChangedFoldoutSubject
                 .Subscribe(ChangedFoldoutSubject));
+            
+            AddDisposable(TrackView.ClickedSpacerSubject
+                .Subscribe(ClickedSpacerSubject));
 
             // TimeToSize監視
             AddDisposable(_editorModel.TimeToSize
@@ -208,6 +211,14 @@ namespace ActionSequencer.Editor {
         /// </summary>
         private void ChangedFoldoutSubject(bool foldout) {
             TrackView.SetFoldout(foldout);
+        }
+
+        /// <summary>
+        /// トラックのスペース部分クリック通知
+        /// </summary>
+        private void ClickedSpacerSubject() {
+            // フォルダ状態をトグルする
+            View.Foldout = !View.Foldout;
         }
 
         /// <summary>

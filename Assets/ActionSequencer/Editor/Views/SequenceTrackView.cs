@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ActionSequencer.Editor.Utils;
 using ActionSequencer.Editor.VisualElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -16,6 +17,7 @@ namespace ActionSequencer.Editor {
 
         public RulerView RulerView { get; private set; }
         public SequenceEventSpacerView SpacerView { get; private set; }
+        public Subject ClickedSpacerSubject { get; } = new Subject();
         public override VisualElement contentContainer => _trackEventContainer;
 
         /// <summary>
@@ -41,6 +43,13 @@ namespace ActionSequencer.Editor {
             _trackEventContainer.name = "track-event-container";
             _trackEventContainer.AddToClassList("track__container");
             hierarchy.Add(_trackEventContainer);
+            
+            // Spacerのクリックを監視
+            SpacerView.RegisterCallback<MouseDownEvent>(evt => {
+                if (evt.button == 0) {
+                    ClickedSpacerSubject.Invoke();
+                }
+            });
         }
 
         /// <summary>
