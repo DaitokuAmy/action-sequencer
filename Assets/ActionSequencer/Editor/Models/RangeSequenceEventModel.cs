@@ -24,7 +24,7 @@ namespace ActionSequencer.Editor
                 SerializedObject.Update();
                 _enterTime.floatValue = Mathf.Clamp(value, 0.0f, _exitTime.floatValue);
                 SerializedObject.ApplyModifiedProperties();
-                ChangedEnterTimeSubject?.Invoke(_enterTime.floatValue);
+                ChangedEnterTimeSubject.Invoke(_enterTime.floatValue);
                 SetDirty();
             }
         }
@@ -36,7 +36,7 @@ namespace ActionSequencer.Editor
                 SerializedObject.Update();
                 _exitTime.floatValue = Mathf.Max(value, _enterTime.floatValue);
                 SerializedObject.ApplyModifiedProperties();
-                ChangedExitTimeSubject?.Invoke(_exitTime.floatValue);
+                ChangedExitTimeSubject.Invoke(_exitTime.floatValue);
                 SetDirty();
             }
         }
@@ -63,8 +63,8 @@ namespace ActionSequencer.Editor
             var exitTime = _enterTime.floatValue + duration;
             _exitTime.floatValue = exitTimeFilter?.Invoke(exitTime) ?? exitTime;
             SerializedObject.ApplyModifiedProperties();
-            ChangedEnterTimeSubject?.Invoke(_enterTime.floatValue);
-            ChangedExitTimeSubject?.Invoke(_exitTime.floatValue);
+            ChangedEnterTimeSubject.Invoke(_enterTime.floatValue);
+            ChangedExitTimeSubject.Invoke(_exitTime.floatValue);
             SetDirty();
         }
     }

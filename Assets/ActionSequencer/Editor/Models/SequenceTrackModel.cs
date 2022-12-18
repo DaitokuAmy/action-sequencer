@@ -38,7 +38,7 @@ namespace ActionSequencer.Editor {
                 SerializedObject.Update();
                 _label.stringValue = value;
                 SerializedObject.ApplyModifiedProperties();
-                ChangedLabelSubject?.Invoke(Label);
+                ChangedLabelSubject.Invoke(Label);
                 SetDirty();
             }
         }
@@ -88,12 +88,12 @@ namespace ActionSequencer.Editor {
                 if (sequenceEvent is SignalSequenceEvent signalEvent) {
                     var model = new SignalSequenceEventModel(signalEvent, this);
                     _signalEventModels.Add(model);
-                    AddedSignalEventModelSubject?.Invoke(model);
+                    AddedSignalEventModelSubject.Invoke(model);
                 }
                 else if (sequenceEvent is RangeSequenceEvent rangeEvent) {
                     var model = new RangeSequenceEventModel(rangeEvent, this);
                     _rangeEventModels.Add(model);
-                    AddedRangeEventModelSubject?.Invoke(model);
+                    AddedRangeEventModelSubject.Invoke(model);
                 }
             }
         }
@@ -167,7 +167,7 @@ namespace ActionSequencer.Editor {
             var model = new SignalSequenceEventModel(evt, this);
             model.ResetLabel();
             _signalEventModels.Add(model);
-            AddedSignalEventModelSubject?.Invoke(model);
+            AddedSignalEventModelSubject.Invoke(model);
 
             return model;
         }
@@ -182,7 +182,7 @@ namespace ActionSequencer.Editor {
             // Modelの生成
             var model = new SignalSequenceEventModel(evt, this);
             _signalEventModels.Add(model);
-            AddedSignalEventModelSubject?.Invoke(model);
+            AddedSignalEventModelSubject.Invoke(model);
 
             return model;
         }
@@ -203,7 +203,7 @@ namespace ActionSequencer.Editor {
             DeleteEventAsset(sequenceEvent);
 
             // 通知
-            RemovedSignalEventModelSubject?.Invoke(model);
+            RemovedSignalEventModelSubject.Invoke(model);
             model.Dispose();
         }
 
@@ -218,7 +218,7 @@ namespace ActionSequencer.Editor {
             var model = new RangeSequenceEventModel(evt, this);
             model.ResetLabel();
             _rangeEventModels.Add(model);
-            AddedRangeEventModelSubject?.Invoke(model);
+            AddedRangeEventModelSubject.Invoke(model);
 
             return model;
         }
@@ -233,7 +233,7 @@ namespace ActionSequencer.Editor {
             // Modelの生成
             var model = new RangeSequenceEventModel(evt, this);
             _rangeEventModels.Add(model);
-            AddedRangeEventModelSubject?.Invoke(model);
+            AddedRangeEventModelSubject.Invoke(model);
 
             return model;
         }
@@ -254,7 +254,7 @@ namespace ActionSequencer.Editor {
             DeleteEventAsset(sequenceEvent);
 
             // 通知
-            RemovedRangeEventModelSubject?.Invoke(model);
+            RemovedRangeEventModelSubject.Invoke(model);
             model.Dispose();
         }
 
@@ -263,12 +263,12 @@ namespace ActionSequencer.Editor {
         /// </summary>
         private void ClearEventModels() {
             foreach (var model in _signalEventModels) {
-                RemovedSignalEventModelSubject?.Invoke(model);
+                RemovedSignalEventModelSubject.Invoke(model);
                 model.Dispose();
             }
 
             foreach (var model in _rangeEventModels) {
-                RemovedRangeEventModelSubject?.Invoke(model);
+                RemovedRangeEventModelSubject.Invoke(model);
                 model.Dispose();
             }
 

@@ -59,13 +59,13 @@ namespace ActionSequencer.Editor {
             hierarchy.Add(_optionButton);
 
             // 値の変化監視
-            _textFieldView.RegisterValueChangedCallback(evt => { ChangedLabelSubject?.Invoke(evt.newValue); });
+            _textFieldView.RegisterValueChangedCallback(evt => { ChangedLabelSubject.Invoke(evt.newValue); });
 
             // ボタンの押下監視
-            _optionButton.clicked += () => ClickedOptionSubject?.Invoke();
+            _optionButton.clicked += () => ClickedOptionSubject.Invoke();
 
             // フォルダの状態監視
-            _foldout.RegisterValueChangedCallback(evt => { ChangedFoldoutSubject?.Invoke(evt.newValue); });
+            _foldout.RegisterValueChangedCallback(evt => { ChangedFoldoutSubject.Invoke(evt.newValue); });
         }
 
         /// <summary>

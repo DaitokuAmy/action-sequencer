@@ -22,7 +22,7 @@ namespace ActionSequencer.Editor
                 SerializedObject.Update();
                 _active.boolValue = value;
                 SerializedObject.ApplyModifiedProperties();
-                ChangedActiveSubject?.Invoke(value);
+                ChangedActiveSubject.Invoke(value);
             }
         }
         // Eventのラベル

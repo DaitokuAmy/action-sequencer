@@ -115,7 +115,7 @@ namespace ActionSequencer.Editor {
             }
 
             _selectedTargets.Add(target);
-            ChangedSelectedTargetsSubject?.Invoke(SelectedTargets);
+            ChangedSelectedTargetsSubject.Invoke(SelectedTargets);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace ActionSequencer.Editor {
                 return;
             }
 
-            ChangedSelectedTargetsSubject?.Invoke(SelectedTargets);
+            ChangedSelectedTargetsSubject.Invoke(SelectedTargets);
         }
 
         /// <summary>
@@ -134,21 +134,21 @@ namespace ActionSequencer.Editor {
         /// </summary>
         public void RemoveSelectedTargets() {
             _selectedTargets.Clear();
-            ChangedSelectedTargetsSubject?.Invoke(SelectedTargets);
+            ChangedSelectedTargetsSubject.Invoke(SelectedTargets);
         }
 
         /// <summary>
         /// Drag開始
         /// </summary>
         public void StartDragEvent(Object target, SequenceEventManipulator.DragType dragType) {
-            EventDragStartSubject?.Invoke(target, dragType);
+            EventDragStartSubject.Invoke(target, dragType);
         }
 
         /// <summary>
         /// Drag終了
         /// </summary>
         public void DraggingEvent(Object target, SequenceEventManipulator.DragInfo info) {
-            EventDraggingSubject?.Invoke(target, info);
+            EventDraggingSubject.Invoke(target, info);
         }
 
         /// <summary>
