@@ -24,12 +24,13 @@
     border-bottom-right-radius: 2px;
     height: 11px;
     background-color: rgba(82, 82, 82, 0.5);
-    border-left-color: rgba(61, 61, 61, 255);
-    border-right-color: rgba(61, 61, 61, 255);
-    border-top-color: rgba(61, 61, 61, 255);
-    border-bottom-color: rgba(61, 61, 61, 255);
+    border-left-color: rgb(61, 61, 61);
+    border-right-color: rgb(61, 61, 61);
+    border-top-color: rgb(61, 61, 61);
+    border-bottom-color: rgb(61, 61, 61);
     flex-shrink: 0;
     margin-top: 11px;
+    margin-right: 200px;
 }
 
 .track__container {
