@@ -20,7 +20,7 @@ namespace ActionSequencer.Editor.Utils {
                 _action = null;
             }
         }
-        
+
         /// <summary>
         /// キャンセル用アクションの生成
         /// </summary>
@@ -28,7 +28,7 @@ namespace ActionSequencer.Editor.Utils {
             return new DisposableAction(action.Invoke);
         }
     }
-    
+
     /// <summary>
     /// 通知用クラス
     /// </summary>
@@ -51,6 +51,7 @@ namespace ActionSequencer.Editor.Utils {
             return CreateCancelAction(() => { OnSendAction -= func; });
         }
     }
+
     public class Subject<T> : SubjectBase, IReadonlySubject<T> {
         // 通知用アクション
         private event Action<T> OnSendAction;
@@ -70,6 +71,7 @@ namespace ActionSequencer.Editor.Utils {
             return CreateCancelAction(() => { OnSendAction -= func; });
         }
     }
+
     public class Subject<T1, T2> : SubjectBase, IReadonlySubject<T1, T2> {
         // 通知用アクション
         private event Action<T1, T2> OnSendAction;
@@ -96,9 +98,11 @@ namespace ActionSequencer.Editor.Utils {
     public interface IReadonlySubject {
         IDisposable Subscribe(Action func);
     }
+
     public interface IReadonlySubject<T> {
         IDisposable Subscribe(Action<T> func);
     }
+
     public interface IReadonlySubject<T1, T2> {
         IDisposable Subscribe(Action<T1, T2> func);
     }

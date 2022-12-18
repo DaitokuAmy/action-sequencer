@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace ActionSequencer.Editor.VisualElements
-{
+namespace ActionSequencer.Editor.VisualElements {
     /// <summary>
     /// RulerView
     /// </summary>
-    public class RulerView : ImmediateModeElement
-    {
-        public new class UxmlFactory : UxmlFactory<RulerView, UxmlTraits> {}
+    public class RulerView : ImmediateModeElement {
+        public new class UxmlFactory : UxmlFactory<RulerView, UxmlTraits> {
+        }
 
         private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
         private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
         private static readonly int Cull = Shader.PropertyToID("_Cull");
         private static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
-        
+
         private static Material _material;
         private List<Label> _labelPool = new List<Label>();
         private List<Label> _usedLabels = new List<Label>();
@@ -24,12 +23,9 @@ namespace ActionSequencer.Editor.VisualElements
         private float _memorySize = 10.0f;
         private int _thickCycle = 5;
 
-        private static Material Material
-        {
-            get
-            {
-                if (_material != null)
-                {
+        private static Material Material {
+            get {
+                if (_material != null) {
                     return _material;
                 }
 
@@ -53,20 +49,18 @@ namespace ActionSequencer.Editor.VisualElements
         public float LineHeightRate { get; set; } = 0.25f;
         public float ThickLineHeightRate { get; set; } = 0.75f;
         public VisualElement MaskElement { get; set; }
-        public float MemorySize
-        {
+
+        public float MemorySize {
             get => _memorySize;
-            set
-            {
+            set {
                 _memorySize = Mathf.Max(2, value);
                 SetupLabels(layout);
             }
         }
-        public int ThickCycle
-        {
+
+        public int ThickCycle {
             get => _thickCycle;
-            set
-            {
+            set {
                 _thickCycle = Mathf.Max(1, value);
                 SetupLabels(layout);
             }
@@ -75,13 +69,12 @@ namespace ActionSequencer.Editor.VisualElements
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public RulerView()
-        {
+        public RulerView() {
             pickingMode = PickingMode.Ignore;
             style.position = new StyleEnum<Position>(Position.Absolute);
 
             this.StretchToParentSize();
-            
+
             RegisterCallback<CustomStyleResolvedEvent>(OnCustomStyleResolved);
             RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
@@ -89,16 +82,14 @@ namespace ActionSequencer.Editor.VisualElements
         /// <summary>
         /// ラベル表記のリフレッシュ
         /// </summary>
-        public void RefreshLabels()
-        {
+        public void RefreshLabels() {
             SetupLabels(layout);
         }
 
         /// <summary>
         /// 描画処理
         /// </summary>
-        protected override void ImmediateRepaint()
-        {
+        protected override void ImmediateRepaint() {
             Material.SetPass(0);
 
             var totalRect = layout;
@@ -109,34 +100,32 @@ namespace ActionSequencer.Editor.VisualElements
             clipRect.xMax = Mathf.Min(clipRect.xMax, totalRect.xMax);
             clipRect.yMin = Mathf.Max(clipRect.yMin, totalRect.yMin);
             clipRect.yMax = Mathf.Max(clipRect.yMax, totalRect.yMax);
-            
-            for (var i = 0;; i++)
-            {
+
+            for (var i = 0;; i++) {
                 var thick = i % ThickCycle == 0;
                 var rect = totalRect;
                 rect.width = thick ? ThickLineWidth : LineWidth;
                 rect.x = i * lineOffset;
-                
+
                 // 範囲外
-                if (rect.xMax <= clipRect.xMin)
-                {
+                if (rect.xMax <= clipRect.xMin) {
                     continue;
                 }
-                if (rect.xMin >= clipRect.xMax)
-                {
+
+                if (rect.xMin >= clipRect.xMax) {
                     break;
                 }
-                
+
                 // Clip
                 rect.xMin = Mathf.Clamp(rect.xMin, clipRect.xMin, clipRect.xMax);
                 rect.xMax = Mathf.Clamp(rect.xMax, clipRect.xMin, clipRect.xMax);
                 rect.yMin = Mathf.Clamp(rect.yMin, clipRect.yMin, clipRect.yMax);
                 rect.yMax = Mathf.Clamp(rect.yMax, clipRect.yMin, clipRect.yMax);
-                
+
                 // ThickStyle
                 var color = thick ? ThickLineColor : LineColor;
                 rect.yMin += rect.height * (1 - (thick ? ThickLineHeightRate : LineHeightRate));
-                
+
                 GL.Begin(GL.QUADS);
                 GL.Color(color);
                 GL.Vertex(new Vector3(rect.x, rect.y));
@@ -146,8 +135,7 @@ namespace ActionSequencer.Editor.VisualElements
                 GL.End();
             }
 
-            for (var i = 0; i < _usedLabels.Count; i++)
-            {
+            for (var i = 0; i < _usedLabels.Count; i++) {
                 var label = _usedLabels[i];
                 // 範囲外のLabelは非表示
                 var labelRect = label.layout;
@@ -158,16 +146,13 @@ namespace ActionSequencer.Editor.VisualElements
         /// <summary>
         /// CustomStyle変更時
         /// </summary>
-        private void OnCustomStyleResolved(CustomStyleResolvedEvent evt)
-        {
-            
+        private void OnCustomStyleResolved(CustomStyleResolvedEvent evt) {
         }
 
         /// <summary>
         /// 形状変化通知
         /// </summary>
-        private void OnGeometryChanged(GeometryChangedEvent evt)
-        {
+        private void OnGeometryChanged(GeometryChangedEvent evt) {
             // Labelを生成
             SetupLabels(evt.newRect);
         }
@@ -175,15 +160,13 @@ namespace ActionSequencer.Editor.VisualElements
         /// <summary>
         /// メモリラベルの再構築
         /// </summary>
-        private void SetupLabels(Rect totalRect)
-        {
+        private void SetupLabels(Rect totalRect) {
             var width = totalRect.width;
-            
+
             ReturnLabels();
             var labelCount = (int)(width / MemorySize / ThickCycle) + 1;
             var labelUnitOffset = MemorySize * ThickCycle;
-            for (var i = 0; i < labelCount; i++)
-            {
+            for (var i = 0; i < labelCount; i++) {
                 var label = GetOrCreateLabel();
                 label.style.left = i * labelUnitOffset;
                 label.text = OnGetThickLabel != null ? OnGetThickLabel(i) : "";
@@ -193,11 +176,9 @@ namespace ActionSequencer.Editor.VisualElements
         /// <summary>
         /// Labelの取得(なければ生成)
         /// </summary>
-        private Label GetOrCreateLabel()
-        {
+        private Label GetOrCreateLabel() {
             // Poolがあればそれを取得
-            if (_labelPool.Count > 0)
-            {
+            if (_labelPool.Count > 0) {
                 var lastIndex = _labelPool.Count - 1;
                 var label = _labelPool[lastIndex];
                 label.visible = true;
@@ -207,8 +188,7 @@ namespace ActionSequencer.Editor.VisualElements
                 return label;
             }
             // Poolになければ生成
-            else
-            {
+            else {
                 var label = new Label();
                 label.style.position = Position.Absolute;
                 label.AddToClassList("ruler_label");
@@ -221,10 +201,8 @@ namespace ActionSequencer.Editor.VisualElements
         /// <summary>
         /// ラベルをPoolに戻す
         /// </summary>
-        private void ReturnLabel(Label label)
-        {
-            if (!_usedLabels.Remove(label))
-            {
+        private void ReturnLabel(Label label) {
+            if (!_usedLabels.Remove(label)) {
                 return;
             }
 
@@ -236,11 +214,9 @@ namespace ActionSequencer.Editor.VisualElements
         /// <summary>
         /// 全てのラベルをPoolに戻す
         /// </summary>
-        private void ReturnLabels()
-        {
+        private void ReturnLabels() {
             var labels = _usedLabels.ToArray();
-            foreach (var label in labels)
-            {
+            foreach (var label in labels) {
                 ReturnLabel(label);
             }
         }

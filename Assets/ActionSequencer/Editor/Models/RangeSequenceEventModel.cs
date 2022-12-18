@@ -3,24 +3,20 @@ using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
-namespace ActionSequencer.Editor
-{
+namespace ActionSequencer.Editor {
     /// <summary>
     /// RangeEvent用Model
     /// </summary>
-    public class RangeSequenceEventModel : SequenceEventModel
-    {
+    public class RangeSequenceEventModel : SequenceEventModel {
         private SerializedProperty _enterTime;
         private SerializedProperty _exitTime;
 
         public Subject<float> ChangedEnterTimeSubject { get; } = new Subject<float>();
         public Subject<float> ChangedExitTimeSubject { get; } = new Subject<float>();
 
-        public float EnterTime
-        {
+        public float EnterTime {
             get => _enterTime.floatValue;
-            set
-            {
+            set {
                 SerializedObject.Update();
                 _enterTime.floatValue = Mathf.Clamp(value, 0.0f, _exitTime.floatValue);
                 SerializedObject.ApplyModifiedProperties();
@@ -28,11 +24,10 @@ namespace ActionSequencer.Editor
                 SetDirty();
             }
         }
-        public float ExitTime
-        {
+
+        public float ExitTime {
             get => _exitTime.floatValue;
-            set
-            {
+            set {
                 SerializedObject.Update();
                 _exitTime.floatValue = Mathf.Max(value, _enterTime.floatValue);
                 SerializedObject.ApplyModifiedProperties();
@@ -45,8 +40,7 @@ namespace ActionSequencer.Editor
         /// コンストラクタ
         /// </summary>
         public RangeSequenceEventModel(RangeSequenceEvent target, SequenceTrackModel trackModel)
-            : base(target, trackModel)
-        {
+            : base(target, trackModel) {
             _enterTime = SerializedObject.FindProperty("enterTime");
             _exitTime = SerializedObject.FindProperty("exitTime");
         }
@@ -54,10 +48,9 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// Durationを変えずにEnterTimeを指定する
         /// </summary>
-        public void MoveEnterTime(float enterTime, Func<float, float> exitTimeFilter = null)
-        {
+        public void MoveEnterTime(float enterTime, Func<float, float> exitTimeFilter = null) {
             var duration = _exitTime.floatValue - _enterTime.floatValue;
-            
+
             SerializedObject.Update();
             _enterTime.floatValue = Mathf.Max(0.0f, enterTime);
             var exitTime = _enterTime.floatValue + duration;

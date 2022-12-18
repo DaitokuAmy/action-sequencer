@@ -5,13 +5,11 @@ using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
-namespace ActionSequencer.Editor
-{
+namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceEditor用のModel
     /// </summary>
-    public class SequenceClipModel : SerializedObjectModel
-    {
+    public class SequenceClipModel : SerializedObjectModel {
         private SerializedProperty _tracks;
         private SerializedProperty _frameRate;
         private List<SequenceTrackModel> _trackModels = new List<SequenceTrackModel>();
@@ -27,19 +25,17 @@ namespace ActionSequencer.Editor
         /// コンストラクタ
         /// </summary>
         public SequenceClipModel(SequenceClip target)
-            : base(target)
-        {
+            : base(target) {
             _tracks = SerializedObject.FindProperty("tracks");
             _frameRate = SerializedObject.FindProperty("frameRate");
-            
+
             RefreshTracks();
         }
 
         /// <summary>
         /// 廃棄時処理
         /// </summary>
-        public override void Dispose()
-        {
+        public override void Dispose() {
             base.Dispose();
             ClearTrackModels();
         }
@@ -47,15 +43,12 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// Trackの状態を再構築
         /// </summary>
-        public void RefreshTracks()
-        {
+        public void RefreshTracks() {
             ClearTrackModels();
-            
-            for (var i = 0; i < _tracks.arraySize; i++)
-            {
+
+            for (var i = 0; i < _tracks.arraySize; i++) {
                 var sequenceTrack = _tracks.GetArrayElementAtIndex(i).objectReferenceValue as SequenceTrack;
-                if (sequenceTrack != null)
-                {
+                if (sequenceTrack != null) {
                     var model = new SequenceTrackModel(sequenceTrack);
                     _trackModels.Add(model);
                     AddedTrackModelSubject.Invoke(model);
@@ -79,6 +72,7 @@ namespace ActionSequencer.Editor
                     _frameRate.intValue = 60;
                     break;
             }
+
             SerializedObject.ApplyModifiedProperties();
         }
 
@@ -108,7 +102,7 @@ namespace ActionSequencer.Editor
             var track = ScriptableObject.CreateInstance<SequenceTrack>();
             track.name = nameof(SequenceTrack);
             AssetDatabase.AddObjectToAsset(track, Target);
-            
+
             // 要素に追加
             SerializedObject.Update();
             _tracks.arraySize++;
@@ -118,45 +112,42 @@ namespace ActionSequencer.Editor
             trackModel.Label = "Track";
             _trackModels.Add(trackModel);
             AddedTrackModelSubject.Invoke(trackModel);
-            
+
             // Eventの追加を監視
             AddDisposable(trackModel.AddedSignalEventModelSubject
                 .Subscribe(x => AddedEventModelSubject.Invoke(x)));
             AddDisposable(trackModel.AddedRangeEventModelSubject
                 .Subscribe(x => AddedEventModelSubject.Invoke(x)));
-            
+
             return trackModel;
         }
-        
+
         /// <summary>
         /// Trackの削除
         /// </summary>
-        public void RemoveTrack(SequenceTrack track)
-        {
+        public void RemoveTrack(SequenceTrack track) {
             var model = _trackModels.FirstOrDefault(x => x.Target == track);
-            if (model == null)
-            {
+            if (model == null) {
                 return;
             }
-            
+
             // Trackの除外
             SerializedObject.Update();
-            for (var i = _tracks.arraySize - 1; i >= 0; i--)
-            {
+            for (var i = _tracks.arraySize - 1; i >= 0; i--) {
                 var element = _tracks.GetArrayElementAtIndex(i);
-                if (element.objectReferenceValue != model.Target)
-                {
+                if (element.objectReferenceValue != model.Target) {
                     continue;
                 }
-                
+
                 _tracks.DeleteArrayElementAtIndex(i);
             }
+
             SerializedObject.ApplyModifiedProperties();
             _trackModels.Remove(model);
-            
+
             // Trackの削除
             Undo.DestroyObjectImmediate(model.Target);
-            
+
             // 通知
             RemovedTrackModelSubject.Invoke(model);
             model.RemoveEvents();
@@ -166,11 +157,9 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// 保持しているTrackを全て削除
         /// </summary>
-        public void RemoveTracks()
-        {
+        public void RemoveTracks() {
             var tracks = _trackModels.Select(x => (SequenceTrack)x.Target).ToArray();
-            foreach (var track in tracks)
-            {
+            foreach (var track in tracks) {
                 RemoveTrack(track);
             }
         }
@@ -178,13 +167,12 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// TrackModelの削除(SerializedObjectからは消えない)
         /// </summary>
-        private void ClearTrackModels()
-        {
-            foreach (var model in _trackModels)
-            {
+        private void ClearTrackModels() {
+            foreach (var model in _trackModels) {
                 RemovedTrackModelSubject.Invoke(model);
                 model.Dispose();
             }
+
             _trackModels.Clear();
         }
     }

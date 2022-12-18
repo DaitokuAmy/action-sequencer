@@ -209,6 +209,7 @@ namespace ActionSequencer {
             if (clip == null) {
                 return -1.0f;
             }
+
             var foundInfo = _playingInfos.FirstOrDefault(x => x.Clip == clip);
             if (foundInfo == null) {
                 return -1.0f;
@@ -294,7 +295,7 @@ namespace ActionSequencer {
             var playingInfo = new PlayingInfo();
             playingInfo.Clip = clip;
             playingInfo.Time = 0.0f;
-            
+
             var events = clip.tracks
                 .SelectMany(x => x.sequenceEvents)
                 .ToArray();

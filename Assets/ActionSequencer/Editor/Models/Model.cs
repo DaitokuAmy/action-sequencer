@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ActionSequencer.Editor
-{
+namespace ActionSequencer.Editor {
     /// <summary>
     /// Model基底
     /// </summary>
@@ -12,11 +11,11 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// 廃棄時処理
         /// </summary>
-        public virtual void Dispose()
-        {
+        public virtual void Dispose() {
             foreach (var disposable in _disposables) {
                 disposable.Dispose();
             }
+
             _disposables.Clear();
         }
 

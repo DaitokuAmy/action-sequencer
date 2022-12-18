@@ -3,18 +3,17 @@ using ActionSequencer.Editor.VisualElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace ActionSequencer.Editor
-{
+namespace ActionSequencer.Editor {
     /// <summary>
     /// Track用のView
     /// </summary>
     public class SequenceTrackView : VisualElement {
         public new class UxmlFactory : UxmlFactory<SequenceTrackView, UxmlTraits> {
         }
-        
+
         private VisualElement _trackEventContainer;
         private List<SequenceEventView> _eventViews = new List<SequenceEventView>();
-        
+
         public RulerView RulerView { get; private set; }
         public SequenceEventSpacerView SpacerView { get; private set; }
         public override VisualElement contentContainer => _trackEventContainer;
@@ -24,7 +23,7 @@ namespace ActionSequencer.Editor
         /// </summary>
         public SequenceTrackView() {
             AddToClassList("track__box");
-            
+
             // Rulerを追加
             RulerView = new RulerView();
             RulerView.LineColor = new Color(1.0f, 1.0f, 1.0f, 0.05f);
@@ -32,11 +31,11 @@ namespace ActionSequencer.Editor
             RulerView.LineHeightRate = 1.0f;
             RulerView.ThickLineHeightRate = 1.0f;
             hierarchy.Add(RulerView);
-            
+
             // Spacerを追加
             SpacerView = new SequenceEventSpacerView();
             hierarchy.Add(SpacerView);
-            
+
             // 子要素の追加用コンテナ
             _trackEventContainer = new VisualElement();
             _trackEventContainer.name = "track-event-container";

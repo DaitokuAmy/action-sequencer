@@ -9,8 +9,10 @@ namespace ActionSequencer.Editor {
     public class SequenceClipPresenter : Presenter<SequenceClipModel, VisualElement> {
         // Editor用Model
         private SequenceEditorModel _editorModel;
+
         // Track格納用
         private VisualElement _trackListView;
+
         // TrackのPresenterリスト
         private readonly List<SequenceTrackPresenter> _trackPresenters = new List<SequenceTrackPresenter>();
 
@@ -47,8 +49,9 @@ namespace ActionSequencer.Editor {
             foreach (var presenter in _trackPresenters) {
                 presenter.Dispose();
             }
+
             _trackPresenters.Clear();
-            
+
             base.Dispose();
         }
 

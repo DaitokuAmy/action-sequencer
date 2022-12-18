@@ -3,22 +3,18 @@ using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
-namespace ActionSequencer.Editor
-{
+namespace ActionSequencer.Editor {
     /// <summary>
     /// SignalEvent用Model
     /// </summary>
-    public class SignalSequenceEventModel : SequenceEventModel
-    {
+    public class SignalSequenceEventModel : SequenceEventModel {
         private SerializedProperty _time;
 
         public Subject<float> ChangedTimeSubject { get; } = new Subject<float>();
-        
-        public float Time
-        {
+
+        public float Time {
             get => _time.floatValue;
-            set
-            {
+            set {
                 SerializedObject.Update();
                 _time.floatValue = Mathf.Max(0.0f, value);
                 SerializedObject.ApplyModifiedProperties();
@@ -31,8 +27,7 @@ namespace ActionSequencer.Editor
         /// コンストラクタ
         /// </summary>
         public SignalSequenceEventModel(SignalSequenceEvent target, SequenceTrackModel trackModel)
-            : base(target, trackModel)
-        {
+            : base(target, trackModel) {
             _time = SerializedObject.FindProperty("time");
         }
     }

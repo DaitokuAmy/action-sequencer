@@ -1,14 +1,13 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace ActionSequencer.Editor.VisualElements
-{
+namespace ActionSequencer.Editor.VisualElements {
     /// <summary>
     /// InspectorView
     /// </summary>
-    public class InspectorView : VisualElement
-    {
-        public new class UxmlFactory : UxmlFactory<InspectorView, UxmlTraits> {}
+    public class InspectorView : VisualElement {
+        public new class UxmlFactory : UxmlFactory<InspectorView, UxmlTraits> {
+        }
 
         private IMGUIContainer _container;
         private UnityEditor.Editor _inspectorEditor;
@@ -19,9 +18,7 @@ namespace ActionSequencer.Editor.VisualElements
         /// コンストラクタ
         /// </summary>
         public InspectorView() {
-            RegisterCallback<DetachFromPanelEvent>(evt => {
-                ClearTarget();
-            });
+            RegisterCallback<DetachFromPanelEvent>(evt => { ClearTarget(); });
         }
 
         /// <summary>
@@ -55,23 +52,21 @@ namespace ActionSequencer.Editor.VisualElements
         /// <summary>
         /// Inspector用コンテナの生成
         /// </summary>
-        private void CreateContainer()
-        {
-            if (_container != null)
-            {
+        private void CreateContainer() {
+            if (_container != null) {
                 return;
             }
 
             _container = new IMGUIContainer(() => {
-                    if (_inspectorEditor == null) {
-                        return;
-                    }
+                if (_inspectorEditor == null) {
+                    return;
+                }
 
-                    var prevMode = SequenceEditorGUI.TimeMode;
-                    SequenceEditorGUI.TimeMode = TimeMode;
-                    _inspectorEditor.OnInspectorGUI();
-                    SequenceEditorGUI.TimeMode = prevMode;
-                });
+                var prevMode = SequenceEditorGUI.TimeMode;
+                SequenceEditorGUI.TimeMode = TimeMode;
+                _inspectorEditor.OnInspectorGUI();
+                SequenceEditorGUI.TimeMode = prevMode;
+            });
             Add(_container);
         }
     }

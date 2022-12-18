@@ -1,14 +1,13 @@
 using UnityEngine;
 
-namespace ActionSequencer
-{
+namespace ActionSequencer {
     /// <summary>
     /// 範囲実行用イベント
     /// </summary>
-    public abstract class RangeSequenceEvent : SequenceEvent
-    {
+    public abstract class RangeSequenceEvent : SequenceEvent {
         [Tooltip("開始時間"), FrameTime("enterFrame")]
         public float enterTime;
+
         [Tooltip("終了時間"), FrameTime("exitFrame")]
         public float exitTime;
 
