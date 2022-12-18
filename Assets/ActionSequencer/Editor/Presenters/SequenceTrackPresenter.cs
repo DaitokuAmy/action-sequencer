@@ -246,20 +246,24 @@ namespace ActionSequencer.Editor
         /// Track内部のEventの時間変化時通知
         /// </summary>
         private void OnChangedEventTime() {
+            var minTime = float.MaxValue;
             var maxTime = 0.0f;
             foreach (var presenter in _signalEventPresenters) {
                 if (presenter.Model is SignalSequenceEventModel model) {
+                    minTime = Mathf.Min(minTime, model.Time);
                     maxTime = Mathf.Max(maxTime, model.Time);
                 }
             }
             foreach (var presenter in _rangeEventPresenters) {
                 if (presenter.Model is RangeSequenceEventModel model) {
+                    minTime = Mathf.Min(minTime, model.EnterTime);
                     maxTime = Mathf.Max(maxTime, model.ExitTime);
                 }
             }
 
-            var width = maxTime * _editorModel.TimeToSize.Value;
-            TrackView.SetTrackWidth(width);
+            var min = minTime * _editorModel.TimeToSize.Value;
+            var max = maxTime * _editorModel.TimeToSize.Value;
+            TrackView.SetTrackArea(min, max);
         }
 
         /// <summary>
@@ -284,12 +288,51 @@ namespace ActionSequencer.Editor
         private void OnClickedOption()
         {
             var menu = new GenericMenu();
+            
+            // Order
             menu.AddItem(new GUIContent("Up"), false, () => {
                 // todo:並び順変更
             });
             menu.AddItem(new GUIContent("Down"), false, () => {
                 // todo:並び順変更
             });
+            
+            // Create
+            var signalTypes = TypeCache.GetTypesDerivedFrom<SignalSequenceEvent>();
+            var rangeTypes = TypeCache.GetTypesDerivedFrom<RangeSequenceEvent>();
+            foreach (var signalType in signalTypes)
+            {
+                var t = signalType;
+                var displayName = SequenceEditorUtility.GetDisplayName(t);
+                menu.AddItem(new GUIContent($"Create/Signal Event/{displayName}"), false, () =>
+                {
+                    var target = _editorModel.ClipModel?.Target;
+                    if (target == null)
+                    {
+                        return;
+                    }
+                    
+                    // Event生成
+                    Model.AddEvent(signalType);
+                });
+            }
+            foreach (var rangeType in rangeTypes)
+            {
+                var t = rangeType;
+                var displayName = SequenceEditorUtility.GetDisplayName(t);
+                menu.AddItem(new GUIContent($"Create/Range Event/{displayName}"), false, () =>
+                {
+                    var target = _editorModel.ClipModel?.Target;
+                    if (target == null)
+                    {
+                        return;
+                    }
+                    
+                    // Event生成
+                    Model.AddEvent(rangeType);
+                });
+            }
+            
             menu.ShowAsContext();
         }
     }

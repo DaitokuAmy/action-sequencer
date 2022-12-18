@@ -53,7 +53,7 @@ namespace ActionSequencer.Editor
             _textFieldView.AddToClassList("track_label__element_textfield");
             _rootView.Add(_textFieldView);
             
-            // ResetButton作成
+            // OptionButton作成
             _optionButton = new Button();
             _optionButton.AddToClassList("track_label__option");
             _optionButton.focusable = false;
@@ -67,6 +67,14 @@ namespace ActionSequencer.Editor
             
             // ボタンの押下監視
             _optionButton.clicked += () => OnClickedOption?.Invoke();
+        }
+
+        /// <summary>
+        /// タブIndexを設定
+        /// </summary>
+        public int SetTabIndices(int offset) {
+            _textFieldView.tabIndex = offset++;
+            return offset;
         }
     }
 }

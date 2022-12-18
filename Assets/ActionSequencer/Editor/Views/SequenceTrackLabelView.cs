@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace ActionSequencer.Editor
-{
+namespace ActionSequencer.Editor {
     /// <summary>
     /// SignalTrack用のView
     /// </summary>
-    public class SequenceTrackLabelView : VisualElement
-    {
+    public class SequenceTrackLabelView : VisualElement {
         public new class UxmlFactory : UxmlFactory<SequenceTrackLabelView, UxmlTraits> {
         }
 
@@ -22,15 +21,16 @@ namespace ActionSequencer.Editor
         public event Action<bool> OnChangedFoldout;
 
         // 表示ラベル
-        public string Label
-        {
+        public string Label {
             get => _textFieldView.value;
             set => _textFieldView.value = value;
         }
+
         // フォルダリング状態
         public bool Foldout {
             get => _foldout.value;
         }
+
         // コンテナ
         public override VisualElement contentContainer => _foldout.contentContainer;
 
@@ -39,17 +39,18 @@ namespace ActionSequencer.Editor
         /// </summary>
         public SequenceTrackLabelView() {
             AddToClassList("track_label__box");
-            
+
             // Foldoutボタン作成
             _foldout = new Foldout();
             _foldout.AddToClassList("track_label__foldout");
+            _foldout.focusable = false;
             hierarchy.Add(_foldout);
-                
+
             // TextField作成
             _textFieldView = new TextField();
             _textFieldView.AddToClassList("track_label__textfield");
             hierarchy.Add(_textFieldView);
-            
+
             // ResetButton作成
             _optionButton = new Button();
             _optionButton.AddToClassList("track_label__option");
@@ -57,18 +58,13 @@ namespace ActionSequencer.Editor
             hierarchy.Add(_optionButton);
 
             // 値の変化監視
-            _textFieldView.RegisterValueChangedCallback(evt =>
-            {
-                OnChangedLabel?.Invoke(evt.newValue);
-            });
-            
+            _textFieldView.RegisterValueChangedCallback(evt => { OnChangedLabel?.Invoke(evt.newValue); });
+
             // ボタンの押下監視
             _optionButton.clicked += () => OnClickedOption?.Invoke();
-            
+
             // フォルダの状態監視
-            _foldout.RegisterValueChangedCallback(evt => {
-                OnChangedFoldout?.Invoke(evt.newValue);
-            });
+            _foldout.RegisterValueChangedCallback(evt => { OnChangedFoldout?.Invoke(evt.newValue); });
         }
 
         /// <summary>
@@ -77,6 +73,18 @@ namespace ActionSequencer.Editor
         public void ResetElements() {
             _elementViews.Clear();
             _foldout.Clear();
+        }
+
+        /// <summary>
+        /// タブIndexを設定
+        /// </summary>
+        public int SetTabIndices(int offset) {
+            _textFieldView.tabIndex = offset++;
+            foreach (var elementView in _elementViews) {
+                offset = elementView.SetTabIndices(offset);
+            }
+
+            return offset;
         }
 
         /// <summary>
@@ -96,6 +104,7 @@ namespace ActionSequencer.Editor
             if (!_elementViews.Remove(elementView)) {
                 return;
             }
+
             _foldout.Remove(elementView);
         }
     }

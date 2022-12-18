@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using ActionSequencer.Editor.Utils;
 using UnityEditor;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -19,7 +16,6 @@ namespace ActionSequencer.Editor
         private SerializedProperty _sequenceEvents;
         private List<SignalSequenceEventModel> _signalEventModels = new List<SignalSequenceEventModel>();
         private List<RangeSequenceEventModel> _rangeEventModels = new List<RangeSequenceEventModel>();
-        private string _defaultLabel;
 
         public event Action<string> OnChangedLabel;
         public event Action<SignalSequenceEventModel> OnAddedSignalEventModel;
@@ -66,9 +62,6 @@ namespace ActionSequencer.Editor
             
             // モデルの生成
             RefreshEvents();
-            
-            // Defaultのラベル名更新
-            RefreshDefaultLabel();
         }
 
         /// <summary>
@@ -184,14 +177,9 @@ namespace ActionSequencer.Editor
 
             // Modelの生成
             var model = new SignalSequenceEventModel(evt, this);
+            model.ResetLabel();
             _signalEventModels.Add(model);
             OnAddedSignalEventModel?.Invoke(model);
-
-            // 一つ目の要素だった場合、Trackのラベルを初期化
-            if (_sequenceEvents.arraySize == 1)
-            {
-                RefreshDefaultLabel();
-            }
             
             return model;
         }
@@ -244,14 +232,9 @@ namespace ActionSequencer.Editor
 
             // Modelの生成
             var model = new RangeSequenceEventModel(evt, this);
+            model.ResetLabel();
             _rangeEventModels.Add(model);
             OnAddedRangeEventModel?.Invoke(model);
-
-            // 一つ目の要素だった場合、Trackのラベルを初期化
-            if (_sequenceEvents.arraySize == 1)
-            {
-                RefreshDefaultLabel();
-            }
 
             return model;
         }
@@ -313,14 +296,6 @@ namespace ActionSequencer.Editor
             
             _signalEventModels.Clear();
             _rangeEventModels.Clear();
-        }
-
-        /// <summary>
-        /// デフォルトラベルの適用
-        /// </summary>
-        public void SetDefaultLabel()
-        {
-            Label = _defaultLabel;
         }
 
         /// <summary>
@@ -411,30 +386,6 @@ namespace ActionSequencer.Editor
             Undo.DestroyObjectImmediate(sequenceEvent);
             
             Undo.CollapseUndoOperations(groupId);
-        }
-
-        /// <summary>
-        /// Defaultのラベル名更新
-        /// </summary>
-        private void RefreshDefaultLabel()
-        {
-            var firstEvent = _signalEventModels.Select(x => x.Target as SequenceEvent).FirstOrDefault() ??
-                             _rangeEventModels.Select(x => x.Target as SequenceEvent).FirstOrDefault();
-            if (firstEvent != null)
-            {
-                var eventType = firstEvent.GetType();
-                _defaultLabel = SequenceEditorUtility.GetDisplayName(eventType);
-            }
-            else
-            {
-                _defaultLabel = "Empty";
-            }
-            
-            // 現在の設定値が空出会った場合、デフォルトラベルを適用
-            if (string.IsNullOrEmpty(Label) || Label == "Empty")
-            {
-                Label = _defaultLabel;
-            }
         }
     }
 }

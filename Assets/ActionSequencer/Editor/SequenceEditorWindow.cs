@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -25,7 +24,7 @@ namespace ActionSequencer.Editor
         // Editor用のModel
         private SequenceEditorModel _editorModel;
         // TrackのPresenterリスト
-        private readonly List<SequenceTrackPresenter> _trackPresenters = new List<SequenceTrackPresenter>();
+        private SequenceClipPresenter _sequenceClipPresenter;
         // ルーラー表示用View
         private RulerView _rulerView;
         // シークバー表示用View
@@ -84,59 +83,26 @@ namespace ActionSequencer.Editor
             // Windowのタイトル変更
             titleContent = new GUIContent(clip != null ? clip.name : ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow)));
             
+            // Viewの整理
             var root = rootVisualElement;
             var trackLabelList = root.Q<VisualElement>("TrackLabelList");
             var trackList = root.Q<VisualElement>("TrackList");
             trackLabelList.Clear();
             trackList.Clear();
             
-            // Inspectorパネル初期化 ※InspectorElementはLayoutに不具合があったので未使用
-            var inspectorView = root.Q<InspectorView>();
-            inspectorView.ClearTarget();
-            
             // ObjectField初期化
             var objectField = root.Q<ObjectField>("TargetObjectField");
             objectField.value = clip;
-
-            _editorModel.OnChangedSelectedTargets += targets =>
-            {
-                inspectorView.SetTarget(targets);
-            };
-
-            if (_editorModel.ClipModel != null)
-            {
-                void OnAddedTrackModel(SequenceTrackModel model)
-                {
-                    var labelView = new SequenceTrackLabelView();
-                    trackLabelList.Add(labelView);
-                    var trackView = new SequenceTrackView();
-                    trackList.Add(trackView);
-                    var presenter = new SequenceTrackPresenter(model, labelView, trackView, _editorModel);
-                    _trackPresenters.Add(presenter);
-                }
-
-                void OnRemoveTrackModel(SequenceTrackModel model)
-                {
-                    var presenter = _trackPresenters.FirstOrDefault(x => x.Model == model);
-                    if (presenter == null)
-                    {
-                        return;
-                    }
-                    trackLabelList.Remove(presenter.View);
-                    trackList.Remove(presenter.TrackView);
-                    presenter.Dispose();
-                    _trackPresenters.Remove(presenter);
-                }
-
-                _editorModel.ClipModel.OnAddedTrackModel += OnAddedTrackModel;
-                _editorModel.ClipModel.OnRemovedTrackModel += OnRemoveTrackModel;
             
-                // 既に登録済のModelを解釈
-                for (var i = 0; i < _editorModel.ClipModel.TrackModels.Count; i++)
-                {
-                    var model = _editorModel.ClipModel.TrackModels[i];
-                    OnAddedTrackModel(model);
-                }
+            // Presenterの削除
+            if (_sequenceClipPresenter != null) {
+                _sequenceClipPresenter.Dispose();
+                _sequenceClipPresenter = null;
+            }
+
+            // Presenterの生成
+            if (_editorModel.ClipModel != null) {
+                _sequenceClipPresenter = new SequenceClipPresenter(_editorModel.ClipModel, trackLabelList, trackList, _editorModel);
             }
         }
 
@@ -253,44 +219,13 @@ namespace ActionSequencer.Editor
             
             // CreateMenu
             var createMenu = root.Q<ToolbarMenu>("CreateMenu");
-            var signalTypes = TypeCache.GetTypesDerivedFrom<SignalSequenceEvent>();
-            var rangeTypes = TypeCache.GetTypesDerivedFrom<RangeSequenceEvent>();
-            foreach (var signalType in signalTypes)
-            {
-                var t = signalType;
-                var displayName = SequenceEditorUtility.GetDisplayName(t);
-                createMenu.menu.AppendAction($"Signal Event/{displayName}", _ =>
-                {
-                    var target = _editorModel.ClipModel?.Target;
-                    if (target == null)
-                    {
-                        return;
-                    }
-                
-                    // Track取得/生成
-                    var trackModel = _editorModel.ClipModel.GetOrCreateTrack(signalType);
-                    // Event生成
-                    trackModel.AddEvent(signalType);
-                });
-            }
-            foreach (var rangeType in rangeTypes)
-            {
-                var t = rangeType;
-                var displayName = SequenceEditorUtility.GetDisplayName(t);
-                createMenu.menu.AppendAction($"Range Event/{displayName}", _ =>
-                {
-                    var target = _editorModel.ClipModel?.Target;
-                    if (target == null)
-                    {
-                        return;
-                    }
-                    
-                    // Track取得/生成
-                    var trackModel = _editorModel.ClipModel.GetOrCreateTrack(rangeType);
-                    // Event生成
-                    trackModel.AddEvent(rangeType);
-                });
-            }
+            
+            // Trackの生成
+            createMenu.menu.AppendAction("Track", _ => {
+                if (_editorModel.ClipModel != null) {
+                    _editorModel.ClipModel.AddTrack();
+                }
+            });
             
             // Play/Pause
             var playPauseToggle = root.Q<ToolbarToggle>("PlayPauseToggle");
@@ -349,6 +284,10 @@ namespace ActionSequencer.Editor
                 {
                     inspectorView.TimeMode = timeMode;
                 }));
+            _editorModel.OnChangedSelectedTargets += targets =>
+            {
+                inspectorView.SetTarget(targets);
+            };
             
             // Seekbar
             _seekbarView = root.Q<VisualElement>("TrackSeekbar");

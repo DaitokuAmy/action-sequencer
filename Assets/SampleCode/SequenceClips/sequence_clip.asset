@@ -12,12 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f3dc1b502acd48ad9608fc38cadbbcb, type: 3}
   m_Name: SequenceTrack
   m_EditorClassIdentifier: 
-  label: "\u6642\u9593\u8A08\u6E2C"
+  label: Track B
   sequenceEvents:
-  - {fileID: 2824624944519452277}
-  - {fileID: -3830713001361520223}
+  - {fileID: 4748742041284091303}
   - {fileID: 7690251550523528495}
---- !u!114 &-3830713001361520223
+--- !u!114 &-6161374162411101724
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -29,10 +28,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc24e13f709b247bbba00cef11701e68, type: 3}
   m_Name: TimerRangeSequenceEvent
   m_EditorClassIdentifier: 
-  label: 
+  label: "\u6642\u9593\u8A08\u6E2C"
   active: 1
-  enterTime: 1.1666666
-  exitTime: 1.8333334
+  enterTime: 2.0333333
+  exitTime: 3.7
+--- !u!114 &-1014740740111705095
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: LogSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u30ED\u30B0\u51FA\u529B"
+  active: 1
+  time: 1
+  text: 
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48,8 +63,59 @@ MonoBehaviour:
   tracks:
   - {fileID: 5437382844919294764}
   - {fileID: -6814886901204156338}
+  - {fileID: 497499553068626419}
   frameRate: 30
---- !u!114 &2824624944519452277
+--- !u!114 &274821728735001683
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: LogSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u30ED\u30B0\u51FA\u529B"
+  active: 1
+  time: 1.6666666
+  text: 
+--- !u!114 &497499553068626419
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f3dc1b502acd48ad9608fc38cadbbcb, type: 3}
+  m_Name: SequenceTrack
+  m_EditorClassIdentifier: 
+  label: Track C
+  sequenceEvents:
+  - {fileID: 274821728735001683}
+  - {fileID: 3789569887080717367}
+  - {fileID: 2833249897527526069}
+  - {fileID: -6161374162411101724}
+--- !u!114 &2833249897527526069
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: LogSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u30ED\u30B0\u51FA\u529B"
+  active: 1
+  time: 1.9333333
+  text: 
+--- !u!114 &3789569887080717367
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -61,10 +127,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc24e13f709b247bbba00cef11701e68, type: 3}
   m_Name: TimerRangeSequenceEvent
   m_EditorClassIdentifier: 
-  label: 
+  label: "\u6642\u9593\u8A08\u6E2C"
   active: 1
-  enterTime: 0.033333335
-  exitTime: 0.6666667
+  enterTime: 0.7
+  exitTime: 1.5333333
+--- !u!114 &4748742041284091303
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc24e13f709b247bbba00cef11701e68, type: 3}
+  m_Name: TimerRangeSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u6642\u9593\u8A08\u6E2C"
+  active: 1
+  enterTime: 1.2666667
+  exitTime: 2.8666666
 --- !u!114 &5437382844919294764
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -77,9 +159,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f3dc1b502acd48ad9608fc38cadbbcb, type: 3}
   m_Name: SequenceTrack
   m_EditorClassIdentifier: 
-  label: "\u30ED\u30B0\u51FA\u529B"
+  label: Track A
   sequenceEvents:
   - {fileID: 7748103785699484379}
+  - {fileID: -1014740740111705095}
+  - {fileID: 8776490537020078489}
 --- !u!114 &7690251550523528495
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -92,10 +176,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc24e13f709b247bbba00cef11701e68, type: 3}
   m_Name: TimerRangeSequenceEvent
   m_EditorClassIdentifier: 
-  label: 
+  label: "\u6642\u9593\u8A08\u6E2C"
   active: 1
-  enterTime: 0.65
-  exitTime: 1.3
+  enterTime: 0.26666668
+  exitTime: 0.93333334
 --- !u!114 &7748103785699484379
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -108,7 +192,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
   m_Name: LogSignalSequenceEvent
   m_EditorClassIdentifier: 
-  label: 
+  label: "\u30ED\u30B0\u51FA\u529B"
   active: 1
-  time: 3.0666666
+  time: 3.7666667
+  text: 
+--- !u!114 &8776490537020078489
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: LogSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u30ED\u30B0\u51FA\u529B"
+  active: 1
+  time: 1.9666667
   text: 

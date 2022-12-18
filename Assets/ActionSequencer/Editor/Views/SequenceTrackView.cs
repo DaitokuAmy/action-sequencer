@@ -47,8 +47,9 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// Track全体の幅を設定
         /// </summary>
-        public void SetTrackWidth(float width) {
-            SpacerView.style.width = width;
+        public void SetTrackArea(float min, float max) {
+            SpacerView.style.width = max - min;
+            SpacerView.style.marginLeft = min;
         }
 
         /// <summary>

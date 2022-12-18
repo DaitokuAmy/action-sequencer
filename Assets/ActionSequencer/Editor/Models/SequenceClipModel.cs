@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace ActionSequencer.Editor
 {
@@ -19,6 +17,8 @@ namespace ActionSequencer.Editor
         
         public event Action<SequenceTrackModel> OnAddedTrackModel;
         public event Action<SequenceTrackModel> OnRemovedTrackModel;
+        public event Action<SequenceEventModel> OnAddedEventModel;
+        public event Action<SequenceEventModel> OnRemovedEventModel;
 
         public IReadOnlyList<SequenceTrackModel> TrackModels => _trackModels;
 
@@ -101,26 +101,9 @@ namespace ActionSequencer.Editor
         }
 
         /// <summary>
-        /// 該当の型を保持したTrackを検索
+        /// トラックの追加
         /// </summary>
-        public SequenceTrackModel FindTrack(Type eventType)
-        {
-            return _trackModels
-                .FirstOrDefault(x => ((SequenceTrack)x.Target).sequenceEvents.FirstOrDefault(evt => evt.GetType() == eventType) != null);
-        }
-
-        /// <summary>
-        /// Trackの取得 or 生成
-        /// </summary>
-        public SequenceTrackModel GetOrCreateTrack(Type eventType)
-        {
-            var trackModel = FindTrack(eventType);
-            if (trackModel != null)
-            {
-                return trackModel;
-            }
-            
-            // なければ生成
+        public SequenceTrackModel AddTrack() {
             var track = ScriptableObject.CreateInstance<SequenceTrack>();
             track.name = nameof(SequenceTrack);
             AssetDatabase.AddObjectToAsset(track, Target);
@@ -130,9 +113,13 @@ namespace ActionSequencer.Editor
             _tracks.arraySize++;
             _tracks.GetArrayElementAtIndex(_tracks.arraySize - 1).objectReferenceValue = track;
             SerializedObject.ApplyModifiedProperties();
-            trackModel = new SequenceTrackModel(track);
+            var trackModel = new SequenceTrackModel(track);
+            trackModel.Label = "Track";
             _trackModels.Add(trackModel);
             OnAddedTrackModel?.Invoke(trackModel);
+            trackModel.OnAddedSignalEventModel += x => OnAddedEventModel?.Invoke(x);
+            trackModel.OnAddedRangeEventModel += x => OnAddedEventModel?.Invoke(x);
+            
             return trackModel;
         }
         

@@ -78,8 +78,9 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// SequenceClipの設定
         /// </summary>
-        public SequenceClipModel SetSequenceClip(SequenceClip clip)
-        {
+        public SequenceClipModel SetSequenceClip(SequenceClip clip) {
+            RemoveSelectedTargets();
+            
             if (ClipModel != null)
             {
                 ClipModel.Dispose();
@@ -128,6 +129,15 @@ namespace ActionSequencer.Editor
             {
                 return;
             }
+            OnChangedSelectedTargets?.Invoke(SelectedTargets);
+        }
+
+        /// <summary>
+        /// 全選択対象の削除
+        /// </summary>
+        public void RemoveSelectedTargets()
+        {
+            _selectedTargets.Clear();
             OnChangedSelectedTargets?.Invoke(SelectedTargets);
         }
 
