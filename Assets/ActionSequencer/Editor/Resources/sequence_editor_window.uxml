@@ -40,6 +40,7 @@
                             <ActionSequencer.Editor.SignalSequenceEventView focusable="true" style="background-color: rgb(255, 16, 229);" />
                         </ActionSequencer.Editor.SequenceTrackView>
                     </ui:VisualElement>
+                    <ui:VisualElement name="Gray" tabindex="-1" style="position: absolute; left: auto; width: 200px; top: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.2); right: 0; overflow: hidden;" />
                 </ui:ScrollView>
                 <ui:VisualElement name="TrackSeekbar" class="track_seekbar" style="position: absolute; height: 100%; width: 2px;" />
             </ui:VisualElement>
