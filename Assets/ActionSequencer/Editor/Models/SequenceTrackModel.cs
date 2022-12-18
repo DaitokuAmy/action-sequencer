@@ -21,6 +21,8 @@ namespace ActionSequencer.Editor {
             new Subject<SequenceEventModel>();
         public Subject<SequenceEventModel> RemovedEventModelSubject { get; } =
             new Subject<SequenceEventModel>();
+        public Subject MovedEventModelSubject { get; } =
+            new Subject();
 
         public Subject ChangedEventTimeSubject { get; } = new Subject();
 
@@ -95,7 +97,7 @@ namespace ActionSequencer.Editor {
         /// </summary>
         public void MoveEvent(SequenceEventModel eventModel, int index) {
             var currentIndex = GetEventIndex(eventModel);
-            if (currentIndex < 0 || index < 0 || index >= _eventModels.Count - 1) {
+            if (currentIndex < 0 || index < 0 || index >= _eventModels.Count) {
                 return;
             }
 
@@ -110,6 +112,9 @@ namespace ActionSequencer.Editor {
             }
 
             SerializedObject.ApplyModifiedProperties();
+            
+            // 通知
+            MovedEventModelSubject.Invoke();
         }
 
         /// <summary>

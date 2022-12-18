@@ -10,12 +10,15 @@ namespace ActionSequencer.Editor {
     /// SequenceEvent用のPresenter基底
     /// </summary>
     public abstract class SequenceEventPresenter : Presenter<SequenceEventModel, SequenceEventView> {
+        
         public SequenceTrackLabelElementView LabelElementView { get; private set; }
+        protected SequenceTrackModel TrackModel { get; private set; }
         protected SequenceEditorModel EditorModel { get; private set; }
 
         public SequenceEventPresenter(SequenceEventModel model, SequenceEventView view,
-            SequenceTrackLabelElementView labelElementView, SequenceEditorModel editorModel)
+            SequenceTrackLabelElementView labelElementView, SequenceTrackModel trackModel, SequenceEditorModel editorModel)
             : base(model, view) {
+            TrackModel = trackModel;
             EditorModel = editorModel;
             LabelElementView = labelElementView;
 
@@ -167,16 +170,22 @@ namespace ActionSequencer.Editor {
         /// </summary>
         private void ClickedOptionSubject() {
             var menu = new GenericMenu();
-            menu.AddItem(new GUIContent("Reset Label"), false, () => {
-                // ラベルのリセット
-                Model.ResetLabel();
-            });
+            
+            // Order
             menu.AddItem(new GUIContent("Up"), false, () => {
-                // todo:並び順変更
+                TrackModel.MovePrevEvent(Model);
             });
             menu.AddItem(new GUIContent("Down"), false, () => {
-                // todo:並び順変更
+                TrackModel.MoveNextEvent(Model);
             });
+            
+            menu.AddSeparator("");
+            
+            // ラベルのリセット
+            menu.AddItem(new GUIContent("Reset Label"), false, () => {
+                Model.ResetLabel();
+            });
+            
             menu.ShowAsContext();
         }
 

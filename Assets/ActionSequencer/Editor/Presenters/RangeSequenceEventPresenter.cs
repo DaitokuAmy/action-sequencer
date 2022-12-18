@@ -17,8 +17,8 @@ namespace ActionSequencer.Editor {
         /// コンストラクタ
         /// </summary>
         public RangeSequenceEventPresenter(RangeSequenceEventModel model, RangeSequenceEventView view,
-            SequenceTrackLabelElementView labelElementView, SequenceEditorModel editorModel)
-            : base(model, view, labelElementView, editorModel) {
+            SequenceTrackLabelElementView labelElementView, SequenceTrackModel trackModel, SequenceEditorModel editorModel)
+            : base(model, view, labelElementView, trackModel, editorModel) {
             _model = model;
             _view = view;
 

@@ -18,6 +18,7 @@ namespace ActionSequencer.Editor {
         public Subject<SequenceTrackModel> RemovedTrackModelSubject { get; } = new Subject<SequenceTrackModel>();
         public Subject<SequenceEventModel> AddedEventModelSubject { get; } = new Subject<SequenceEventModel>();
         public Subject<SequenceEventModel> RemovedEventModelSubject { get; } = new Subject<SequenceEventModel>();
+        public Subject MovedEventModelSubject { get; } = new Subject();
 
         public IReadOnlyList<SequenceTrackModel> TrackModels => _trackModels;
 
@@ -100,7 +101,7 @@ namespace ActionSequencer.Editor {
         /// </summary>
         public void MoveTrack(SequenceTrackModel track, int index) {
             var currentIndex = GetTrackIndex(track);
-            if (currentIndex < 0 || index < 0 || index >= _trackModels.Count - 1) {
+            if (currentIndex < 0 || index < 0 || index >= _trackModels.Count) {
                 return;
             }
 
@@ -115,6 +116,9 @@ namespace ActionSequencer.Editor {
             }
 
             SerializedObject.ApplyModifiedProperties();
+
+            // 通知
+            MovedEventModelSubject.Invoke();
         }
 
         /// <summary>

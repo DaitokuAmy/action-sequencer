@@ -4,6 +4,7 @@ using System.Linq;
 using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace ActionSequencer.Editor {
     /// <summary>
@@ -28,6 +29,8 @@ namespace ActionSequencer.Editor {
                 .Subscribe(AddedEventModelSubject));
             AddDisposable(Model.RemovedEventModelSubject
                 .Subscribe(RemovedEventModelSubject));
+            AddDisposable(Model.MovedEventModelSubject
+                .Subscribe(MovedEventModelSubject));
             AddDisposable(Model.ChangedLabelSubject
                 .Subscribe(ChangedLabelSubject));
             AddDisposable(Model.ChangedEventTimeSubject
@@ -88,13 +91,16 @@ namespace ActionSequencer.Editor {
             }
 
             var eventList = new List<SequenceEvent>(sequenceTrack.sequenceEvents);
-            TrackView.Sort((a, b) => {
+            int Compare(VisualElement a, VisualElement b) {
                 var sequenceEventA = a.userData as SequenceEvent;
                 var sequenceEventB = b.userData as SequenceEvent;
                 var indexA = eventList.IndexOf(sequenceEventA);
                 var indexB = eventList.IndexOf(sequenceEventB);
                 return indexA - indexB;
-            });
+            }
+
+            View.Sort(Compare);
+            TrackView.Sort(Compare);
         }
 
         /// <summary>
@@ -103,20 +109,21 @@ namespace ActionSequencer.Editor {
         private void AddedEventModelSubject(SequenceEventModel model) {
             // TrackLabelの要素を追加
             var element = View.AddElement();
+            element.userData = model.Target;
             
             // Event用のPresenter構築
             if (model is SignalSequenceEventModel signalEventModel) {
                 var view = new SignalSequenceEventView();
                 view.userData = model.Target;
                 TrackView.AddEventView(view);
-                var presenter = new SignalSequenceEventPresenter(signalEventModel, view, element, _editorModel);
+                var presenter = new SignalSequenceEventPresenter(signalEventModel, view, element, Model, _editorModel);
                 _eventPresenters.Add(presenter);
             }
             else if (model is RangeSequenceEventModel rangeEventModel) {
                 var view = new RangeSequenceEventView();
                 view.userData = model.Target;
                 TrackView.AddEventView(view);
-                var presenter = new RangeSequenceEventPresenter(rangeEventModel, view, element, _editorModel);
+                var presenter = new RangeSequenceEventPresenter(rangeEventModel, view, element, Model, _editorModel);
                 _eventPresenters.Add(presenter);
             }
 
@@ -148,6 +155,14 @@ namespace ActionSequencer.Editor {
 
             // Track幅計算しなおし
             OnChangedEventTime();
+        }
+
+        /// <summary>
+        /// EventModel移動時
+        /// </summary>
+        private void MovedEventModelSubject() {
+            // Viewのソート
+            SortEventViews();
         }
 
         /// <summary>
@@ -201,11 +216,13 @@ namespace ActionSequencer.Editor {
 
             // Order
             menu.AddItem(new GUIContent("Up"), false, () => {
-                // todo:並び順変更
+                _editorModel.ClipModel.MovePrevTrack(Model);
             });
             menu.AddItem(new GUIContent("Down"), false, () => {
-                // todo:並び順変更
+                _editorModel.ClipModel.MoveNextTrack(Model);
             });
+            
+            menu.AddSeparator("");
 
             // Create
             var signalTypes = TypeCache.GetTypesDerivedFrom<SignalSequenceEvent>();

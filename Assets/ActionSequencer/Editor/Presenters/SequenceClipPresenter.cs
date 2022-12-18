@@ -34,6 +34,8 @@ namespace ActionSequencer.Editor {
                 .Subscribe(AddedEventModelSubject));
             AddDisposable(Model.RemovedEventModelSubject
                 .Subscribe(RemovedEventModelSubject));
+            AddDisposable(Model.MovedEventModelSubject
+                .Subscribe(MovedEventModelSubject));
 
             // 既に登録済のModelを解釈
             for (var i = 0; i < Model.TrackModels.Count; i++) {
@@ -99,14 +101,26 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
+        /// TrackEvent移動時
+        /// </summary>
+        private void MovedEventModelSubject() {
+            RefreshTracks();
+        }
+
+        /// <summary>
         /// Track情報のリフレッシュ
         /// </summary>
         private void RefreshTracks() {
+            _trackPresenters.Sort((a, b) => Model.GetTrackIndex(a.Model) - Model.GetTrackIndex(b.Model));
+            
             var offset = 100;
             for (var i = 0; i < _trackPresenters.Count; i++) {
                 var presenter = _trackPresenters[i];
                 offset = presenter.View.SetTabIndices(offset);
             }
+            
+            View.Sort((a, b) => _trackPresenters.FindIndex(x => x.View == a) - _trackPresenters.FindIndex(x => x.View == b));
+            _trackListView.Sort((a, b) => _trackPresenters.FindIndex(x => x.TrackView == a) - _trackPresenters.FindIndex(x => x.TrackView == b));
         }
     }
 }

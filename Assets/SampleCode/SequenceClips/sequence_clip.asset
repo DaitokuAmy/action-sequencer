@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
   m_Name: LogSignalSequenceEvent
   m_EditorClassIdentifier: 
-  label: "\u30ED\u30B0\u51FA\u529B"
+  label: "\u30ED\u30B0\u51FA\u529B2"
   active: 1
   time: 1
   text: 
@@ -209,7 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
   m_Name: LogSignalSequenceEvent
   m_EditorClassIdentifier: 
-  label: "\u30ED\u30B0\u51FA\u529B"
+  label: "\u30ED\u30B0\u51FA\u529B1"
   active: 1
   time: 1.3666667
   text: 
@@ -225,7 +225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
   m_Name: LogSignalSequenceEvent
   m_EditorClassIdentifier: 
-  label: "\u30ED\u30B0\u51FA\u529B"
+  label: "\u30ED\u30B0\u51FA\u529B3"
   active: 1
   time: 1.5
   text: 
