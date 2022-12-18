@@ -232,7 +232,7 @@ namespace ActionSequencer.Editor {
             foreach (var signalType in signalTypes) {
                 var t = signalType;
                 var displayName = SequenceEditorUtility.GetDisplayName(t);
-                menu.AddItem(new GUIContent($"Create/Signal Event/{displayName}"), false, () => {
+                menu.AddItem(new GUIContent($"Create Event/Signal/{displayName}"), false, () => {
                     var target = _editorModel.ClipModel?.Target;
                     if (target == null) {
                         return;
@@ -246,7 +246,7 @@ namespace ActionSequencer.Editor {
             foreach (var rangeType in rangeTypes) {
                 var t = rangeType;
                 var displayName = SequenceEditorUtility.GetDisplayName(t);
-                menu.AddItem(new GUIContent($"Create/Range Event/{displayName}"), false, () => {
+                menu.AddItem(new GUIContent($"Create Event/Range/{displayName}"), false, () => {
                     var target = _editorModel.ClipModel?.Target;
                     if (target == null) {
                         return;
@@ -256,6 +256,13 @@ namespace ActionSequencer.Editor {
                     Model.AddEvent(rangeType);
                 });
             }
+            
+            menu.AddSeparator("");
+            
+            // トラック削除
+            menu.AddItem(new GUIContent("Delete Track"), false, () => {
+                _editorModel.ClipModel.RemoveTrack(Model.Target as SequenceTrack);
+            });
 
             menu.ShowAsContext();
         }

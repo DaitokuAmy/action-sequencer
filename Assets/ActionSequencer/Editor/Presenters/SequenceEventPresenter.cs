@@ -186,6 +186,21 @@ namespace ActionSequencer.Editor {
                 Model.ResetLabel();
             });
             
+            menu.AddSeparator("");
+            
+            // イベントの選択
+            menu.AddItem(new GUIContent("Select Event"), false, () => {
+                EditorModel.SetSelectedTarget(Model.Target);
+            });
+            // イベントの複製
+            menu.AddItem(new GUIContent("Duplicate Event"), false, () => {
+                TrackModel.DuplicateEvent(Model.Target as SequenceEvent);
+            });
+            // イベントの削除
+            menu.AddItem(new GUIContent("Delete Event"), false, () => {
+                TrackModel.RemoveEvent(Model.Target as SequenceEvent);
+            });
+            
             menu.ShowAsContext();
         }
 

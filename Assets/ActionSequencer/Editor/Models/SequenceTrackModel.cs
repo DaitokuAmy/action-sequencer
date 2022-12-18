@@ -177,7 +177,8 @@ namespace ActionSequencer.Editor {
         /// 保持しているEventを全部削除
         /// </summary>
         public void RemoveEvents() {
-            foreach (var model in _eventModels) {
+            var models = _eventModels.ToArray();
+            foreach (var model in models) {
                 if (model is SignalSequenceEventModel signalEventModel) {
                     RemoveSignalEvent((SignalSequenceEvent)signalEventModel.Target);
                 }

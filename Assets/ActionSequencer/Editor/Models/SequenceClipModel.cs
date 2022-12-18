@@ -185,6 +185,9 @@ namespace ActionSequencer.Editor {
             if (model == null) {
                 return;
             }
+            
+            // 含まれているイベントを全て削除
+            model.RemoveEvents();
 
             // Trackの除外
             SerializedObject.Update();
@@ -206,7 +209,6 @@ namespace ActionSequencer.Editor {
             // 通知
             RemovedTrackModelSubject.Invoke(model);
             
-            model.RemoveEvents();
             model.Dispose();
         }
 
