@@ -150,6 +150,10 @@ namespace ActionSequencer.Editor {
             var styleSheet = Resources.Load<StyleSheet>("sequence_editor_window");
             root.styleSheets.Add(styleSheet);
 
+            // キー入力受け取れるように設定
+            root.focusable = true;
+            root.pickingMode = PickingMode.Position;
+
             // Scroll位置の同期
             var trackLabelList = root.Q<ScrollView>("TrackLabelList");
             var trackScrollView = root.Q<ScrollView>("TrackScrollView");
@@ -171,7 +175,7 @@ namespace ActionSequencer.Editor {
             };
             rulerArea.RegisterCallback<WheelEvent>(evt => {
                 // WheelによってTimeToSize変更
-                _editorModel.TimeToSize.Value = Mathf.Clamp(_editorModel.TimeToSize.Value - evt.delta.y, 100, 500);
+                _editorModel.TimeToSize.Value -= evt.delta.y;
             });
             _rulerView.OnGetThickLabel += thickIndex => {
                 if (thickIndex % 2 != 0) {
@@ -254,11 +258,18 @@ namespace ActionSequencer.Editor {
 
             // Seekbar
             _seekbarView = root.Q<VisualElement>("TrackSeekbar");
+            
+            // Sizeのフィット
+            var trackArea = root.Q<VisualElement>("TrackArea");
+            root.RegisterCallback<KeyDownEvent>(evt => {
+                if (evt.keyCode == KeyCode.F) {
+                    if (_editorModel.SetBestTimeToSize(trackArea.layout.width - 20.0f)) {
+                        trackScrollView.horizontalScroller.value = 0.0f;
+                    }
+                }
+            });
 
             // ViewDataKey
-            // SetViewDataKey(trackLabelList);
-            // SetViewDataKey(rulerScrollView);
-            // SetViewDataKey(trackScrollView);
             var splitViews = root.Query<SplitView>().ToList();
             foreach (var element in splitViews) {
                 SetViewDataKey(element);

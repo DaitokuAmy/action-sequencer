@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -169,6 +170,43 @@ namespace ActionSequencer.Editor {
             }
 
             return time;
+        }
+
+        /// <summary>
+        /// ちょうど良いTimeToSizeを設定
+        /// </summary>
+        public bool SetBestTimeToSize(float contentWidth) {
+            if (ClipModel == null || contentWidth <= 0.0f) {
+                return false;
+            }
+
+            var eventModels = ClipModel.TrackModels
+                .SelectMany(x => x.EventModels)
+                .ToArray();
+
+            if (!eventModels.Any()) {
+                return false;
+            }
+                
+            var duration = eventModels.Max(x => {
+                if (x is SignalSequenceEventModel signalEventModel) {
+                    return signalEventModel.Time;
+                }
+
+                if (x is RangeSequenceEventModel rangeEventModel) {
+                    return rangeEventModel.ExitTime;
+                }
+
+                return 0.0f;
+            });
+
+            if (duration <= 0.0f) {
+                return false;
+            }
+            
+            // 幅に合うようにTimeToSizeを設定
+            TimeToSize.Value = contentWidth / duration;
+            return true;
         }
 
         /// <summary>
