@@ -19,8 +19,10 @@ namespace ActionSequencer.Editor {
 
         public Subject<SequenceEventModel> AddedEventModelSubject { get; } =
             new Subject<SequenceEventModel>();
+
         public Subject<SequenceEventModel> RemovedEventModelSubject { get; } =
             new Subject<SequenceEventModel>();
+
         public Subject MovedEventModelSubject { get; } =
             new Subject();
 
@@ -51,11 +53,14 @@ namespace ActionSequencer.Editor {
             AddDisposable(AddedEventModelSubject
                 .Subscribe(x => {
                     if (x is SignalSequenceEventModel signalEventModel) {
-                        AddDisposable(signalEventModel.ChangedTimeSubject.Subscribe(_ => ChangedEventTimeSubject.Invoke()));
+                        AddDisposable(
+                            signalEventModel.ChangedTimeSubject.Subscribe(_ => ChangedEventTimeSubject.Invoke()));
                     }
                     else if (x is RangeSequenceEventModel rangeEventModel) {
-                        AddDisposable(rangeEventModel.ChangedEnterTimeSubject.Subscribe(_ => ChangedEventTimeSubject.Invoke()));
-                        AddDisposable(rangeEventModel.ChangedExitTimeSubject.Subscribe(_ => ChangedEventTimeSubject.Invoke()));
+                        AddDisposable(
+                            rangeEventModel.ChangedEnterTimeSubject.Subscribe(_ => ChangedEventTimeSubject.Invoke()));
+                        AddDisposable(
+                            rangeEventModel.ChangedExitTimeSubject.Subscribe(_ => ChangedEventTimeSubject.Invoke()));
                     }
                 }));
 
@@ -112,7 +117,7 @@ namespace ActionSequencer.Editor {
             }
 
             SerializedObject.ApplyModifiedProperties();
-            
+
             // 通知
             MovedEventModelSubject.Invoke();
         }
@@ -125,6 +130,7 @@ namespace ActionSequencer.Editor {
             if (currentIndex <= 0) {
                 return;
             }
+
             MoveEvent(eventModel, currentIndex - 1);
         }
 
@@ -136,6 +142,7 @@ namespace ActionSequencer.Editor {
             if (currentIndex < 0 || currentIndex >= _eventModels.Count - 1) {
                 return;
             }
+
             MoveEvent(eventModel, currentIndex + 1);
         }
 
@@ -165,12 +172,20 @@ namespace ActionSequencer.Editor {
         /// Eventの削除
         /// </summary>
         public void RemoveEvent(SequenceEvent sequenceEvent) {
-            if (sequenceEvent is SignalSequenceEvent signalSequenceEvent) {
-                RemoveSignalEvent(signalSequenceEvent);
+            var model = _eventModels.FirstOrDefault(x => x.Target == sequenceEvent);
+            if (model == null) {
+                return;
             }
-            else if (sequenceEvent is RangeSequenceEvent rangeSequenceEvent) {
-                RemoveRangeEvent(rangeSequenceEvent);
-            }
+
+            // Modelの削除
+            _eventModels.Remove(model);
+
+            // 要素削除
+            DeleteEventAsset(sequenceEvent);
+
+            // 通知
+            RemovedEventModelSubject.Invoke(model);
+            model.Dispose();
         }
 
         /// <summary>
@@ -179,12 +194,7 @@ namespace ActionSequencer.Editor {
         public void RemoveEvents() {
             var models = _eventModels.ToArray();
             foreach (var model in models) {
-                if (model is SignalSequenceEventModel signalEventModel) {
-                    RemoveSignalEvent((SignalSequenceEvent)signalEventModel.Target);
-                }
-                else if (model is RangeSequenceEventModel rangeEventModel) {
-                    RemoveRangeEvent((RangeSequenceEvent)rangeEventModel.Target);
-                }
+                RemoveEvent(model.Target as SequenceEvent);
             }
         }
 
@@ -192,12 +202,40 @@ namespace ActionSequencer.Editor {
         /// Eventの複製
         /// </summary>
         public void DuplicateEvent(SequenceEvent sequenceEvent) {
+            // 要素の追加
+            var evt = DuplicateEventAsset(sequenceEvent);
+
+            // Modelの生成
+            var model = default(SequenceEventModel);
             if (sequenceEvent is SignalSequenceEvent signalSequenceEvent) {
-                DuplicateSignalEvent(signalSequenceEvent);
+                model = new SignalSequenceEventModel(signalSequenceEvent, this);
             }
             else if (sequenceEvent is RangeSequenceEvent rangeSequenceEvent) {
-                DuplicateRangeEvent(rangeSequenceEvent);
+                model = new RangeSequenceEventModel(rangeSequenceEvent, this);
             }
+
+            _eventModels.Add(model);
+            AddedEventModelSubject.Invoke(model);
+        }
+
+        /// <summary>
+        /// 含まれているEventをターゲットのTrackに移動する
+        /// </summary>
+        public void TransportEvent(SequenceEventModel eventModel, SequenceTrackModel target) {
+            if (!_eventModels.Contains(eventModel)) {
+                return;
+            }
+
+            // 参照場所を書き換える
+            var sequenceEvent = eventModel.Target as SequenceEvent;
+            RemoveEventAsset(sequenceEvent);
+            _eventModels.Remove(eventModel);
+            target.AddEventAsset(sequenceEvent);
+            target._eventModels.Add(eventModel);
+            
+            // 通知
+            RemovedEventModelSubject.Invoke(eventModel);
+            target.AddedEventModelSubject.Invoke(eventModel);
         }
 
         /// <summary>
@@ -221,41 +259,6 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
-        /// SignalEventの複製
-        /// </summary>
-        private SignalSequenceEventModel DuplicateSignalEvent(SignalSequenceEvent sequenceEvent) {
-            // 要素の追加
-            var evt = DuplicateEventAsset(sequenceEvent);
-
-            // Modelの生成
-            var model = new SignalSequenceEventModel(evt, this);
-            _eventModels.Add(model);
-            AddedEventModelSubject.Invoke(model);
-
-            return model;
-        }
-
-        /// <summary>
-        /// SignalEventの削除
-        /// </summary>
-        private void RemoveSignalEvent(SignalSequenceEvent sequenceEvent) {
-            var model = _eventModels.FirstOrDefault(x => x.Target == sequenceEvent);
-            if (model == null) {
-                return;
-            }
-
-            // Modelの削除
-            _eventModels.Remove(model);
-
-            // 要素削除
-            DeleteEventAsset(sequenceEvent);
-
-            // 通知
-            RemovedEventModelSubject.Invoke((SignalSequenceEventModel)model);
-            model.Dispose();
-        }
-
-        /// <summary>
         /// RangeEventの追加
         /// </summary>
         private RangeSequenceEventModel AddRangeEvent(Type eventType) {
@@ -272,41 +275,6 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
-        /// RangeEventの追加
-        /// </summary>
-        private RangeSequenceEventModel DuplicateRangeEvent(RangeSequenceEvent sequenceEvent) {
-            // 要素の追加
-            var evt = DuplicateEventAsset(sequenceEvent);
-
-            // Modelの生成
-            var model = new RangeSequenceEventModel(evt, this);
-            _eventModels.Add(model);
-            AddedEventModelSubject.Invoke(model);
-
-            return model;
-        }
-
-        /// <summary>
-        /// RangeEventの削除
-        /// </summary>
-        private void RemoveRangeEvent(RangeSequenceEvent sequenceEvent) {
-            var model = _eventModels.FirstOrDefault(x => x.Target == sequenceEvent);
-            if (model == null) {
-                return;
-            }
-
-            // Modelの削除
-            _eventModels.Remove(model);
-
-            // 要素削除
-            DeleteEventAsset(sequenceEvent);
-
-            // 通知
-            RemovedEventModelSubject.Invoke(model);
-            model.Dispose();
-        }
-
-        /// <summary>
         /// SequenceEvent用のModelを削除する(SerializedObjectからは除外しない)
         /// </summary>
         private void ClearEventModels() {
@@ -314,7 +282,7 @@ namespace ActionSequencer.Editor {
                 RemovedEventModelSubject.Invoke(model);
                 model.Dispose();
             }
-            
+
             _eventModels.Clear();
         }
 
@@ -396,10 +364,36 @@ namespace ActionSequencer.Editor {
 
             SerializedObject.ApplyModifiedProperties();
 
-            // Asset削除
-            Undo.DestroyObjectImmediate(sequenceEvent);
-
             Undo.CollapseUndoOperations(groupId);
+        }
+
+        /// <summary>
+        /// SequenceEventアセットの追加
+        /// </summary>
+        private void AddEventAsset(SequenceEvent sequenceEvent) {
+            // 要素の追加
+            SerializedObject.Update();
+            _sequenceEvents.arraySize++;
+            _sequenceEvents.GetArrayElementAtIndex(_sequenceEvents.arraySize - 1).objectReferenceValue = sequenceEvent;
+            SerializedObject.ApplyModifiedProperties();
+        }
+
+        /// <summary>
+        /// SequenceEventアセットの除外（消しはしない）
+        /// </summary>
+        private void RemoveEventAsset(SequenceEvent sequenceEvent) {
+            // 要素から除外
+            SerializedObject.Update();
+            for (var i = _sequenceEvents.arraySize - 1; i >= 0; i--) {
+                var element = _sequenceEvents.GetArrayElementAtIndex(i);
+                if (element.objectReferenceValue != sequenceEvent) {
+                    continue;
+                }
+
+                _sequenceEvents.DeleteArrayElementAtIndex(i);
+            }
+
+            SerializedObject.ApplyModifiedProperties();
         }
     }
 }

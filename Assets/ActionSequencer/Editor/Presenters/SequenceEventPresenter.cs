@@ -200,6 +200,19 @@ namespace ActionSequencer.Editor {
             menu.AddItem(new GUIContent("Delete Event"), false, () => {
                 TrackModel.RemoveEvent(Model.Target as SequenceEvent);
             });
+            // イベントの移動
+            foreach (var trackModel in EditorModel.ClipModel.TrackModels) {
+                var content = new GUIContent($"Move Event/{trackModel.Label}");
+                if (trackModel == TrackModel) {
+                    menu.AddDisabledItem(content);
+                    continue;
+                }
+
+                var tm = trackModel;
+                menu.AddItem(content, false, () => {
+                    TrackModel.TransportEvent(Model, tm);
+                });
+            }
             
             menu.ShowAsContext();
         }
