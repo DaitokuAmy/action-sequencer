@@ -26,16 +26,25 @@ namespace ActionSequencer.Editor
             TrackView = trackView;
             _editorModel = editorModel;
 
-            Model.OnAddedRangeEventModel += OnAddedRangeEventModel;
-            Model.OnAddedSignalEventModel += OnAddedSignalEventModel;
-            Model.OnRemovedSignalEventModel += RemovedSignalEventModel;
-            Model.OnRemovedRangeEventModel += RemovedRangeEventModel;
-            Model.OnChangedLabel += OnChangedLabel;
-            Model.OnChangedEventTime += OnChangedEventTime;
+            AddDisposable(Model.AddedRangeEventModelSubject
+                .Subscribe(AddedRangeEventModelSubject));
+            AddDisposable(Model.AddedSignalEventModelSubject
+                .Subscribe(AddedSignalEventModelSubject));
+            AddDisposable(Model.RemovedSignalEventModelSubject
+                .Subscribe(RemovedSignalEventModelSubject));
+            AddDisposable(Model.RemovedRangeEventModelSubject
+                .Subscribe(RemovedRangeEventModelSubject));
+            AddDisposable(Model.ChangedLabelSubject
+                .Subscribe(ChangedLabelSubject));
+            AddDisposable(Model.ChangedEventTimeSubject
+                .Subscribe(OnChangedEventTime));
 
-            View.OnChangedLabel += OnChangedLabelView;
-            View.OnClickedOption += OnClickedOption;
-            View.OnChangedFoldout += OnChangedFoldout;
+            AddDisposable(View.ChangedLabelSubject
+                .Subscribe(ChangedLabelSubjectView));
+            AddDisposable(View.ClickedOptionSubject
+                .Subscribe(ClickedOptionSubject));
+            AddDisposable(View.ChangedFoldoutSubject
+                .Subscribe(ChangedFoldoutSubject));
 
             // TimeToSize監視
             AddDisposable(_editorModel.TimeToSize
@@ -61,16 +70,16 @@ namespace ActionSequencer.Editor
             for (var i = 0; i < Model.SignalEventModels.Count; i++)
             {
                 var eventModel = Model.SignalEventModels[i];
-                OnAddedSignalEventModel(eventModel);
+                AddedSignalEventModelSubject(eventModel);
             }
             for (var i = 0; i < Model.RangeEventModels.Count; i++)
             {
                 var eventModel = Model.RangeEventModels[i];
-                OnAddedRangeEventModel(eventModel);
+                AddedRangeEventModelSubject(eventModel);
             }
             
-            OnChangedLabel(Model.Label);
-            OnChangedFoldout(View.Foldout);
+            ChangedLabelSubject(Model.Label);
+            ChangedFoldoutSubject(View.Foldout);
             OnChangedEventTime();
         }
         
@@ -80,16 +89,6 @@ namespace ActionSequencer.Editor
         public override void Dispose()
         {
             base.Dispose();
-            
-            Model.OnAddedRangeEventModel -= OnAddedRangeEventModel;
-            Model.OnAddedSignalEventModel -= OnAddedSignalEventModel;
-            Model.OnRemovedSignalEventModel -= RemovedSignalEventModel;
-            Model.OnRemovedRangeEventModel -= RemovedRangeEventModel;
-            Model.OnChangedLabel -= OnChangedLabel;
-            Model.OnChangedEventTime -= OnChangedEventTime;
-
-            View.OnChangedLabel -= OnChangedLabelView;
-            View.OnClickedOption -= OnClickedOption;
 
             foreach (var presenter in _signalEventPresenters)
             {
@@ -127,7 +126,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// SignalEventModel追加時
         /// </summary>
-        private void OnAddedSignalEventModel(SignalSequenceEventModel model)
+        private void AddedSignalEventModelSubject(SignalSequenceEventModel model)
         {
             // EventView作成
             var view = new SignalSequenceEventView();
@@ -151,7 +150,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// RangeEventModel追加時
         /// </summary>
-        private void OnAddedRangeEventModel(RangeSequenceEventModel model)
+        private void AddedRangeEventModelSubject(RangeSequenceEventModel model)
         {
             // EventView作成
             var view = new RangeSequenceEventView();
@@ -175,7 +174,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// SignalEventModel削除時
         /// </summary>
-        private void RemovedSignalEventModel(SignalSequenceEventModel model)
+        private void RemovedSignalEventModelSubject(SignalSequenceEventModel model)
         {
             var presenter = _signalEventPresenters.FirstOrDefault(x => x.Model == model);
             if (presenter == null)
@@ -206,7 +205,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// RangeEventModel削除時
         /// </summary>
-        private void RemovedRangeEventModel(RangeSequenceEventModel model)
+        private void RemovedRangeEventModelSubject(RangeSequenceEventModel model)
         {
             var presenter = _rangeEventPresenters.FirstOrDefault(x => x.Model == model);
             if (presenter == null)
@@ -237,7 +236,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// Label変更時
         /// </summary>
-        private void OnChangedLabel(string label)
+        private void ChangedLabelSubject(string label)
         {
             View.Label = label;
         }
@@ -269,7 +268,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// View経由でのLabel変更通知
         /// </summary>
-        private void OnChangedLabelView(string label)
+        private void ChangedLabelSubjectView(string label)
         {
             Model.Label = label;
         }
@@ -277,7 +276,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// フォルダリング状態の変化通知
         /// </summary>
-        private void OnChangedFoldout(bool foldout)
+        private void ChangedFoldoutSubject(bool foldout)
         {
             TrackView.SetFoldout(foldout);
         }
@@ -285,7 +284,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// View経由でのDefaultLabelボタン押下通知
         /// </summary>
-        private void OnClickedOption()
+        private void ClickedOptionSubject()
         {
             var menu = new GenericMenu();
             

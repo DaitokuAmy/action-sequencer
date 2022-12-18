@@ -280,14 +280,9 @@ namespace ActionSequencer.Editor
             // InspectorView
             var inspectorView = root.Q<InspectorView>();
             _disposables.Add(_editorModel.CurrentTimeMode
-                .Subscribe(timeMode =>
-                {
-                    inspectorView.TimeMode = timeMode;
-                }));
-            _editorModel.OnChangedSelectedTargets += targets =>
-            {
-                inspectorView.SetTarget(targets);
-            };
+                .Subscribe(timeMode => inspectorView.TimeMode = timeMode));
+            _disposables.Add(_editorModel.ChangedSelectedTargetsSubject
+                .Subscribe(inspectorView.SetTarget));
             
             // Seekbar
             _seekbarView = root.Q<VisualElement>("TrackSeekbar");

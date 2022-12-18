@@ -22,7 +22,7 @@ namespace ActionSequencer.Editor
                 SerializedObject.Update();
                 _active.boolValue = value;
                 SerializedObject.ApplyModifiedProperties();
-                OnChangedActive?.Invoke(value);
+                ChangedActiveSubject?.Invoke(value);
             }
         }
         // Eventのラベル
@@ -35,14 +35,14 @@ namespace ActionSequencer.Editor
                 SerializedObject.Update();
                 _label.stringValue = value;
                 SerializedObject.ApplyModifiedProperties();
-                OnChangedLabel?.Invoke(value);
+                ChangedLabelSubject.Invoke(value);
             }
         }
 
         // アクティブ状態変化時
-        public event Action<bool> OnChangedActive;
+        public Subject<bool> ChangedActiveSubject { get; } = new Subject<bool>();
         // ラベル変更時
-        public event Action<string> OnChangedLabel;
+        public Subject<string> ChangedLabelSubject { get; } = new Subject<string>();
 
         // 親のTrackModel
         public SequenceTrackModel TrackModel { get; private set; }

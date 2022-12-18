@@ -37,21 +37,13 @@ namespace ActionSequencer.Editor
                 .Subscribe(_ => SetStyleByTime(_model.EnterTime, _model.ExitTime)));
 
             // Modelの時間変更監視
-            _model.OnChangedEnterTime += OnChangedEnterTime;
-            _model.OnChangedExitTime += OnChangedExitTime;
+            AddDisposable(_model.ChangedEnterTimeSubject 
+                .Subscribe(ChangedEnterTimeSubject));
+            AddDisposable(_model.ChangedExitTimeSubject
+                .Subscribe(ChangedExitTimeSubject));
             
-            OnChangedEnterTime(_model.EnterTime);
-            OnChangedExitTime(_model.ExitTime);
-        }
-        
-        /// <summary>
-        /// 廃棄時処理
-        /// </summary>
-        public override void Dispose()
-        {
-            base.Dispose();
-            _model.OnChangedEnterTime -= OnChangedEnterTime;
-            _model.OnChangedExitTime -= OnChangedExitTime;
+            ChangedEnterTimeSubject(_model.EnterTime);
+            ChangedExitTimeSubject(_model.ExitTime);
         }
 
         /// <summary>
@@ -88,7 +80,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// EnterTime変更時
         /// </summary>
-        private void OnChangedEnterTime(float time)
+        private void ChangedEnterTimeSubject(float time)
         {
             SetStyleByTime(_model.EnterTime, _model.ExitTime);
         }
@@ -96,7 +88,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// ExitTime変更時
         /// </summary>
-        private void OnChangedExitTime(float time)
+        private void ChangedExitTimeSubject(float time)
         {
             SetStyleByTime(_model.EnterTime, _model.ExitTime);
         }

@@ -28,19 +28,13 @@ namespace ActionSequencer.Editor
             labelElementView.LabelColor = model.ThemeColor;
 
             AddDisposable(EditorModel.TimeToSize
-                .Subscribe(_ => OnChangedTime(_model.Time)));
+                .Subscribe(_ => ChangedTimeSubject(_model.Time)));
             
             // Modelの時間変更監視
-            _model.OnChangedTime += OnChangedTime;
+            AddDisposable(_model.ChangedTimeSubject
+                .Subscribe(ChangedTimeSubject));
             
-            OnChangedTime(_model.Time);
-        }
-        
-        public override void Dispose()
-        {
-            base.Dispose();
-            //_view.UnregisterCallback();
-            _model.OnChangedTime -= OnChangedTime;
+            ChangedTimeSubject(_model.Time);
         }
 
         protected override void OnDragStart(SequenceEventManipulator.DragType dragType, bool otherEvent)
@@ -53,7 +47,7 @@ namespace ActionSequencer.Editor
             _model.Time = EditorModel.GetAbsorptionTime(_dragStartTime + deltaTime);
         }
 
-        private void OnChangedTime(float time)
+        private void ChangedTimeSubject(float time)
         {
             // 位置として反映
             _view.style.marginLeft = TimeToSize(time);

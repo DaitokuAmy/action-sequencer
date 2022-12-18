@@ -24,15 +24,19 @@ namespace ActionSequencer.Editor {
             _trackListView = trackListView;
 
             // Event監視
-            Model.OnAddedTrackModel += OnAddedTrackModel;
-            Model.OnRemovedTrackModel += OnRemovedTrackModel;
-            Model.OnAddedEventModel += OnAddedEventModel;
-            Model.OnRemovedEventModel += OnRemovedEventModel;
+            AddDisposable(Model.AddedTrackModelSubject
+                .Subscribe(AddedTrackModelSubject));
+            AddDisposable(Model.RemovedTrackModelSubject
+                .Subscribe(RemovedTrackModelSubject));
+            AddDisposable(Model.AddedEventModelSubject
+                .Subscribe(AddedEventModelSubject));
+            AddDisposable(Model.RemovedEventModelSubject
+                .Subscribe(RemovedEventModelSubject));
 
             // 既に登録済のModelを解釈
             for (var i = 0; i < Model.TrackModels.Count; i++) {
                 var trackModel = _editorModel.ClipModel.TrackModels[i];
-                OnAddedTrackModel(trackModel);
+                AddedTrackModelSubject(trackModel);
             }
         }
 
@@ -40,18 +44,18 @@ namespace ActionSequencer.Editor {
         /// 廃棄時処理
         /// </summary>
         public override void Dispose() {
+            foreach (var presenter in _trackPresenters) {
+                presenter.Dispose();
+            }
+            _trackPresenters.Clear();
+            
             base.Dispose();
-
-            Model.OnAddedTrackModel -= OnAddedTrackModel;
-            Model.OnRemovedTrackModel -= OnRemovedTrackModel;
-            Model.OnAddedEventModel -= OnAddedEventModel;
-            Model.OnRemovedEventModel -= OnRemovedEventModel;
         }
 
         /// <summary>
         /// TrackModel追加時
         /// </summary>
-        private void OnAddedTrackModel(SequenceTrackModel model) {
+        private void AddedTrackModelSubject(SequenceTrackModel model) {
             var labelView = new SequenceTrackLabelView();
             View.Add(labelView);
             var trackView = new SequenceTrackView();
@@ -64,7 +68,7 @@ namespace ActionSequencer.Editor {
         /// <summary>
         /// TrackModel削除時
         /// </summary>
-        private void OnRemovedTrackModel(SequenceTrackModel model) {
+        private void RemovedTrackModelSubject(SequenceTrackModel model) {
             var presenter = _trackPresenters.FirstOrDefault(x => x.Model == model);
             if (presenter == null) {
                 return;
@@ -80,14 +84,14 @@ namespace ActionSequencer.Editor {
         /// <summary>
         /// TrackEvent追加時
         /// </summary>
-        private void OnAddedEventModel(SequenceEventModel model) {
+        private void AddedEventModelSubject(SequenceEventModel model) {
             RefreshTracks();
         }
 
         /// <summary>
         /// TrackEvent削除時
         /// </summary>
-        private void OnRemovedEventModel(SequenceEventModel model) {
+        private void RemovedEventModelSubject(SequenceEventModel model) {
             RefreshTracks();
         }
 

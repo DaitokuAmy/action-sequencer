@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,11 +15,11 @@ namespace ActionSequencer.Editor
         private SerializedProperty _tracks;
         private SerializedProperty _frameRate;
         private List<SequenceTrackModel> _trackModels = new List<SequenceTrackModel>();
-        
-        public event Action<SequenceTrackModel> OnAddedTrackModel;
-        public event Action<SequenceTrackModel> OnRemovedTrackModel;
-        public event Action<SequenceEventModel> OnAddedEventModel;
-        public event Action<SequenceEventModel> OnRemovedEventModel;
+
+        public Subject<SequenceTrackModel> AddedTrackModelSubject { get; } = new Subject<SequenceTrackModel>();
+        public Subject<SequenceTrackModel> RemovedTrackModelSubject { get; } = new Subject<SequenceTrackModel>();
+        public Subject<SequenceEventModel> AddedEventModelSubject { get; } = new Subject<SequenceEventModel>();
+        public Subject<SequenceEventModel> RemovedEventModelSubject { get; } = new Subject<SequenceEventModel>();
 
         public IReadOnlyList<SequenceTrackModel> TrackModels => _trackModels;
 
@@ -57,7 +58,7 @@ namespace ActionSequencer.Editor
                 {
                     var model = new SequenceTrackModel(sequenceTrack);
                     _trackModels.Add(model);
-                    OnAddedTrackModel?.Invoke(model);
+                    AddedTrackModelSubject.Invoke(model);
                 }
             }
         }
@@ -116,9 +117,13 @@ namespace ActionSequencer.Editor
             var trackModel = new SequenceTrackModel(track);
             trackModel.Label = "Track";
             _trackModels.Add(trackModel);
-            OnAddedTrackModel?.Invoke(trackModel);
-            trackModel.OnAddedSignalEventModel += x => OnAddedEventModel?.Invoke(x);
-            trackModel.OnAddedRangeEventModel += x => OnAddedEventModel?.Invoke(x);
+            AddedTrackModelSubject.Invoke(trackModel);
+            
+            // Eventの追加を監視
+            AddDisposable(trackModel.AddedSignalEventModelSubject
+                .Subscribe(x => AddedEventModelSubject.Invoke(x)));
+            AddDisposable(trackModel.AddedRangeEventModelSubject
+                .Subscribe(x => AddedEventModelSubject.Invoke(x)));
             
             return trackModel;
         }
@@ -153,7 +158,7 @@ namespace ActionSequencer.Editor
             Undo.DestroyObjectImmediate(model.Target);
             
             // 通知
-            OnRemovedTrackModel?.Invoke(model);
+            RemovedTrackModelSubject.Invoke(model);
             model.RemoveEvents();
             model.Dispose();
         }
@@ -177,7 +182,7 @@ namespace ActionSequencer.Editor
         {
             foreach (var model in _trackModels)
             {
-                OnRemovedTrackModel?.Invoke(model);
+                RemovedTrackModelSubject.Invoke(model);
                 model.Dispose();
             }
             _trackModels.Clear();

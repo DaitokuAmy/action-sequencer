@@ -1,4 +1,5 @@
 using System;
+using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace ActionSequencer.Editor
     {
         private SerializedProperty _time;
 
-        public event Action<float> OnChangedTime;
+        public Subject<float> ChangedTimeSubject { get; } = new Subject<float>();
         
         public float Time
         {
@@ -21,7 +22,7 @@ namespace ActionSequencer.Editor
                 SerializedObject.Update();
                 _time.floatValue = Mathf.Max(0.0f, value);
                 SerializedObject.ApplyModifiedProperties();
-                OnChangedTime?.Invoke(_time.floatValue);
+                ChangedTimeSubject.Invoke(_time.floatValue);
                 SetDirty();
             }
         }

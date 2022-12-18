@@ -1,4 +1,5 @@
 using System;
+using ActionSequencer.Editor.Utils;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,8 +12,8 @@ namespace ActionSequencer.Editor
     {
         private bool _selected;
         private ContextualMenuManipulator _contextualMenuManipulator;
-        
-        public event Action<ContextualMenuPopulateEvent> OnOpenContextMenu;
+
+        public Subject<ContextualMenuPopulateEvent> OpenContextMenuSubject { get; } = new Subject<ContextualMenuPopulateEvent>();
 
         public SequenceEventManipulator Manipulator { get; private set; } 
 
@@ -59,7 +60,7 @@ namespace ActionSequencer.Editor
         /// </summary>
         private void OnOpenContextMenuInternal(ContextualMenuPopulateEvent evt)
         {
-            OnOpenContextMenu?.Invoke(evt);
+            OpenContextMenuSubject.Invoke(evt);
         }
     }
 }

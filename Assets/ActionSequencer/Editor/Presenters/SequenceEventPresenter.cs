@@ -21,7 +21,8 @@ namespace ActionSequencer.Editor
             EditorModel = editorModel;
             LabelElementView = labelElementView;
             
-            EditorModel.OnChangedSelectedTargets += OnChangedSelectedTargets;
+            AddDisposable(EditorModel.ChangedSelectedTargetsSubject
+                .Subscribe(ChangedSelectedTargetsSubject));
             
             // SerializedPropertyの変化監視
             View.Unbind();
@@ -30,30 +31,40 @@ namespace ActionSequencer.Editor
                 Model.Active = prop.boolValue;
             });
 
-            // Label要素のイベント監視
+            // Label要素初期化
             LabelElementView.LabelColor = model.ThemeColor;
             LabelElementView.Label = Model.Label;
-            LabelElementView.OnChangedLabel += OnChangedViewLabel;
-            LabelElementView.OnClickedOption += OnClickedOption;
+
+            // Label要素のイベント監視            
+            AddDisposable(LabelElementView.ChangedSubject
+                .Subscribe(OnChangedViewLabel));
+            AddDisposable(LabelElementView.ClickedOptionSubject
+                .Subscribe(ClickedOptionSubject));
             
             // イベント監視
             View.RegisterCallback<MouseDownEvent>(OnMouseDownEvent);
             View.RegisterCallback<ValidateCommandEvent>(OnValidateCommandEvent);
             
             // アクティブ状態の監視
-            Model.OnChangedActive += OnChangedActive;
-            Model.OnChangedLabel += OnChangedLabel;
-            OnChangedActive(Model.Active);
+            AddDisposable(Model.ChangedActiveSubject
+                .Subscribe(ChangedActiveSubject));
+            AddDisposable(Model.ChangedLabelSubject
+                .Subscribe(ChangedLabelSubject));
+
+            ChangedActiveSubject(Model.Active);
             
             // 右クリック監視
-            View.OnOpenContextMenu += OnOpenContextMenu;
+            AddDisposable(View.OpenContextMenuSubject
+                .Subscribe(OpenContextMenuSubject));
             
             // Drag監視
             View.Manipulator.OnDragStart += OnDragStart;
             View.Manipulator.OnDragging += OnDragging;
 
-            EditorModel.OnEventDragStart += OnEventDragStart;
-            EditorModel.OnEventDragging += OnEventDragging;
+            AddDisposable(EditorModel.EventDragStartSubject
+                .Subscribe(EventDragStartSubject));
+            AddDisposable(EditorModel.EventDraggingSubject
+                .Subscribe(EventDraggingSubject));
         }
         
         public override void Dispose()
@@ -62,21 +73,11 @@ namespace ActionSequencer.Editor
             
             EditorModel.RemoveSelectedTarget(Model.Target);
             
-            LabelElementView.OnChangedLabel -= OnChangedViewLabel;
-            LabelElementView.OnClickedOption -= OnClickedOption;
-            
             View.UnregisterCallback<MouseDownEvent>(OnMouseDownEvent);
             View.UnregisterCallback<ValidateCommandEvent>(OnValidateCommandEvent);
             
-            Model.OnChangedActive -= OnChangedActive;
-            Model.OnChangedLabel -= OnChangedLabel;
-            
-            View.OnOpenContextMenu -= OnOpenContextMenu;
             View.Manipulator.OnDragStart -= OnDragStart;
             View.Manipulator.OnDragging -= OnDragging;
-
-            EditorModel.OnEventDragStart -= OnEventDragStart;
-            EditorModel.OnEventDragging -= OnEventDragging;
         }
 
         private void OnDragStart(SequenceEventManipulator.DragType dragType)
@@ -92,7 +93,7 @@ namespace ActionSequencer.Editor
         }
         protected abstract void OnDragging(SequenceEventManipulator.DragInfo info, bool otherEvent);
 
-        private void OnEventDragStart(Object target, SequenceEventManipulator.DragType dragType)
+        private void EventDragStartSubject(Object target, SequenceEventManipulator.DragType dragType)
         {
             if (target == Model.Target || !View.Selected)
             {
@@ -102,7 +103,7 @@ namespace ActionSequencer.Editor
             OnDragStart(dragType, true);
         }
 
-        private void OnEventDragging(Object target, SequenceEventManipulator.DragInfo info)
+        private void EventDraggingSubject(Object target, SequenceEventManipulator.DragInfo info)
         {
             if (target == Model.Target || !View.Selected)
             {
@@ -150,7 +151,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// 選択対象の変更通知
         /// </summary>
-        private void OnChangedSelectedTargets(Object[] targets)
+        private void ChangedSelectedTargetsSubject(Object[] targets)
         {
             var selected = targets.Contains(Model.Target);
             View.Selected = selected;
@@ -159,7 +160,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// アクティブ状態の切り替え通知
         /// </summary>
-        private void OnChangedActive(bool active)
+        private void ChangedActiveSubject(bool active)
         {
             View.style.backgroundColor = active ? Model.ThemeColor : Color.gray;
         }
@@ -174,14 +175,14 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// ラベル変更時
         /// </summary>
-        private void OnChangedLabel(string label) {
+        private void ChangedLabelSubject(string label) {
             LabelElementView.Label = label;
         }
         
         /// <summary>
         /// オプション押下時
         /// </summary>
-        private void OnClickedOption() {
+        private void ClickedOptionSubject() {
             var menu = new GenericMenu();
             menu.AddItem(new GUIContent("Reset Label"), false, () => {
                 // ラベルのリセット
@@ -215,7 +216,7 @@ namespace ActionSequencer.Editor
         /// <summary>
         /// コンテキストメニューを開いた時の処理
         /// </summary>
-        private void OnOpenContextMenu(ContextualMenuPopulateEvent evt)
+        private void OpenContextMenuSubject(ContextualMenuPopulateEvent evt)
         {
             evt.menu.AppendAction("Duplicate", action =>
             {

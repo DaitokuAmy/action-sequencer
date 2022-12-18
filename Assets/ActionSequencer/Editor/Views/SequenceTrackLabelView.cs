@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ActionSequencer.Editor.Utils;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,9 +17,9 @@ namespace ActionSequencer.Editor {
         private Button _optionButton;
         private List<SequenceTrackLabelElementView> _elementViews = new List<SequenceTrackLabelElementView>();
 
-        public event Action<string> OnChangedLabel;
-        public event Action OnClickedOption;
-        public event Action<bool> OnChangedFoldout;
+        public Subject<string> ChangedLabelSubject { get; } = new Subject<string>();
+        public Subject ClickedOptionSubject { get; } = new Subject();
+        public Subject<bool> ChangedFoldoutSubject { get; } = new Subject<bool>();
 
         // 表示ラベル
         public string Label {
@@ -58,13 +59,13 @@ namespace ActionSequencer.Editor {
             hierarchy.Add(_optionButton);
 
             // 値の変化監視
-            _textFieldView.RegisterValueChangedCallback(evt => { OnChangedLabel?.Invoke(evt.newValue); });
+            _textFieldView.RegisterValueChangedCallback(evt => { ChangedLabelSubject?.Invoke(evt.newValue); });
 
             // ボタンの押下監視
-            _optionButton.clicked += () => OnClickedOption?.Invoke();
+            _optionButton.clicked += () => ClickedOptionSubject?.Invoke();
 
             // フォルダの状態監視
-            _foldout.RegisterValueChangedCallback(evt => { OnChangedFoldout?.Invoke(evt.newValue); });
+            _foldout.RegisterValueChangedCallback(evt => { ChangedFoldoutSubject?.Invoke(evt.newValue); });
         }
 
         /// <summary>

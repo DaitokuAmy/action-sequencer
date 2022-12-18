@@ -10,6 +10,8 @@ namespace ActionSequencer.Editor.Utils
         private T _value;
         private bool _initialized;
         private Func<T, T> _preprocess;
+        
+        private event Action<T> OnChangedValueAction;
 
         /// <summary>
         /// 廃棄時の処理記述用
@@ -61,14 +63,9 @@ namespace ActionSequencer.Editor.Utils
 
                 _initialized = true;
                 _value = _preprocess != null ? _preprocess.Invoke(value) : value;
-                OnChangedValue?.Invoke(_value);
+                OnChangedValueAction?.Invoke(_value);
             }
         }
-        
-        /// <summary>
-        /// 値変化通知
-        /// </summary>
-        public event Action<T> OnChangedValue;
 
         /// <summary>
         /// 処理の監視(初期化済であれば、監視開始時に一度値が通知される)
@@ -79,10 +76,10 @@ namespace ActionSequencer.Editor.Utils
             {
                 func.Invoke(Value);
             }
-            OnChangedValue += func;
+            OnChangedValueAction += func;
             return new DisposableAction(() =>
             {
-                OnChangedValue -= func;
+                OnChangedValueAction -= func;
             });
         }
     }
@@ -93,8 +90,6 @@ namespace ActionSequencer.Editor.Utils
     public interface IReadonlyReactiveProperty<T>
     {
         T Value { get; }
-        event Action<T> OnChangedValue;
-        
         IDisposable Subscribe(Action<T> func);
     }
 }

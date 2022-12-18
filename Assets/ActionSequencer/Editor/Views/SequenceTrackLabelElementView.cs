@@ -1,4 +1,5 @@
 using System;
+using ActionSequencer.Editor.Utils;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,8 +17,8 @@ namespace ActionSequencer.Editor
         private TextField _textFieldView;
         private Button _optionButton;
 
-        public event Action<string> OnChangedLabel;
-        public event Action OnClickedOption;
+        public Subject<string> ChangedSubject { get; } = new Subject<string>();
+        public Subject ClickedOptionSubject { get; } = new Subject();
 
         // 表示ラベル
         public string Label
@@ -62,11 +63,11 @@ namespace ActionSequencer.Editor
             // 値の変化監視
             _textFieldView.RegisterValueChangedCallback(evt =>
             {
-                OnChangedLabel?.Invoke(evt.newValue);
+                ChangedSubject.Invoke(evt.newValue);
             });
             
             // ボタンの押下監視
-            _optionButton.clicked += () => OnClickedOption?.Invoke();
+            _optionButton.clicked += () => ClickedOptionSubject.Invoke();
         }
 
         /// <summary>

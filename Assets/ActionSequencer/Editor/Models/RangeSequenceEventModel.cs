@@ -1,4 +1,5 @@
 using System;
+using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,8 +13,8 @@ namespace ActionSequencer.Editor
         private SerializedProperty _enterTime;
         private SerializedProperty _exitTime;
 
-        public event Action<float> OnChangedEnterTime; 
-        public event Action<float> OnChangedExitTime;
+        public Subject<float> ChangedEnterTimeSubject { get; } = new Subject<float>();
+        public Subject<float> ChangedExitTimeSubject { get; } = new Subject<float>();
 
         public float EnterTime
         {
@@ -23,7 +24,7 @@ namespace ActionSequencer.Editor
                 SerializedObject.Update();
                 _enterTime.floatValue = Mathf.Clamp(value, 0.0f, _exitTime.floatValue);
                 SerializedObject.ApplyModifiedProperties();
-                OnChangedEnterTime?.Invoke(_enterTime.floatValue);
+                ChangedEnterTimeSubject?.Invoke(_enterTime.floatValue);
                 SetDirty();
             }
         }
@@ -35,7 +36,7 @@ namespace ActionSequencer.Editor
                 SerializedObject.Update();
                 _exitTime.floatValue = Mathf.Max(value, _enterTime.floatValue);
                 SerializedObject.ApplyModifiedProperties();
-                OnChangedExitTime?.Invoke(_exitTime.floatValue);
+                ChangedExitTimeSubject?.Invoke(_exitTime.floatValue);
                 SetDirty();
             }
         }
@@ -62,8 +63,8 @@ namespace ActionSequencer.Editor
             var exitTime = _enterTime.floatValue + duration;
             _exitTime.floatValue = exitTimeFilter?.Invoke(exitTime) ?? exitTime;
             SerializedObject.ApplyModifiedProperties();
-            OnChangedEnterTime?.Invoke(_enterTime.floatValue);
-            OnChangedExitTime?.Invoke(_exitTime.floatValue);
+            ChangedEnterTimeSubject?.Invoke(_enterTime.floatValue);
+            ChangedExitTimeSubject?.Invoke(_exitTime.floatValue);
             SetDirty();
         }
     }
