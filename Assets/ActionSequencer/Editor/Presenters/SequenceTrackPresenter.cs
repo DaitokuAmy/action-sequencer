@@ -189,6 +189,8 @@ namespace ActionSequencer.Editor {
                 }
             }
 
+            minTime = Mathf.Min(minTime, maxTime);
+
             var min = minTime * _editorModel.TimeToSize.Value;
             var max = maxTime * _editorModel.TimeToSize.Value;
             TrackView.SetTrackArea(min, max);

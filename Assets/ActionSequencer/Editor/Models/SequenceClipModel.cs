@@ -166,11 +166,13 @@ namespace ActionSequencer.Editor {
             var trackModel = new SequenceTrackModel(track);
             trackModel.Label = "Track";
             _trackModels.Add(trackModel);
-            AddedTrackModelSubject.Invoke(trackModel);
 
             // Eventの追加を監視
             AddDisposable(trackModel.AddedEventModelSubject
                 .Subscribe(x => AddedEventModelSubject.Invoke(x)));
+            
+            // 通知
+            AddedTrackModelSubject.Invoke(trackModel);
 
             return trackModel;
         }
@@ -203,6 +205,7 @@ namespace ActionSequencer.Editor {
 
             // 通知
             RemovedTrackModelSubject.Invoke(model);
+            
             model.RemoveEvents();
             model.Dispose();
         }

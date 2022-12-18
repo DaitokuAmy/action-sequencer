@@ -67,6 +67,7 @@ namespace ActionSequencer.Editor {
             _trackListView.Add(trackView);
             var presenter = new SequenceTrackPresenter(model, labelView, trackView, _editorModel);
             _trackPresenters.Add(presenter);
+            
             RefreshTracks();
         }
 
