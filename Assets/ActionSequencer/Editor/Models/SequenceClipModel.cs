@@ -96,6 +96,57 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
+        /// トラックを移動
+        /// </summary>
+        public void MoveTrack(SequenceTrackModel track, int index) {
+            var currentIndex = GetTrackIndex(track);
+            if (currentIndex < 0 || index < 0 || index >= _trackModels.Count - 1) {
+                return;
+            }
+
+            _trackModels.RemoveAt(currentIndex);
+            _trackModels.Insert(index, track);
+
+            // 状態を保存
+            SerializedObject.Update();
+
+            for (var i = 0; i < _trackModels.Count; i++) {
+                _tracks.GetArrayElementAtIndex(i).objectReferenceValue = _trackModels[i].Target;
+            }
+
+            SerializedObject.ApplyModifiedProperties();
+        }
+
+        /// <summary>
+        /// Trackを一つ上に移動
+        /// </summary>
+        public void MovePrevTrack(SequenceTrackModel track) {
+            var currentIndex = GetTrackIndex(track);
+            if (currentIndex <= 0) {
+                return;
+            }
+            MoveTrack(track, currentIndex - 1);
+        }
+
+        /// <summary>
+        /// Trackを一つ下に移動
+        /// </summary>
+        public void MoveNextTrack(SequenceTrackModel track) {
+            var currentIndex = GetTrackIndex(track);
+            if (currentIndex < 0 || currentIndex >= _trackModels.Count - 1) {
+                return;
+            }
+            MoveTrack(track, currentIndex + 1);
+        }
+
+        /// <summary>
+        /// トラックのIndexを取得
+        /// </summary>
+        public int GetTrackIndex(SequenceTrackModel track) {
+            return _trackModels.IndexOf(track);
+        }
+
+        /// <summary>
         /// トラックの追加
         /// </summary>
         public SequenceTrackModel AddTrack() {
@@ -114,9 +165,7 @@ namespace ActionSequencer.Editor {
             AddedTrackModelSubject.Invoke(trackModel);
 
             // Eventの追加を監視
-            AddDisposable(trackModel.AddedSignalEventModelSubject
-                .Subscribe(x => AddedEventModelSubject.Invoke(x)));
-            AddDisposable(trackModel.AddedRangeEventModelSubject
+            AddDisposable(trackModel.AddedEventModelSubject
                 .Subscribe(x => AddedEventModelSubject.Invoke(x)));
 
             return trackModel;
@@ -152,16 +201,6 @@ namespace ActionSequencer.Editor {
             RemovedTrackModelSubject.Invoke(model);
             model.RemoveEvents();
             model.Dispose();
-        }
-
-        /// <summary>
-        /// 保持しているTrackを全て削除
-        /// </summary>
-        public void RemoveTracks() {
-            var tracks = _trackModels.Select(x => (SequenceTrack)x.Target).ToArray();
-            foreach (var track in tracks) {
-                RemoveTrack(track);
-            }
         }
 
         /// <summary>

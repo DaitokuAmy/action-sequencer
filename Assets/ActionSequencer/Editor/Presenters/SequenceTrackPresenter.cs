@@ -11,8 +11,7 @@ namespace ActionSequencer.Editor {
     /// </summary>
     public class SequenceTrackPresenter : Presenter<SequenceTrackModel, SequenceTrackLabelView> {
         private SequenceEditorModel _editorModel;
-        private List<SignalSequenceEventPresenter> _signalEventPresenters = new List<SignalSequenceEventPresenter>();
-        private List<RangeSequenceEventPresenter> _rangeEventPresenters = new List<RangeSequenceEventPresenter>();
+        private List<SequenceEventPresenter> _eventPresenters = new List<SequenceEventPresenter>();
 
         public SequenceTrackView TrackView { get; private set; }
 
@@ -25,14 +24,10 @@ namespace ActionSequencer.Editor {
             TrackView = trackView;
             _editorModel = editorModel;
 
-            AddDisposable(Model.AddedRangeEventModelSubject
-                .Subscribe(AddedRangeEventModelSubject));
-            AddDisposable(Model.AddedSignalEventModelSubject
-                .Subscribe(AddedSignalEventModelSubject));
-            AddDisposable(Model.RemovedSignalEventModelSubject
-                .Subscribe(RemovedSignalEventModelSubject));
-            AddDisposable(Model.RemovedRangeEventModelSubject
-                .Subscribe(RemovedRangeEventModelSubject));
+            AddDisposable(Model.AddedEventModelSubject
+                .Subscribe(AddedEventModelSubject));
+            AddDisposable(Model.RemovedEventModelSubject
+                .Subscribe(RemovedEventModelSubject));
             AddDisposable(Model.ChangedLabelSubject
                 .Subscribe(ChangedLabelSubject));
             AddDisposable(Model.ChangedEventTimeSubject
@@ -62,14 +57,9 @@ namespace ActionSequencer.Editor {
                 }));
 
             // 既に登録済のModelを解釈
-            for (var i = 0; i < Model.SignalEventModels.Count; i++) {
-                var eventModel = Model.SignalEventModels[i];
-                AddedSignalEventModelSubject(eventModel);
-            }
-
-            for (var i = 0; i < Model.RangeEventModels.Count; i++) {
-                var eventModel = Model.RangeEventModels[i];
-                AddedRangeEventModelSubject(eventModel);
+            for (var i = 0; i < Model.EventModels.Count; i++) {
+                var eventModel = Model.EventModels[i];
+                AddedEventModelSubject(eventModel);
             }
 
             ChangedLabelSubject(Model.Label);
@@ -83,11 +73,7 @@ namespace ActionSequencer.Editor {
         public override void Dispose() {
             base.Dispose();
 
-            foreach (var presenter in _signalEventPresenters) {
-                presenter.Dispose();
-            }
-
-            foreach (var presenter in _rangeEventPresenters) {
+            foreach (var presenter in _eventPresenters) {
                 presenter.Dispose();
             }
         }
@@ -112,20 +98,27 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
-        /// SignalEventModel追加時
+        /// EventModel追加時
         /// </summary>
-        private void AddedSignalEventModelSubject(SignalSequenceEventModel model) {
-            // EventView作成
-            var view = new SignalSequenceEventView();
-            view.userData = model.Target;
-            TrackView.AddEventView(view);
-
+        private void AddedEventModelSubject(SequenceEventModel model) {
             // TrackLabelの要素を追加
             var element = View.AddElement();
-
-            // Presenter作成
-            var presenter = new SignalSequenceEventPresenter(model, view, element, _editorModel);
-            _signalEventPresenters.Add(presenter);
+            
+            // Event用のPresenter構築
+            if (model is SignalSequenceEventModel signalEventModel) {
+                var view = new SignalSequenceEventView();
+                view.userData = model.Target;
+                TrackView.AddEventView(view);
+                var presenter = new SignalSequenceEventPresenter(signalEventModel, view, element, _editorModel);
+                _eventPresenters.Add(presenter);
+            }
+            else if (model is RangeSequenceEventModel rangeEventModel) {
+                var view = new RangeSequenceEventView();
+                view.userData = model.Target;
+                TrackView.AddEventView(view);
+                var presenter = new RangeSequenceEventPresenter(rangeEventModel, view, element, _editorModel);
+                _eventPresenters.Add(presenter);
+            }
 
             // Viewのソート
             SortEventViews();
@@ -135,33 +128,10 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
-        /// RangeEventModel追加時
+        /// EventModel削除時
         /// </summary>
-        private void AddedRangeEventModelSubject(RangeSequenceEventModel model) {
-            // EventView作成
-            var view = new RangeSequenceEventView();
-            view.userData = model.Target;
-            TrackView.AddEventView(view);
-
-            // TrackLabelの要素を追加
-            var element = View.AddElement();
-
-            // Presenter作成
-            var presenter = new RangeSequenceEventPresenter(model, view, element, _editorModel);
-            _rangeEventPresenters.Add(presenter);
-
-            // Viewのソート
-            SortEventViews();
-
-            // Track幅計算しなおし
-            OnChangedEventTime();
-        }
-
-        /// <summary>
-        /// SignalEventModel削除時
-        /// </summary>
-        private void RemovedSignalEventModelSubject(SignalSequenceEventModel model) {
-            var presenter = _signalEventPresenters.FirstOrDefault(x => x.Model == model);
+        private void RemovedEventModelSubject(SequenceEventModel model) {
+            var presenter = _eventPresenters.FirstOrDefault(x => x.Model == model);
             if (presenter == null) {
                 return;
             }
@@ -174,40 +144,7 @@ namespace ActionSequencer.Editor {
 
             // Presenter削除
             presenter.Dispose();
-            _signalEventPresenters.Remove(presenter);
-
-            // Eventがなくなった場合、自身を削除
-            if (Model.EventCount <= 0) {
-                _editorModel.ClipModel.RemoveTrack(Model.Target as SequenceTrack);
-            }
-
-            // Track幅計算しなおし
-            OnChangedEventTime();
-        }
-
-        /// <summary>
-        /// RangeEventModel削除時
-        /// </summary>
-        private void RemovedRangeEventModelSubject(RangeSequenceEventModel model) {
-            var presenter = _rangeEventPresenters.FirstOrDefault(x => x.Model == model);
-            if (presenter == null) {
-                return;
-            }
-
-            // EventView削除
-            TrackView.RemoveEventView(presenter.View);
-
-            // Label要素を削除
-            View.RemoveElement(presenter.LabelElementView);
-
-            // Presenter削除
-            presenter.Dispose();
-            _rangeEventPresenters.Remove(presenter);
-
-            // Eventがなくなった場合、自身を削除
-            if (Model.EventCount <= 0) {
-                _editorModel.ClipModel.RemoveTrack(Model.Target as SequenceTrack);
-            }
+            _eventPresenters.Remove(presenter);
 
             // Track幅計算しなおし
             OnChangedEventTime();
@@ -226,17 +163,14 @@ namespace ActionSequencer.Editor {
         private void OnChangedEventTime() {
             var minTime = float.MaxValue;
             var maxTime = 0.0f;
-            foreach (var presenter in _signalEventPresenters) {
-                if (presenter.Model is SignalSequenceEventModel model) {
-                    minTime = Mathf.Min(minTime, model.Time);
-                    maxTime = Mathf.Max(maxTime, model.Time);
+            foreach (var presenter in _eventPresenters) {
+                if (presenter.Model is SignalSequenceEventModel signalEventModel) {
+                    minTime = Mathf.Min(minTime, signalEventModel.Time);
+                    maxTime = Mathf.Max(maxTime, signalEventModel.Time);
                 }
-            }
-
-            foreach (var presenter in _rangeEventPresenters) {
-                if (presenter.Model is RangeSequenceEventModel model) {
-                    minTime = Mathf.Min(minTime, model.EnterTime);
-                    maxTime = Mathf.Max(maxTime, model.ExitTime);
+                else if (presenter.Model is RangeSequenceEventModel rangeEventModel) {
+                    minTime = Mathf.Min(minTime, rangeEventModel.EnterTime);
+                    maxTime = Mathf.Max(maxTime, rangeEventModel.ExitTime);
                 }
             }
 
