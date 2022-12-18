@@ -229,6 +229,8 @@ namespace ActionSequencer.Editor {
                     playPauseToggle.AddToClassList("play_icon");
                 }
             });
+            // todo:取り合えず無効
+            playPauseToggle.style.display = DisplayStyle.None;
 
             // ObjectField
             var objectField = root.Q<ObjectField>("TargetObjectField");
