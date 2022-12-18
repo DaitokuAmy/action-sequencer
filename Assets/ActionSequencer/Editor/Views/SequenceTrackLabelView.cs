@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace ActionSequencer.Editor
@@ -10,9 +9,9 @@ namespace ActionSequencer.Editor
     /// </summary>
     public class SequenceTrackLabelView : VisualElement
     {
-        public new class UxmlFactory : UxmlFactory<SequenceTrackLabelView, UxmlTraits> {}
-        
-        private VisualElement _rootView;
+        public new class UxmlFactory : UxmlFactory<SequenceTrackLabelView, UxmlTraits> {
+        }
+
         private Foldout _foldout;
         private TextField _textFieldView;
         private Button _optionButton;
@@ -32,33 +31,30 @@ namespace ActionSequencer.Editor
         public bool Foldout {
             get => _foldout.value;
         }
-        
+        // コンテナ
+        public override VisualElement contentContainer => _foldout.contentContainer;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
         public SequenceTrackLabelView() {
             AddToClassList("track_label__box");
             
-            // Header作成
-            _rootView = new VisualElement();
-            _rootView.style.flexDirection = new StyleEnum<FlexDirection>(FlexDirection.Row);
-            Add(_rootView);
-            
             // Foldoutボタン作成
             _foldout = new Foldout();
             _foldout.AddToClassList("track_label__foldout");
-            _rootView.Add(_foldout);
+            hierarchy.Add(_foldout);
                 
             // TextField作成
             _textFieldView = new TextField();
             _textFieldView.AddToClassList("track_label__textfield");
-            _rootView.Add(_textFieldView);
+            hierarchy.Add(_textFieldView);
             
             // ResetButton作成
             _optionButton = new Button();
             _optionButton.AddToClassList("track_label__option");
             _optionButton.focusable = false;
-            _rootView.Add(_optionButton);
+            hierarchy.Add(_optionButton);
 
             // 値の変化監視
             _textFieldView.RegisterValueChangedCallback(evt =>
@@ -73,6 +69,14 @@ namespace ActionSequencer.Editor
             _foldout.RegisterValueChangedCallback(evt => {
                 OnChangedFoldout?.Invoke(evt.newValue);
             });
+        }
+
+        /// <summary>
+        /// 要素の削除
+        /// </summary>
+        public void ResetElements() {
+            _elementViews.Clear();
+            _foldout.Clear();
         }
 
         /// <summary>

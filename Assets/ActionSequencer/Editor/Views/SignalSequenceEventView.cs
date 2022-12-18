@@ -1,3 +1,5 @@
+using UnityEngine.UIElements;
+
 namespace ActionSequencer.Editor
 {
     /// <summary>
@@ -5,6 +7,9 @@ namespace ActionSequencer.Editor
     /// </summary>
     public class SignalSequenceEventView : SequenceEventView
     {
+        public new class UxmlFactory : UxmlFactory<SignalSequenceEventView, UxmlTraits> {
+        }
+        
         /// <summary>
         /// コンストラクタ
         /// </summary>

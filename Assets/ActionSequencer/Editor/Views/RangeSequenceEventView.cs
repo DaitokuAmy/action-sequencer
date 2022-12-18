@@ -7,6 +7,9 @@ namespace ActionSequencer.Editor
     /// </summary>
     public class RangeSequenceEventView : SequenceEventView
     {
+        public new class UxmlFactory : UxmlFactory<RangeSequenceEventView, UxmlTraits> {
+        }
+        
         /// <summary>
         /// コンストラクタ
         /// </summary>

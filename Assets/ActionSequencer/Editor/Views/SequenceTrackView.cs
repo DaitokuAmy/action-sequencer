@@ -9,11 +9,15 @@ namespace ActionSequencer.Editor
     /// Track用のView
     /// </summary>
     public class SequenceTrackView : VisualElement {
-        private VisualElement _eventViewContainer;
+        public new class UxmlFactory : UxmlFactory<SequenceTrackView, UxmlTraits> {
+        }
+        
+        private VisualElement _trackEventContainer;
         private List<SequenceEventView> _eventViews = new List<SequenceEventView>();
         
         public RulerView RulerView { get; private set; }
         public SequenceEventSpacerView SpacerView { get; private set; }
+        public override VisualElement contentContainer => _trackEventContainer;
 
         /// <summary>
         /// コンストラクタ
@@ -27,17 +31,17 @@ namespace ActionSequencer.Editor
             RulerView.ThickLineColor = new Color(1.0f, 1.0f, 1.0f, 0.1f);
             RulerView.LineHeightRate = 1.0f;
             RulerView.ThickLineHeightRate = 1.0f;
-            Add(RulerView);
+            hierarchy.Add(RulerView);
             
             // Spacerを追加
             SpacerView = new SequenceEventSpacerView();
-            Add(SpacerView);
+            hierarchy.Add(SpacerView);
             
             // 子要素の追加用コンテナ
-            _eventViewContainer = new VisualElement();
-            _eventViewContainer.name = "EventViewContainer";
-            _eventViewContainer.AddToClassList("track__container");
-            Add(_eventViewContainer);
+            _trackEventContainer = new VisualElement();
+            _trackEventContainer.name = "track-event-container";
+            _trackEventContainer.AddToClassList("track__container");
+            hierarchy.Add(_trackEventContainer);
         }
 
         /// <summary>
@@ -52,7 +56,7 @@ namespace ActionSequencer.Editor
         /// </summary>
         public void AddEventView(SequenceEventView eventView) {
             _eventViews.Add(eventView);
-            _eventViewContainer.Add(eventView);
+            _trackEventContainer.Add(eventView);
         }
 
         /// <summary>
@@ -60,14 +64,14 @@ namespace ActionSequencer.Editor
         /// </summary>
         public void RemoveEventView(SequenceEventView eventView) {
             _eventViews.Remove(eventView);
-            _eventViewContainer.Remove(eventView);
+            _trackEventContainer.Remove(eventView);
         }
 
         /// <summary>
         /// イベントのフォルダリング状態反映
         /// </summary>
         public void SetFoldout(bool foldout) {
-            _eventViewContainer.style.display = foldout ? DisplayStyle.Flex : DisplayStyle.None;
+            _trackEventContainer.style.display = foldout ? DisplayStyle.Flex : DisplayStyle.None;
         }
     }
 }
