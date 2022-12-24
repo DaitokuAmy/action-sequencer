@@ -34,7 +34,7 @@ https://github.com/DaitokuAmy/action-sequencer.git?path=/Assets/ActionSequencer#
 
 ## 機能
 #### ライフサイクル
-初期化はコンストラクタを使用します
+初期化はSequenceControllerというクラス(Sequenceを実行するためのクラス)を作成する所から始まります
 ```C#
 _sequenceController = new SequenceController();
 ```
