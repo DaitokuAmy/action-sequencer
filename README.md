@@ -97,7 +97,6 @@ public class LogSignalSequenceEventHandler : SignalSequenceEventHandler<LogSigna
     /// <summary>
     /// タイミング発火時の処理
     /// </summary>
-    /// <param name="signalSequenceEvent"></param>
     protected override void OnInvoke(LogSignalSequenceEvent signalSequenceEvent)
     {
         Debug.Log(signalSequenceEvent.text);
