@@ -1,3 +1,4 @@
+using System;
 using ActionSequencer;
 using UnityEngine;
 
@@ -6,24 +7,30 @@ public class SampleScene : MonoBehaviour, ISequenceControllerProvider
     [SerializeField]
     private SequenceClip _clip;
 
-    private SequenceController _controller;
+    private SequenceController _sequenceController;
 
-    SequenceController ISequenceControllerProvider.SequenceController => _controller;
+    SequenceController ISequenceControllerProvider.SequenceController => _sequenceController;
     
     private void Start()
     {
-        SequenceController.BindGlobalSignalEventHandler<LogSignalSequenceEvent, LogSignalSequenceEventHandler>();
-        SequenceController.BindGlobalRangeEventHandler<TimerRangeSequenceEvent, TimerRangeSequenceEventHandler>();
-        _controller = new SequenceController();
+        _sequenceController = new SequenceController();
+        
+        _sequenceController.BindSignalEventHandler<LogSignalSequenceEvent, LogSignalSequenceEventHandler>();
+        _sequenceController.BindRangeEventHandler<TimerRangeSequenceEvent, TimerRangeSequenceEventHandler>();
+        
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            _controller.Play(_clip);
+            _sequenceController.Play(_clip);
         }
         
-        _controller.Update(Time.deltaTime);
+        _sequenceController.Update(Time.deltaTime);
+    }
+
+    private void OnDestroy() {
+        _sequenceController?.Dispose();
     }
 }

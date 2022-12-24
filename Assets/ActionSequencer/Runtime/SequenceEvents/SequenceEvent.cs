@@ -9,7 +9,7 @@ namespace ActionSequencer {
         [Tooltip("有効なイベントか")] public bool active = true;
 
         private void OnValidate() {
-            hideFlags |= HideFlags.HideInHierarchy;
+            //hideFlags |= HideFlags.HideInHierarchy;
         }
     }
 }

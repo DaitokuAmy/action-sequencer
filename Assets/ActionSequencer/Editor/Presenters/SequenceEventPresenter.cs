@@ -201,8 +201,9 @@ namespace ActionSequencer.Editor {
                 TrackModel.RemoveEvent(Model.Target as SequenceEvent);
             });
             // イベントの移動
-            foreach (var trackModel in EditorModel.ClipModel.TrackModels) {
-                var content = new GUIContent($"Move Event/{trackModel.Label}");
+            for (var i = 0; i < EditorModel.ClipModel.TrackModels.Count; i++) {
+                var trackModel = EditorModel.ClipModel.TrackModels[i];
+                var content = new GUIContent($"Move Event/{i}:{trackModel.Label}");
                 if (trackModel == TrackModel) {
                     menu.AddDisabledItem(content);
                     continue;

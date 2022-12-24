@@ -207,10 +207,10 @@ namespace ActionSequencer.Editor {
 
             // Modelの生成
             var model = default(SequenceEventModel);
-            if (sequenceEvent is SignalSequenceEvent signalSequenceEvent) {
+            if (evt is SignalSequenceEvent signalSequenceEvent) {
                 model = new SignalSequenceEventModel(signalSequenceEvent, this);
             }
-            else if (sequenceEvent is RangeSequenceEvent rangeSequenceEvent) {
+            else if (evt is RangeSequenceEvent rangeSequenceEvent) {
                 model = new RangeSequenceEventModel(rangeSequenceEvent, this);
             }
 

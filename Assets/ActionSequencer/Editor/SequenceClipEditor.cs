@@ -11,7 +11,9 @@ namespace ActionSequencer.Editor {
         /// インスペクタ描画
         /// </summary>
         public override void OnInspectorGUI() {
-            base.OnInspectorGUI();
+            using (new EditorGUI.DisabledScope(true)) {
+                base.OnInspectorGUI();
+            }
 
             if (GUILayout.Button("Open")) {
                 SequenceEditorWindow.Open(target as SequenceClip);

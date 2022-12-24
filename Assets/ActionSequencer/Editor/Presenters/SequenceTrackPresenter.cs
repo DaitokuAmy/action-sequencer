@@ -135,6 +135,9 @@ namespace ActionSequencer.Editor {
 
             // Track幅計算しなおし
             OnChangedEventTime();
+            
+            // 選択させる
+            _editorModel.SetSelectedTarget(model.Target);
         }
 
         /// <summary>

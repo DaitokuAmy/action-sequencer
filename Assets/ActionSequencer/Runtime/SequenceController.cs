@@ -31,7 +31,7 @@ namespace ActionSequencer {
     /// <summary>
     /// Sequence再生用クラス
     /// </summary>
-    public sealed class SequenceController {
+    public sealed class SequenceController : IDisposable {
         /// <summary>
         /// 再生中情報
         /// </summary>
@@ -166,6 +166,13 @@ namespace ActionSequencer {
         }
 
         /// <summary>
+        /// 廃棄処理
+        /// </summary>
+        public void Dispose() {
+            StopAll();
+        }
+
+        /// <summary>
         /// 再生処理
         /// </summary>
         /// <param name="clip">再生対象のClip</param>
@@ -200,6 +207,25 @@ namespace ActionSequencer {
 
             // 再生中リストから除外
             _playingInfos.Remove(playingInfo);
+        }
+        
+        /// <summary>
+        /// 全クリップの強制停止
+        /// </summary>
+        public void StopAll() {
+            foreach (var playingInfo in _playingInfos) {
+                // 実行中の物を全部キャンセル
+                for (var i = playingInfo.ActiveRangeEvents.Count - 1; i >= 0; i--) {
+                    var rangeEvent = playingInfo.ActiveRangeEvents[i];
+                    if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handler)) {
+                        if (handler.IsEntered) {
+                            handler.Cancel(rangeEvent);
+                        }
+                    }
+                }
+            }
+            
+            _playingInfos.Clear();
         }
 
         /// <summary>
