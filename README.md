@@ -74,7 +74,7 @@ public class LogSignalSequenceEvent : SignalSequenceEvent
 }
 ```
 * RangeEventの場合(任意の範囲での処理を定義したい場合)
-```
+```C#
 [SequenceEvent("時間計測", "#FF8888")]
 public class TimerRangeSequenceEvent : RangeSequenceEvent
 {
