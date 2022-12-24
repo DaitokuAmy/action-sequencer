@@ -138,7 +138,7 @@ public class TimerRangeSequenceEventHandler : RangeSequenceEventHandler<TimerRan
 ```
 #### イベントのBind
 イベントの作成、イベントハンドリング処理の記述だけでは動かせず、それらを紐づけ(Bind)する事で機能が動作するようになります  
-イベントのハンドリングが<b>必要ないシーンなどではBindを行わない、もしくは違うHandlerをBindするなど</b>といった使い分けが可能です
+イベントのハンドリングが必要ないシーンなどでは<b>Bindを行わない、もしくは違うHandlerをBindするなど</b>といった使い分けが可能です
 ```C#
 _sequenceController.BindSignalEventHandler<LogSignalSequenceEvent, LogSignalSequenceEventHandler>();
 _sequenceController.BindRangeEventHandler<TimerRangeSequenceEvent, TimerRangeSequenceEventHandler>();
