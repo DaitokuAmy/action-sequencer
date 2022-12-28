@@ -207,6 +207,11 @@ namespace ActionSequencer.Editor {
 
             // CreateMenu
             var createMenu = root.Q<ToolbarMenu>("CreateMenu");
+            createMenu.SetEnabled(_editorModel.ClipModel != null);
+            _disposables.Add(_editorModel.ChangeClipModelSubject
+                .Subscribe(model => {
+                    createMenu.SetEnabled(model != null);
+                }));
 
             // Trackの生成
             createMenu.menu.AppendAction("Track", _ => {

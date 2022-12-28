@@ -36,10 +36,12 @@ namespace ActionSequencer.Editor {
         public Subject<Object, SequenceEventManipulator.DragInfo> EventDraggingSubject { get; } =
             new Subject<Object, SequenceEventManipulator.DragInfo>();
 
+        public Subject<SequenceClipModel> ChangeClipModelSubject { get; } = new Subject<SequenceClipModel>();
+
         public Object[] SelectedTargets => _selectedTargets.ToArray();
         public VisualElement RootElement { get; private set; }
         public SequenceClipModel ClipModel { get; private set; }
-
+        
         public ReactiveProperty<float> TimeToSize { get; private set; } =
             new ReactiveProperty<float>(200.0f, x => Mathf.Max(80.0f, x));
 
@@ -95,7 +97,9 @@ namespace ActionSequencer.Editor {
                 // TimeModeをFrameRateに反映
                 CurrentTimeMode.Value = ClipModel.GetTimeMode();
             }
-
+            
+            ChangeClipModelSubject.Invoke(ClipModel);
+            
             return ClipModel;
         }
 
