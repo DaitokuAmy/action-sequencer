@@ -42,7 +42,7 @@ namespace ActionSequencer.Editor {
                 .Subscribe(ClickedOptionSubject));
             AddDisposable(View.ChangedFoldoutSubject
                 .Subscribe(ChangedFoldoutSubject));
-            
+
             AddDisposable(TrackView.ClickedSpacerSubject
                 .Subscribe(ClickedSpacerSubject));
 
@@ -94,6 +94,7 @@ namespace ActionSequencer.Editor {
             }
 
             var eventList = new List<SequenceEvent>(sequenceTrack.sequenceEvents);
+
             int Compare(VisualElement a, VisualElement b) {
                 var sequenceEventA = a.userData as SequenceEvent;
                 var sequenceEventB = b.userData as SequenceEvent;
@@ -113,7 +114,7 @@ namespace ActionSequencer.Editor {
             // TrackLabelの要素を追加
             var element = View.AddElement();
             element.userData = model.Target;
-            
+
             // Event用のPresenter構築
             if (model is SignalSequenceEventModel signalEventModel) {
                 var view = new SignalSequenceEventView();
@@ -135,7 +136,7 @@ namespace ActionSequencer.Editor {
 
             // Track幅計算しなおし
             OnChangedEventTime();
-            
+
             // 選択させる
             _editorModel.SetSelectedTarget(model.Target);
         }
@@ -231,13 +232,9 @@ namespace ActionSequencer.Editor {
             var menu = new GenericMenu();
 
             // Order
-            menu.AddItem(new GUIContent("Up"), false, () => {
-                _editorModel.ClipModel.MovePrevTrack(Model);
-            });
-            menu.AddItem(new GUIContent("Down"), false, () => {
-                _editorModel.ClipModel.MoveNextTrack(Model);
-            });
-            
+            menu.AddItem(new GUIContent("Up"), false, () => { _editorModel.ClipModel.MovePrevTrack(Model); });
+            menu.AddItem(new GUIContent("Down"), false, () => { _editorModel.ClipModel.MoveNextTrack(Model); });
+
             menu.AddSeparator("");
 
             // Create
@@ -270,13 +267,12 @@ namespace ActionSequencer.Editor {
                     Model.AddEvent(rangeType);
                 });
             }
-            
+
             menu.AddSeparator("");
-            
+
             // トラック削除
-            menu.AddItem(new GUIContent("Delete Track"), false, () => {
-                _editorModel.ClipModel.RemoveTrack(Model.Target as SequenceTrack);
-            });
+            menu.AddItem(new GUIContent("Delete Track"), false,
+                () => { _editorModel.ClipModel.RemoveTrack(Model.Target as SequenceTrack); });
 
             menu.ShowAsContext();
         }

@@ -43,7 +43,7 @@ namespace ActionSequencer.Editor {
             _trackEventContainer.name = "track-event-container";
             _trackEventContainer.AddToClassList("track__container");
             hierarchy.Add(_trackEventContainer);
-            
+
             // Spacerのクリックを監視
             SpacerView.RegisterCallback<MouseDownEvent>(evt => {
                 if (evt.button == 0) {

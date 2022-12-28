@@ -129,6 +129,7 @@ namespace ActionSequencer.Editor {
             if (currentIndex <= 0) {
                 return;
             }
+
             MoveTrack(track, currentIndex - 1);
         }
 
@@ -140,6 +141,7 @@ namespace ActionSequencer.Editor {
             if (currentIndex < 0 || currentIndex >= _trackModels.Count - 1) {
                 return;
             }
+
             MoveTrack(track, currentIndex + 1);
         }
 
@@ -170,7 +172,7 @@ namespace ActionSequencer.Editor {
             // Eventの追加を監視
             AddDisposable(trackModel.AddedEventModelSubject
                 .Subscribe(x => AddedEventModelSubject.Invoke(x)));
-            
+
             // 通知
             AddedTrackModelSubject.Invoke(trackModel);
 
@@ -185,7 +187,7 @@ namespace ActionSequencer.Editor {
             if (model == null) {
                 return;
             }
-            
+
             // 含まれているイベントを全て削除
             model.RemoveEvents();
 
@@ -208,7 +210,7 @@ namespace ActionSequencer.Editor {
 
             // 通知
             RemovedTrackModelSubject.Invoke(model);
-            
+
             model.Dispose();
         }
 

@@ -41,7 +41,7 @@ namespace ActionSequencer.Editor {
         public Object[] SelectedTargets => _selectedTargets.ToArray();
         public VisualElement RootElement { get; private set; }
         public SequenceClipModel ClipModel { get; private set; }
-        
+
         public ReactiveProperty<float> TimeToSize { get; private set; } =
             new ReactiveProperty<float>(200.0f, x => Mathf.Max(80.0f, x));
 
@@ -97,9 +97,9 @@ namespace ActionSequencer.Editor {
                 // TimeModeをFrameRateに反映
                 CurrentTimeMode.Value = ClipModel.GetTimeMode();
             }
-            
+
             ChangeClipModelSubject.Invoke(ClipModel);
-            
+
             return ClipModel;
         }
 
@@ -191,7 +191,7 @@ namespace ActionSequencer.Editor {
             if (!eventModels.Any()) {
                 return false;
             }
-                
+
             var duration = eventModels.Max(x => {
                 if (x is SignalSequenceEventModel signalEventModel) {
                     return signalEventModel.Time;
@@ -207,7 +207,7 @@ namespace ActionSequencer.Editor {
             if (duration <= 0.0f) {
                 return false;
             }
-            
+
             // 幅に合うようにTimeToSizeを設定
             TimeToSize.Value = contentWidth / duration;
             return true;

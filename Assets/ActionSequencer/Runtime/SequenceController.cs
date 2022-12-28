@@ -174,7 +174,8 @@ namespace ActionSequencer {
         /// <param name="onExit">区間終了時処理</param>
         /// <param name="onUpdate">区間中更新処理</param>
         /// <param name="onCancel">区間キャンセル時処理</param>
-        public static void BindGlobalRangeEventHandler<TEvent>(Action<TEvent> onEnter, Action<TEvent> onExit, Action<TEvent, float> onUpdate = null, Action<TEvent> onCancel = null)
+        public static void BindGlobalRangeEventHandler<TEvent>(Action<TEvent> onEnter, Action<TEvent> onExit,
+            Action<TEvent, float> onUpdate = null, Action<TEvent> onCancel = null)
             where TEvent : RangeSequenceEvent {
             BindGlobalRangeEventHandler<TEvent, ObserveRangeSequenceEventHandler<TEvent>>(handler => {
                 handler.SetEnterAction(onEnter);
@@ -204,7 +205,8 @@ namespace ActionSequencer {
         /// <param name="onExit">区間終了時処理</param>
         /// <param name="onUpdate">区間中更新処理</param>
         /// <param name="onCancel">区間キャンセル時処理</param>
-        public void BindRangeEventHandler<TEvent>(Action<TEvent> onEnter, Action<TEvent> onExit, Action<TEvent, float> onUpdate = null, Action<TEvent> onCancel = null)
+        public void BindRangeEventHandler<TEvent>(Action<TEvent> onEnter, Action<TEvent> onExit,
+            Action<TEvent, float> onUpdate = null, Action<TEvent> onCancel = null)
             where TEvent : RangeSequenceEvent {
             BindRangeEventHandler<TEvent, ObserveRangeSequenceEventHandler<TEvent>>(handler => {
                 handler.SetEnterAction(onEnter);

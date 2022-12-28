@@ -67,7 +67,7 @@ namespace ActionSequencer.Editor {
             _trackListView.Add(trackView);
             var presenter = new SequenceTrackPresenter(model, labelView, trackView, _editorModel);
             _trackPresenters.Add(presenter);
-            
+
             RefreshTracks();
         }
 
@@ -113,15 +113,17 @@ namespace ActionSequencer.Editor {
         /// </summary>
         private void RefreshTracks() {
             _trackPresenters.Sort((a, b) => Model.GetTrackIndex(a.Model) - Model.GetTrackIndex(b.Model));
-            
+
             var offset = 100;
             for (var i = 0; i < _trackPresenters.Count; i++) {
                 var presenter = _trackPresenters[i];
                 offset = presenter.View.SetTabIndices(offset);
             }
-            
-            View.Sort((a, b) => _trackPresenters.FindIndex(x => x.View == a) - _trackPresenters.FindIndex(x => x.View == b));
-            _trackListView.Sort((a, b) => _trackPresenters.FindIndex(x => x.TrackView == a) - _trackPresenters.FindIndex(x => x.TrackView == b));
+
+            View.Sort((a, b) =>
+                _trackPresenters.FindIndex(x => x.View == a) - _trackPresenters.FindIndex(x => x.View == b));
+            _trackListView.Sort((a, b) =>
+                _trackPresenters.FindIndex(x => x.TrackView == a) - _trackPresenters.FindIndex(x => x.TrackView == b));
         }
     }
 }

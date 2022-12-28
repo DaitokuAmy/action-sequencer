@@ -232,7 +232,7 @@ namespace ActionSequencer.Editor {
             _eventModels.Remove(eventModel);
             target.AddEventAsset(sequenceEvent);
             target._eventModels.Add(eventModel);
-            
+
             // 通知
             RemovedEventModelSubject.Invoke(eventModel);
             target.AddedEventModelSubject.Invoke(eventModel);
