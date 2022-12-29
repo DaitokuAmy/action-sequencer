@@ -16,7 +16,8 @@ namespace ActionSequencer.Editor {
     /// </summary>
     public class SequenceEditorWindow : EditorWindow {
         // リセット対策用SequenceClipキャッシュ
-        [SerializeField] private SequenceClip _escapedClip;
+        [SerializeField]
+        private SequenceClip _escapedClip;
 
         // Editor用のModel
         private SequenceEditorModel _editorModel;
@@ -207,6 +208,9 @@ namespace ActionSequencer.Editor {
 
             // CreateMenu
             var createMenu = root.Q<ToolbarMenu>("CreateMenu");
+            createMenu.SetEnabled(_editorModel.ClipModel != null);
+            _disposables.Add(_editorModel.ChangeClipModelSubject
+                .Subscribe(model => { createMenu.SetEnabled(model != null); }));
 
             // Trackの生成
             createMenu.menu.AppendAction("Track", _ => {
@@ -260,7 +264,7 @@ namespace ActionSequencer.Editor {
 
             // Seekbar
             _seekbarView = root.Q<VisualElement>("TrackSeekbar");
-            
+
             // Sizeのフィット
             var trackArea = root.Q<VisualElement>("TrackArea");
             root.RegisterCallback<KeyDownEvent>(evt => {

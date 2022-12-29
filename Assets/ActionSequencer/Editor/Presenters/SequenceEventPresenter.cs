@@ -10,13 +10,13 @@ namespace ActionSequencer.Editor {
     /// SequenceEvent用のPresenter基底
     /// </summary>
     public abstract class SequenceEventPresenter : Presenter<SequenceEventModel, SequenceEventView> {
-        
         public SequenceTrackLabelElementView LabelElementView { get; private set; }
         protected SequenceTrackModel TrackModel { get; private set; }
         protected SequenceEditorModel EditorModel { get; private set; }
 
         public SequenceEventPresenter(SequenceEventModel model, SequenceEventView view,
-            SequenceTrackLabelElementView labelElementView, SequenceTrackModel trackModel, SequenceEditorModel editorModel)
+            SequenceTrackLabelElementView labelElementView, SequenceTrackModel trackModel,
+            SequenceEditorModel editorModel)
             : base(model, view) {
             TrackModel = trackModel;
             EditorModel = editorModel;
@@ -170,36 +170,26 @@ namespace ActionSequencer.Editor {
         /// </summary>
         private void ClickedOptionSubject() {
             var menu = new GenericMenu();
-            
+
             // Order
-            menu.AddItem(new GUIContent("Up"), false, () => {
-                TrackModel.MovePrevEvent(Model);
-            });
-            menu.AddItem(new GUIContent("Down"), false, () => {
-                TrackModel.MoveNextEvent(Model);
-            });
-            
+            menu.AddItem(new GUIContent("Up"), false, () => { TrackModel.MovePrevEvent(Model); });
+            menu.AddItem(new GUIContent("Down"), false, () => { TrackModel.MoveNextEvent(Model); });
+
             menu.AddSeparator("");
-            
+
             // ラベルのリセット
-            menu.AddItem(new GUIContent("Reset Label"), false, () => {
-                Model.ResetLabel();
-            });
-            
+            menu.AddItem(new GUIContent("Reset Label"), false, () => { Model.ResetLabel(); });
+
             menu.AddSeparator("");
-            
+
             // イベントの選択
-            menu.AddItem(new GUIContent("Select Event"), false, () => {
-                EditorModel.SetSelectedTarget(Model.Target);
-            });
+            menu.AddItem(new GUIContent("Select Event"), false, () => { EditorModel.SetSelectedTarget(Model.Target); });
             // イベントの複製
-            menu.AddItem(new GUIContent("Duplicate Event"), false, () => {
-                TrackModel.DuplicateEvent(Model.Target as SequenceEvent);
-            });
+            menu.AddItem(new GUIContent("Duplicate Event"), false,
+                () => { TrackModel.DuplicateEvent(Model.Target as SequenceEvent); });
             // イベントの削除
-            menu.AddItem(new GUIContent("Delete Event"), false, () => {
-                TrackModel.RemoveEvent(Model.Target as SequenceEvent);
-            });
+            menu.AddItem(new GUIContent("Delete Event"), false,
+                () => { TrackModel.RemoveEvent(Model.Target as SequenceEvent); });
             // イベントの移動
             for (var i = 0; i < EditorModel.ClipModel.TrackModels.Count; i++) {
                 var trackModel = EditorModel.ClipModel.TrackModels[i];
@@ -210,11 +200,9 @@ namespace ActionSequencer.Editor {
                 }
 
                 var tm = trackModel;
-                menu.AddItem(content, false, () => {
-                    TrackModel.TransportEvent(Model, tm);
-                });
+                menu.AddItem(content, false, () => { TrackModel.TransportEvent(Model, tm); });
             }
-            
+
             menu.ShowAsContext();
         }
 

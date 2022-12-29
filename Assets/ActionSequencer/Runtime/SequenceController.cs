@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,11 +8,14 @@ namespace ActionSequencer {
     /// <summary>
     /// Sequence再生管理用ハンドル
     /// </summary>
-    public struct SequenceHandle {
+    public struct SequenceHandle : IEnumerator {
         private readonly SequenceController.PlayingInfo _playingInfo;
 
         // 再生完了しているか
         public bool IsDone => _playingInfo != null ? _playingInfo.IsDone : true;
+
+        // IEnumerator用
+        object IEnumerator.Current => null;
 
         public SequenceHandle(SequenceController.PlayingInfo playingInfo) {
             _playingInfo = playingInfo;
@@ -25,6 +29,11 @@ namespace ActionSequencer {
             }
 
             return GetHashCode() == obj.GetHashCode();
+        }
+
+        bool IEnumerator.MoveNext() => !IsDone;
+
+        void IEnumerator.Reset() {
         }
     }
 
@@ -97,6 +106,17 @@ namespace ActionSequencer {
         /// <summary>
         /// 単体イベント用のハンドラを設定
         /// </summary>
+        /// <param name="onInvoke">イベント発火時処理</param>
+        public static void BindGlobalSignalEventHandler<TEvent>(Action<TEvent> onInvoke)
+            where TEvent : SignalSequenceEvent {
+            BindGlobalSignalEventHandler<TEvent, ObserveSignalSequenceEventHandler<TEvent>>(handler => {
+                handler.SetInvokeAction(onInvoke);
+            });
+        }
+
+        /// <summary>
+        /// 単体イベント用のハンドラを設定
+        /// </summary>
         /// <param name="onInit">ハンドラ生成時の処理</param>
         public void BindSignalEventHandler<TEvent, THandler>(Action<THandler> onInit = null)
             where TEvent : SignalSequenceEvent
@@ -105,6 +125,17 @@ namespace ActionSequencer {
                 Type = typeof(THandler),
                 InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null
             };
+        }
+
+        /// <summary>
+        /// 単体イベント用のハンドラを設定
+        /// </summary>
+        /// <param name="onInvoke">イベント発火時処理</param>
+        public void BindSignalEventHandler<TEvent>(Action<TEvent> onInvoke)
+            where TEvent : SignalSequenceEvent {
+            BindSignalEventHandler<TEvent, ObserveSignalSequenceEventHandler<TEvent>>(handler => {
+                handler.SetInvokeAction(onInvoke);
+            });
         }
 
         /// <summary>
@@ -139,6 +170,24 @@ namespace ActionSequencer {
         /// <summary>
         /// 範囲イベント用のハンドラを設定
         /// </summary>
+        /// <param name="onEnter">区間開始時処理</param>
+        /// <param name="onExit">区間終了時処理</param>
+        /// <param name="onUpdate">区間中更新処理</param>
+        /// <param name="onCancel">区間キャンセル時処理</param>
+        public static void BindGlobalRangeEventHandler<TEvent>(Action<TEvent> onEnter, Action<TEvent> onExit,
+            Action<TEvent, float> onUpdate = null, Action<TEvent> onCancel = null)
+            where TEvent : RangeSequenceEvent {
+            BindGlobalRangeEventHandler<TEvent, ObserveRangeSequenceEventHandler<TEvent>>(handler => {
+                handler.SetEnterAction(onEnter);
+                handler.SetExitAction(onExit);
+                handler.SetUpdateAction(onUpdate);
+                handler.SetCancelAction(onCancel);
+            });
+        }
+
+        /// <summary>
+        /// 範囲イベント用のハンドラを設定
+        /// </summary>
         /// <param name="onInit">ハンドラ生成時の処理</param>
         public void BindRangeEventHandler<TEvent, THandler>(Action<THandler> onInit = null)
             where TEvent : RangeSequenceEvent
@@ -147,6 +196,24 @@ namespace ActionSequencer {
                 Type = typeof(THandler),
                 InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null
             };
+        }
+
+        /// <summary>
+        /// 範囲イベント用のハンドラを設定
+        /// </summary>
+        /// <param name="onEnter">区間開始時処理</param>
+        /// <param name="onExit">区間終了時処理</param>
+        /// <param name="onUpdate">区間中更新処理</param>
+        /// <param name="onCancel">区間キャンセル時処理</param>
+        public void BindRangeEventHandler<TEvent>(Action<TEvent> onEnter, Action<TEvent> onExit,
+            Action<TEvent, float> onUpdate = null, Action<TEvent> onCancel = null)
+            where TEvent : RangeSequenceEvent {
+            BindRangeEventHandler<TEvent, ObserveRangeSequenceEventHandler<TEvent>>(handler => {
+                handler.SetEnterAction(onEnter);
+                handler.SetExitAction(onExit);
+                handler.SetUpdateAction(onUpdate);
+                handler.SetCancelAction(onCancel);
+            });
         }
 
         /// <summary>
@@ -208,7 +275,7 @@ namespace ActionSequencer {
             // 再生中リストから除外
             _playingInfos.Remove(playingInfo);
         }
-        
+
         /// <summary>
         /// 全クリップの強制停止
         /// </summary>
@@ -224,7 +291,7 @@ namespace ActionSequencer {
                     }
                 }
             }
-            
+
             _playingInfos.Clear();
         }
 

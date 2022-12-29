@@ -36,6 +36,8 @@ namespace ActionSequencer.Editor {
         public Subject<Object, SequenceEventManipulator.DragInfo> EventDraggingSubject { get; } =
             new Subject<Object, SequenceEventManipulator.DragInfo>();
 
+        public Subject<SequenceClipModel> ChangeClipModelSubject { get; } = new Subject<SequenceClipModel>();
+
         public Object[] SelectedTargets => _selectedTargets.ToArray();
         public VisualElement RootElement { get; private set; }
         public SequenceClipModel ClipModel { get; private set; }
@@ -95,6 +97,8 @@ namespace ActionSequencer.Editor {
                 // TimeModeをFrameRateに反映
                 CurrentTimeMode.Value = ClipModel.GetTimeMode();
             }
+
+            ChangeClipModelSubject.Invoke(ClipModel);
 
             return ClipModel;
         }
@@ -187,7 +191,7 @@ namespace ActionSequencer.Editor {
             if (!eventModels.Any()) {
                 return false;
             }
-                
+
             var duration = eventModels.Max(x => {
                 if (x is SignalSequenceEventModel signalEventModel) {
                     return signalEventModel.Time;
@@ -203,7 +207,7 @@ namespace ActionSequencer.Editor {
             if (duration <= 0.0f) {
                 return false;
             }
-            
+
             // 幅に合うようにTimeToSizeを設定
             TimeToSize.Value = contentWidth / duration;
             return true;

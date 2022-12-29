@@ -13,7 +13,8 @@ namespace ActionSequencer.Editor {
         private float _dragStartTime;
 
         public SignalSequenceEventPresenter(SignalSequenceEventModel model, SignalSequenceEventView view,
-            SequenceTrackLabelElementView labelElementView, SequenceTrackModel trackModel, SequenceEditorModel editorModel)
+            SequenceTrackLabelElementView labelElementView, SequenceTrackModel trackModel,
+            SequenceEditorModel editorModel)
             : base(model, view, labelElementView, trackModel, editorModel) {
             _model = model;
             _view = view;
