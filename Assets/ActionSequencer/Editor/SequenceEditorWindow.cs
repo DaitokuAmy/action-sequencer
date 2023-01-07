@@ -87,7 +87,7 @@ namespace ActionSequencer.Editor {
             // Viewの整理
             var root = rootVisualElement;
             var trackLabelList = root.Q<VisualElement>("TrackLabelList");
-            var trackList = root.Q<VisualElement>("TrackList");
+            var trackList = root.Q<SequenceTrackListView>("TrackList");
             trackLabelList.Clear();
             trackList.Clear();
 
@@ -158,15 +158,15 @@ namespace ActionSequencer.Editor {
             // Scroll位置の同期
             var trackLabelList = root.Q<ScrollView>("TrackLabelList");
             var trackScrollView = root.Q<ScrollView>("TrackScrollView");
-            var trackList = root.Q<VisualElement>("TrackList");
+            var trackList = root.Q<SequenceTrackListView>("TrackList");
             trackLabelList.verticalScroller.valueChanged += x => { trackScrollView.verticalScroller.value = x; };
             trackScrollView.verticalScroller.valueChanged += x => { trackLabelList.verticalScroller.value = x; };
 
             // Timeline用Rulerの初期化
             var rulerArea = root.Q<VisualElement>("TrackRulerArea");
             _rulerView = root.Q<RulerView>("RulerView");
-            trackList.contentContainer.RegisterCallback<GeometryChangedEvent>(evt => {
-                _rulerView.style.width = evt.newRect.width;
+            trackList.RegisterCallback<GeometryChangedEvent>(evt => {
+                _rulerView.style.width = trackList.layout.width;
             });
             trackScrollView.horizontalScroller.valueChanged += x => {
                 var pos = _rulerView.transform.position;
@@ -201,7 +201,7 @@ namespace ActionSequencer.Editor {
                 .Subscribe(_ => { _rulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel); }));
             _disposables.Add(_editorModel.CurrentTimeMode
                 .Subscribe(timeMode => {
-                    _rulerView.ThickCycle = SequenceEditorUtility.GetThickCycle(timeMode);
+                    _rulerView.ThickCycle = SequenceEditorUtility.GetThickCycles(timeMode);
                     _rulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
                     _rulerView.RefreshLabels();
                 }));

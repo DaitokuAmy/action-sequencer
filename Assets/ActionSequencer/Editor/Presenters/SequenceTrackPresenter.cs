@@ -50,18 +50,6 @@ namespace ActionSequencer.Editor {
             AddDisposable(_editorModel.TimeToSize
                 .Subscribe(x => { OnChangedEventTime(); }));
 
-            // Rulerの情報反映
-            TrackView.RulerView.MaskElement = TrackView.parent.parent;
-            AddDisposable(_editorModel.TimeToSize
-                .Subscribe(_ => {
-                    TrackView.RulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
-                }));
-            AddDisposable(_editorModel.CurrentTimeMode
-                .Subscribe(timeMode => {
-                    TrackView.RulerView.ThickCycle = SequenceEditorUtility.GetThickCycle(timeMode);
-                    TrackView.RulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
-                }));
-
             // 既に登録済のModelを解釈
             for (var i = 0; i < Model.EventModels.Count; i++) {
                 var eventModel = Model.EventModels[i];

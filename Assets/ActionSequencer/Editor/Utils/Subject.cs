@@ -6,26 +6,10 @@ namespace ActionSequencer.Editor.Utils {
     /// </summary>
     public abstract class SubjectBase {
         /// <summary>
-        /// 廃棄時の処理記述用
-        /// </summary>
-        private class DisposableAction : IDisposable {
-            private Action _action;
-
-            public DisposableAction(Action action) {
-                _action = action;
-            }
-
-            public void Dispose() {
-                _action?.Invoke();
-                _action = null;
-            }
-        }
-
-        /// <summary>
         /// キャンセル用アクションの生成
         /// </summary>
         protected IDisposable CreateCancelAction(Action action) {
-            return new DisposableAction(action.Invoke);
+            return new ActionDisposable(action.Invoke);
         }
     }
 

@@ -7,10 +7,15 @@
     border-bottom-left-radius: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-    background-color: rgb(100, 100, 100);
     margin-bottom: 4px;
     min-height: 21px;
     flex-shrink: 0;
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-left-color: rgba(0, 0, 0, 255);
+    border-right-color: rgba(0, 0, 0, 255);
+    border-top-color: rgba(0, 0, 0, 255);
+    border-bottom-color: rgba(0, 0, 0, 255);
 }
 
 .track__spacer {
@@ -23,14 +28,14 @@
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
     height: 11px;
-    background-color: rgba(82, 82, 82, 0.5);
-    border-left-color: rgb(61, 61, 61);
-    border-right-color: rgb(61, 61, 61);
-    border-top-color: rgb(61, 61, 61);
-    border-bottom-color: rgb(61, 61, 61);
+    background-color: rgb(82, 82, 82);
+    border-left-color: rgb(38, 38, 38);
+    border-right-color: rgb(38, 38, 38);
+    border-top-color: rgb(38, 38, 38);
+    border-bottom-color: rgb(38, 38, 38);
     flex-shrink: 0;
     margin-top: 11px;
-    margin-right: 200px;
+    margin-right: 0;
 }
 
 .track__container {
@@ -246,4 +251,16 @@
 
 .track_seekbar {
     background-color: rgba(255, 0, 0, 0.75);
+}
+
+.track_list__container {
+}
+
+.track_list__gray {
+    background-color: rgba(0, 0, 0, 0.25);
+    position: absolute;
+    left: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
 }

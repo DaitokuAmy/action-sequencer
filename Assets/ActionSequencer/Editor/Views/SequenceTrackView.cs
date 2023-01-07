@@ -14,8 +14,7 @@ namespace ActionSequencer.Editor {
 
         private VisualElement _trackEventContainer;
         private List<SequenceEventView> _eventViews = new List<SequenceEventView>();
-
-        public RulerView RulerView { get; private set; }
+        
         public SequenceEventSpacerView SpacerView { get; private set; }
         public Subject ClickedSpacerSubject { get; } = new Subject();
         public override VisualElement contentContainer => _trackEventContainer;
@@ -25,14 +24,6 @@ namespace ActionSequencer.Editor {
         /// </summary>
         public SequenceTrackView() {
             AddToClassList("track__box");
-
-            // Rulerを追加
-            RulerView = new RulerView();
-            RulerView.LineColor = new Color(1.0f, 1.0f, 1.0f, 0.05f);
-            RulerView.ThickLineColor = new Color(1.0f, 1.0f, 1.0f, 0.1f);
-            RulerView.LineHeightRate = 1.0f;
-            RulerView.ThickLineHeightRate = 1.0f;
-            hierarchy.Add(RulerView);
 
             // Spacerを追加
             SpacerView = new SequenceEventSpacerView();

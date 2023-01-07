@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ActionSequencer.Editor.Utils;
 using UnityEngine.UIElements;
 
 namespace ActionSequencer.Editor {
@@ -37,6 +38,15 @@ namespace ActionSequencer.Editor {
         /// </summary>
         public void AddDisposable(IDisposable disposable) {
             _disposables.Add(disposable);
+        }
+
+        /// <summary>
+        /// VisualElementのCallback監視（自動キャンセル）
+        /// </summary>
+        public void AddChangedCallback<TEvent>(VisualElement element, EventCallback<TEvent> onChanged)
+            where TEvent : EventBase<TEvent>, new() {
+            element.RegisterCallback<TEvent>(onChanged);
+            AddDisposable(new ActionDisposable(() => element.UnregisterCallback(onChanged)));
         }
     }
 }

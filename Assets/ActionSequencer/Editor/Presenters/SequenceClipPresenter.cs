@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using ActionSequencer.Editor.Utils;
+using ActionSequencer.Editor.VisualElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace ActionSequencer.Editor {
@@ -11,7 +14,7 @@ namespace ActionSequencer.Editor {
         private SequenceEditorModel _editorModel;
 
         // Track格納用
-        private VisualElement _trackListView;
+        private SequenceTrackListView _trackListView;
 
         // TrackのPresenterリスト
         private readonly List<SequenceTrackPresenter> _trackPresenters = new List<SequenceTrackPresenter>();
@@ -20,7 +23,7 @@ namespace ActionSequencer.Editor {
         /// コンストラクタ
         /// </summary>
         public SequenceClipPresenter(SequenceClipModel model, VisualElement trackLabelListView,
-            VisualElement trackListView, SequenceEditorModel editorModel)
+            SequenceTrackListView trackListView, SequenceEditorModel editorModel)
             : base(model, trackLabelListView) {
             _editorModel = editorModel;
             _trackListView = trackListView;
@@ -36,6 +39,29 @@ namespace ActionSequencer.Editor {
                 .Subscribe(RemovedEventModelSubject));
             AddDisposable(Model.MovedEventModelSubject
                 .Subscribe(MovedEventModelSubject));
+            
+            _trackListView.RulerView.MaskElement = _trackListView.parent.parent;
+            
+            AddDisposable(_editorModel.TimeToSize
+                .Subscribe(_ => {
+                    _trackListView.RulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
+                }));
+            AddDisposable(_editorModel.CurrentTimeMode
+                .Subscribe(timeMode => {
+                    _trackListView.RulerView.ThickCycle = SequenceEditorUtility.GetThickCycles(timeMode);
+                    _trackListView.RulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
+                }));
+            
+            // TrackListのPaddingを表示領域まで拡張（Gray/Rulerを端まで表示するため）
+            void ApplyListPadding() {
+                var viewport = _trackListView.parent.parent;
+                var totalWidth = viewport.layout.width - 4; // ScrollBarが出ないようにするためのOffsetを引く
+                var baseWidth = _trackListView.contentRect.width;
+                var padding = Mathf.Max(200, totalWidth - baseWidth);
+                _trackListView.style.paddingRight = padding;
+            }
+            AddChangedCallback<GeometryChangedEvent>(_trackListView.parent.parent, _ => ApplyListPadding());
+            AddChangedCallback<GeometryChangedEvent>(_trackListView.contentContainer,_ => ApplyListPadding());
 
             // 既に登録済のModelを解釈
             for (var i = 0; i < Model.TrackModels.Count; i++) {

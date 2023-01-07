@@ -41,8 +41,8 @@ namespace ActionSequencer.Editor {
                 .Subscribe(ClickedOptionSubject));
 
             // イベント監視
-            View.RegisterCallback<MouseDownEvent>(OnMouseDownEvent);
-            View.RegisterCallback<ValidateCommandEvent>(OnValidateCommandEvent);
+            AddChangedCallback<MouseDownEvent>(View, OnMouseDownEvent);
+            AddChangedCallback<ValidateCommandEvent>(View, OnValidateCommandEvent);
 
             // アクティブ状態の監視
             AddDisposable(Model.ChangedActiveSubject
@@ -70,9 +70,6 @@ namespace ActionSequencer.Editor {
             base.Dispose();
 
             EditorModel.RemoveSelectedTarget(Model.Target);
-
-            View.UnregisterCallback<MouseDownEvent>(OnMouseDownEvent);
-            View.UnregisterCallback<ValidateCommandEvent>(OnValidateCommandEvent);
 
             View.Manipulator.OnDragStart -= OnDragStart;
             View.Manipulator.OnDragging -= OnDragging;
