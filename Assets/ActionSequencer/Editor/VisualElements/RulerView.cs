@@ -23,6 +23,7 @@ namespace ActionSequencer.Editor.VisualElements {
 
         private float _memorySize = 10.0f;
         private int[] _memoryCycles = new[] { 5 };
+        private int _tickCycle = 5;
 
         private static Material Material {
             get {
@@ -51,6 +52,7 @@ namespace ActionSequencer.Editor.VisualElements {
         public float ThickLineHeightRate { get; set; } = 0.75f;
         public VisualElement MaskElement { get; set; }
 
+        // メモリサイズ
         public float MemorySize {
             get => _memorySize;
             set {
@@ -58,11 +60,19 @@ namespace ActionSequencer.Editor.VisualElements {
                 SetupLabels(layout);
             }
         }
-
+        // メモリを間引く際に使用する表示サイクル
         public int[] MemoryCycles {
             get => _memoryCycles;
             set {
                 _memoryCycles = value.Select(x => Mathf.Max(1, x)).ToArray();
+                SetupLabels(layout);
+            }
+        }
+        // Boldメモリのサイクル
+        public int TickCycle {
+            get => _tickCycle;
+            set {
+                _tickCycle = Mathf.Max(1, value);
                 SetupLabels(layout);
             }
         }
@@ -116,7 +126,7 @@ namespace ActionSequencer.Editor.VisualElements {
             }
 
             int GetMemoryLevel(int index) {
-                if (index % MemoryCycles[0] == 0) {
+                if (index % TickCycle == 0) {
                     return 0;
                 }
 
@@ -196,7 +206,7 @@ namespace ActionSequencer.Editor.VisualElements {
             var width = totalRect.width;
 
             ReturnLabels();
-            var thickCycle = MemoryCycles[0];
+            var thickCycle = TickCycle;
             var labelCount = (int)(width / MemorySize / thickCycle) + 1;
             var labelUnitOffset = MemorySize * thickCycle;
             for (var i = 0; i < labelCount; i++) {

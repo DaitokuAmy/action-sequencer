@@ -41,7 +41,7 @@ namespace ActionSequencer.Editor.Utils {
         /// </summary>
         public static float CalcMemorySize(SequenceEditorModel editorModel) {
             var timeMode = editorModel.CurrentTimeMode.Value;
-            return editorModel.TimeToSize.Value * GetThickSeconds(timeMode) / GetThickCycles(timeMode)[0];
+            return editorModel.TimeToSize.Value * GetThickSeconds(timeMode) / GetMemoryCycles(timeMode)[0];
         }
 
         /// <summary>
@@ -61,9 +61,9 @@ namespace ActionSequencer.Editor.Utils {
         }
 
         /// <summary>
-        /// ThickCycleの取得
+        /// MemoryCycleの取得
         /// </summary>
-        public static int[] GetThickCycles(SequenceEditorModel.TimeMode timeMode) {
+        public static int[] GetMemoryCycles(SequenceEditorModel.TimeMode timeMode) {
             switch (timeMode) {
                 case SequenceEditorModel.TimeMode.Seconds:
                     return new[] { 20, 10, 5, 2 };
@@ -73,7 +73,23 @@ namespace ActionSequencer.Editor.Utils {
                     return new[] { 30, 15, 10, 5, 2 };
             }
 
-            return new[] { 10, 5 };
+            return new[] { 20, 10, 5, 2 };
+        }
+        
+        /// <summary>
+        /// ThickCycleの取得
+        /// </summary>
+        public static int GetTickCycle(SequenceEditorModel.TimeMode timeMode) {
+            switch (timeMode) {
+                case SequenceEditorModel.TimeMode.Seconds:
+                    return 20;
+                case SequenceEditorModel.TimeMode.Frames30:
+                    return 15;
+                case SequenceEditorModel.TimeMode.Frames60:
+                    return 30;
+            }
+
+            return 20;
         }
     }
 }

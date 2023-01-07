@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using ActionSequencer.Editor.Utils;
@@ -43,7 +42,7 @@ namespace ActionSequencer.Editor {
         public SequenceClipModel ClipModel { get; private set; }
 
         public ReactiveProperty<float> TimeToSize { get; private set; } =
-            new ReactiveProperty<float>(200.0f, x => Mathf.Max(80.0f, x));
+            new ReactiveProperty<float>(200.0f, x => Mathf.Max(40.0f, x));
 
         public ReactiveProperty<TimeMode> CurrentTimeMode { get; private set; } =
             new ReactiveProperty<TimeMode>(TimeMode.Seconds);
