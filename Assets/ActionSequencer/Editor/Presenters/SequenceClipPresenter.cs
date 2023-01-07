@@ -48,7 +48,7 @@ namespace ActionSequencer.Editor {
                 }));
             AddDisposable(_editorModel.CurrentTimeMode
                 .Subscribe(timeMode => {
-                    _trackListView.RulerView.ThickCycle = SequenceEditorUtility.GetThickCycles(timeMode);
+                    _trackListView.RulerView.MemoryCycles = SequenceEditorUtility.GetThickCycles(timeMode);
                     _trackListView.RulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
                 }));
             

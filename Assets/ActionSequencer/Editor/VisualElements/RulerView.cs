@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -21,7 +22,7 @@ namespace ActionSequencer.Editor.VisualElements {
         private List<Label> _usedLabels = new List<Label>();
 
         private float _memorySize = 10.0f;
-        private int _thickCycle = 5;
+        private int[] _memoryCycles = new[] { 5 };
 
         private static Material Material {
             get {
@@ -53,15 +54,15 @@ namespace ActionSequencer.Editor.VisualElements {
         public float MemorySize {
             get => _memorySize;
             set {
-                _memorySize = Mathf.Max(2, value);
+                _memorySize = Mathf.Max(0, value);
                 SetupLabels(layout);
             }
         }
 
-        public int ThickCycle {
-            get => _thickCycle;
+        public int[] MemoryCycles {
+            get => _memoryCycles;
             set {
-                _thickCycle = Mathf.Max(1, value);
+                _memoryCycles = value.Select(x => Mathf.Max(1, x)).ToArray();
                 SetupLabels(layout);
             }
         }
@@ -100,9 +101,40 @@ namespace ActionSequencer.Editor.VisualElements {
             clipRect.xMax = Mathf.Min(clipRect.xMax, totalRect.xMax);
             clipRect.yMin = Mathf.Max(clipRect.yMin, totalRect.yMin);
             clipRect.yMax = Mathf.Max(clipRect.yMax, totalRect.yMax);
+                
+            // MemoryCycleを適切に変更
+            var minLineOffset = LineWidth * 5;
+            var memoryCycle = 1;
+            if (lineOffset < minLineOffset) {
+                memoryCycle = MemoryCycles[0];
+                for (var i = MemoryCycles.Length - 1; i > 0; i--) {
+                    if (lineOffset * MemoryCycles[i] >= minLineOffset) {
+                        memoryCycle = MemoryCycles[i];
+                        break;
+                    }
+                }
+            }
+
+            int GetMemoryLevel(int index) {
+                if (index % MemoryCycles[0] == 0) {
+                    return 0;
+                }
+
+                if (index % memoryCycle == 0) {
+                    return 1;
+                }
+
+                return -1;
+            }
 
             for (var i = 0;; i++) {
-                var thick = i % ThickCycle == 0;
+                // 間引き
+                var memoryLevel = GetMemoryLevel(i);
+                if (memoryLevel < 0) {
+                    continue;
+                }
+                
+                var thick = memoryLevel == 0;
                 var rect = totalRect;
                 rect.width = thick ? ThickLineWidth : LineWidth;
                 rect.x = i * lineOffset;
@@ -164,8 +196,9 @@ namespace ActionSequencer.Editor.VisualElements {
             var width = totalRect.width;
 
             ReturnLabels();
-            var labelCount = (int)(width / MemorySize / ThickCycle) + 1;
-            var labelUnitOffset = MemorySize * ThickCycle;
+            var thickCycle = MemoryCycles[0];
+            var labelCount = (int)(width / MemorySize / thickCycle) + 1;
+            var labelUnitOffset = MemorySize * thickCycle;
             for (var i = 0; i < labelCount; i++) {
                 var label = GetOrCreateLabel();
                 label.style.left = i * labelUnitOffset;

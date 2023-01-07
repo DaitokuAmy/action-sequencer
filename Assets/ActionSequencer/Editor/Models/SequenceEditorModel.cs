@@ -166,7 +166,7 @@ namespace ActionSequencer.Editor {
 
             switch (CurrentTimeMode.Value) {
                 case TimeMode.Seconds:
-                    return Mathf.RoundToInt(time * 20) / 20.0f;
+                    return Mathf.RoundToInt(time * 40) / 40.0f;
                 case TimeMode.Frames30:
                     return Mathf.RoundToInt(time * 30) / 30.0f;
                 case TimeMode.Frames60:

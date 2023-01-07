@@ -201,7 +201,7 @@ namespace ActionSequencer.Editor {
                 .Subscribe(_ => { _rulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel); }));
             _disposables.Add(_editorModel.CurrentTimeMode
                 .Subscribe(timeMode => {
-                    _rulerView.ThickCycle = SequenceEditorUtility.GetThickCycles(timeMode);
+                    _rulerView.MemoryCycles = SequenceEditorUtility.GetThickCycles(timeMode);
                     _rulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
                     _rulerView.RefreshLabels();
                 }));
