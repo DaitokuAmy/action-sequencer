@@ -40,7 +40,7 @@ namespace ActionSequencer {
     /// <summary>
     /// Sequence再生用クラス
     /// </summary>
-    public sealed class SequenceController : IDisposable {
+    public sealed class SequenceController : IReadOnlySequenceController, IDisposable {
         /// <summary>
         /// 再生中情報
         /// </summary>
