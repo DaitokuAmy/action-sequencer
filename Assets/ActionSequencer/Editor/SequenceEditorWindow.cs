@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using ActionSequencer.Editor.VisualElements;
 using UnityEditor.Callbacks;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 using ObjectField = UnityEditor.UIElements.ObjectField;
 using ToolbarMenu = UnityEditor.UIElements.ToolbarMenu;
 using ToolbarToggle = UnityEditor.UIElements.ToolbarToggle;
@@ -255,6 +257,12 @@ namespace ActionSequencer.Editor {
             timeFitToggle.RegisterValueChangedCallback(evt => { _editorModel.TimeFit.Value = evt.newValue; });
             _disposables.Add(_editorModel.TimeFit
                 .Subscribe(timeFit => { timeFitToggle.value = timeFit; }));
+            
+            // Refresh
+            var refreshButton = root.Q<Button>("RefreshButton");
+            refreshButton.clicked += () => {
+                Setup(_escapedClip, true);
+            };
 
             // InspectorView
             var inspectorView = root.Q<InspectorView>();

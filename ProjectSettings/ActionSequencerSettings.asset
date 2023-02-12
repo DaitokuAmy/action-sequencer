@@ -517,3 +517,132 @@ MonoBehaviour:
   - fullName: TimerRangeSequenceEvent
     label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
     color: {r: 0.7, g: 0.8, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.32053223, g: 0.36838976, b: 0.46226418, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.31617126, g: 0.3655013, b: 0.46226418, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.33228016, g: 0.40165478, b: 0.5377358, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.31612673, g: 0.4132542, b: 0.6037736, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.28751335, g: 0.41660094, b: 0.6698113, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.23553754, g: 0.40765932, b: 0.745283, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.21052866, g: 0.40383697, b: 0.7830189, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.20803669, g: 0.40855744, b: 0.8018868, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.2028302, g: 0.40829447, b: 0.8113208, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.20518868, g: 0.41304207, b: 0.8207547, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.20990565, g: 0.42253727, b: 0.8396226, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.21462265, g: 0.43203253, b: 0.8584906, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.2216981, g: 0.44627532, b: 0.8867924, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.38314345, g: 0.5148307, b: 0.7735849, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.39044145, g: 0.51966727, b: 0.7735849, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.41834283, g: 0.5286125, b: 0.745283, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.46164113, g: 0.55412537, b: 0.735849, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.503916, g: 0.5757782, b: 0.7169812, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.56403524, g: 0.6124387, b: 0.7075472, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.5773852, g: 0.621286, b: 0.7075472, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.5840602, g: 0.6257096, b: 0.7075472, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.5446778, g: 0.61920786, b: 0.754717, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.51023495, g: 0.59029156, b: 0.735849, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.47552508, g: 0.56789804, b: 0.735849, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.45469916, g: 0.554462, b: 0.735849, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.4236383, g: 0.5411178, b: 0.754717, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.3977394, g: 0.5311039, b: 0.7735849, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.30495724, g: 0.49467716, b: 0.8396226, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.22014059, g: 0.466737, b: 0.9150943, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.1342115, g: 0.43473163, b: 0.9811321, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.06132078, g: 0.39440042, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.0047169924, g: 0.35788184, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0.3548386, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0.3548386, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0.3548386, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0.3548386, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0.3548386, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0.3548386, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 1, g: 0.033333335, b: 0, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 1, g: 0.36666667, b: 0, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0.3333335, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.97, g: 0.98, b: 1, a: 1}

@@ -5,6 +5,7 @@
         <ActionSequencer.Editor.VisualElements.ObjectField name="TargetObjectField" type="ActionSequencer.SequenceClip, ActionSequencer" />
         <ui:DropdownField index="-1" choices="30FPS, 60FPS, Sec" name="RulerMode" style="min-width: 80px;" />
         <ActionSequencer.Editor.VisualElements.ToolbarToggle focusable="false" value="true" text="Fit" name="TimeFitToggle" />
+        <ui:Button text="Refresh" display-tooltip-when-elided="true" name="RefreshButton" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; border-left-color: rgb(36, 36, 36); border-right-color: rgb(36, 36, 36); border-top-color: rgb(36, 36, 36); border-bottom-color: rgb(36, 36, 36); border-left-width: 1px; border-right-width: 1px; border-top-width: 0; border-bottom-width: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;" />
     </ActionSequencer.Editor.VisualElements.Toolbar>
     <ActionSequencer.Editor.VisualElements.SplitView fixed-pane-index="1" fixed-pane-initial-dimension="360" name="EditorArea">
         <ActionSequencer.Editor.VisualElements.SplitView fixed-pane-initial-dimension="150" name="ContentArea">
