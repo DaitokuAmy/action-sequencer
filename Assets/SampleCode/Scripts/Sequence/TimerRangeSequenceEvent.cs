@@ -3,7 +3,6 @@ using ActionSequencer;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-[SequenceEvent("時間計測", "#FF8888")]
 public class TimerRangeSequenceEvent : RangeSequenceEvent
 {
     [Tooltip("出力用のフォーマット")]

@@ -263,9 +263,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
   m_Name: LogSignalSequenceEvent
   m_EditorClassIdentifier: 
-  label: "\u30ED\u30B0\u51FA\u529B1"
+  label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
   active: 1
-  time: 1.3666667
+  time: 1.35
   text: 
 --- !u!114 &8776490537020078489
 MonoBehaviour:

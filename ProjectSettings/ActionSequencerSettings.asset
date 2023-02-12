@@ -1,0 +1,519 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1
+MonoBehaviour:
+  m_ObjectHideFlags: 53
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 432557ae87edc434a9a30d0c22cc5eae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sequenceEventTypeSettings:
+  - fullName: LogSignalSequenceEvent
+    label: a
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: a\
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: a
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: 
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u30C6"
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u30C6\u30B9"
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u30C6\u30B9\u30C8"
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: 
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u30ED"
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u30ED\u30B0"
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u30ED\u30B0\u51FA"
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: 
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u6642"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u6642\u9593"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u6642\u9593\u8A08"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0, b: 0, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "a\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9295865, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9295865, b: 0, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 0.8113208, g: 0.757696, b: 0.049750824, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 0.8301887, g: 0.7758683, b: 0.05873976, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 0.8396226, g: 0.78468496, b: 0.059407253, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 0.8584906, g: 0.80288863, b: 0.068841234, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 0.8867924, g: 0.8299465, b: 0.079476655, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 0.9056604, g: 0.847605, b: 0.08116765, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 0.9528302, g: 0.89238405, b: 0.09438412, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 0.9716981, g: 0.910055, b: 0.09625311, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 0.990566, g: 0.927726, b: 0.098122105, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.93656147, b: 0.0990566, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.93656147, b: 0.0990566, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9372257, b: 0.10849059, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.93789, b: 0.11792451, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.93789, b: 0.11792451, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9385543, b: 0.1273585, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9392186, b: 0.13679248, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9405471, b: 0.15566039, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9418757, b: 0.1745283, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.94253993, b: 0.18396229, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9445328, b: 0.21226418, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.94586134, b: 0.23113209, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.949847, b: 0.28773582, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.95183986, b: 0.3160377, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9531684, b: 0.33490568, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.954497, b: 0.3537736, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9578183, b: 0.4009434, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9591469, b: 0.4198113, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.96113974, b: 0.4481132, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.96313256, b: 0.4764151, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9657897, b: 0.514151, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.96711826, b: 0.5330188, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9677825, b: 0.5424528, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9684468, b: 0.5518868, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9691111, b: 0.5613208, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9704396, b: 0.5801887, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9711039, b: 0.5896226, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.97243243, b: 0.6084906, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9730967, b: 0.6179246, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.973761, b: 0.6273585, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9744253, b: 0.6367924, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.97508955, b: 0.6462264, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.97575384, b: 0.6556604, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.97641814, b: 0.6650944, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.97708243, b: 0.6745283, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.97841096, b: 0.6933962, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.97907525, b: 0.7028302, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9804038, b: 0.7216981, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9810681, b: 0.7311321, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.98173237, b: 0.740566, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9823966, b: 0.75, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9830609, b: 0.759434, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9837252, b: 0.7688679, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9850537, b: 0.7877358, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9863823, b: 0.8066038, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9870466, b: 0.8160377, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9883751, b: 0.8349056, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9890394, b: 0.8443396, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9897037, b: 0.8537736, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.99036795, b: 0.8632076, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.99103224, b: 0.8726415, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.99103224, b: 0.8726415, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.99169654, b: 0.8820755, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.99236083, b: 0.8915094, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.99169654, b: 0.8820755, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.99103224, b: 0.8726415, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.99036795, b: 0.8632076, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9890394, b: 0.8443396, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.98771083, b: 0.8254717, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9870466, b: 0.8160377, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9863823, b: 0.8066038, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9850537, b: 0.7877358, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9837252, b: 0.7688679, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.98173237, b: 0.740566, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.97907525, b: 0.7028302, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9730967, b: 0.6179246, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9697754, b: 0.5707547, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9677825, b: 0.5424528, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.96645397, b: 0.5235849, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9657897, b: 0.514151, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9651254, b: 0.504717, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9657897, b: 0.514151, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9684468, b: 0.5518868, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9691111, b: 0.5613208, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9704396, b: 0.5801887, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.97243243, b: 0.6084906, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9730967, b: 0.6179246, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9744253, b: 0.6367924, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.97575384, b: 0.6556604, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.97641814, b: 0.6650944, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.97708243, b: 0.6745283, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.97774667, b: 0.6839622, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.9978876, b: 0.97, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.97887594, b: 0.7, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.72499996, b: 0.7, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.96, b: 0.7, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.7, b: 0.7, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.96, b: 0.7, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.72499996, b: 0.7, a: 1}
+  - fullName: LogSignalSequenceEvent
+    label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+    color: {r: 1, g: 0.95, b: 0.7, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.42209998, g: 0.4824, b: 0.603, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.4319, g: 0.4936, b: 0.617, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.4368, g: 0.49920005, b: 0.624, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.4669, g: 0.53360003, b: 0.667, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.50119996, g: 0.5728, b: 0.71599996, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.5362, g: 0.6128, b: 0.766, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.581, g: 0.66400003, b: 0.83, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.6055, g: 0.69200003, b: 0.865, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0.68235296}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0.6862745}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0.69411767}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0.70980394}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0.72156864}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0.74509805}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0.78039217}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0.83137256}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 0.9411765}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 1}
+  - fullName: TimerRangeSequenceEvent
+    label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
+    color: {r: 0.7, g: 0.8, b: 1, a: 1}
