@@ -56,6 +56,7 @@ namespace ActionSequencer.Editor {
         /// </summary>
         private void DrawSequenceEventSettings() {
             var eventTypes = TypeCache.GetTypesDerivedFrom<SignalSequenceEvent>()
+                .Where(x => !x.IsAbstract && !x.IsGenericType)
                 .Concat(TypeCache.GetTypesDerivedFrom<RangeSequenceEvent>());
             var settingsProp = _serializedObject.FindProperty("_sequenceEventTypeSettings");
 

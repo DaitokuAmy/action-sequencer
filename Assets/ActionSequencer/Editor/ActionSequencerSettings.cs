@@ -16,7 +16,7 @@ namespace ActionSequencer.Editor {
         public class SequenceEventTypeSetting {
             public string fullName;
             public string label;
-            public Color color;
+            public Color color = Color.white;
         }
 
         [SerializeField]
