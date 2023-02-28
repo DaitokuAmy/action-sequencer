@@ -260,12 +260,10 @@ namespace ActionSequencer.Editor {
             timeFitToggle.RegisterValueChangedCallback(evt => { _editorModel.TimeFit.Value = evt.newValue; });
             _disposables.Add(_editorModel.TimeFit
                 .Subscribe(timeFit => { timeFitToggle.value = timeFit; }));
-            
+
             // Refresh
             var refreshButton = root.Q<Button>("RefreshButton");
-            refreshButton.clicked += () => {
-                Setup(_escapedClip, true);
-            };
+            refreshButton.clicked += () => { Setup(_escapedClip, true); };
 
             // InspectorView
             var inspectorView = root.Q<InspectorView>();
@@ -367,7 +365,7 @@ namespace ActionSequencer.Editor {
             if (clip == null) {
                 return;
             }
-            
+
             var serializedObj = new SerializedObject(clip);
             serializedObj.Update();
             var tracksProp = serializedObj.FindProperty("tracks");
@@ -379,7 +377,9 @@ namespace ActionSequencer.Editor {
                     continue;
                 }
 
-                var sequenceEventsProp = trackProp.FindPropertyRelative("sequenceEvents");
+                var trackObj = new SerializedObject(trackProp.objectReferenceValue);
+                trackObj.Update();
+                var sequenceEventsProp = trackObj.FindProperty("sequenceEvents");
                 for (var j = 0; j < sequenceEventsProp.arraySize; j++) {
                     var sequenceEventProp = sequenceEventsProp.GetArrayElementAtIndex(j);
                     if (sequenceEventProp.objectReferenceValue == null) {
@@ -387,7 +387,10 @@ namespace ActionSequencer.Editor {
                         j--;
                     }
                 }
+
+                trackObj.ApplyModifiedPropertiesWithoutUndo();
             }
+
             serializedObj.ApplyModifiedPropertiesWithoutUndo();
         }
     }
