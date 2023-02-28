@@ -79,6 +79,9 @@ namespace ActionSequencer.Editor {
                 return;
             }
 
+            // SequenceClipのクリーンアップ
+            CleanSequenceClipAsset(_escapedClip);
+
             // Clipの設定
             _editorModel.SetSequenceClip(clip);
 
@@ -355,6 +358,37 @@ namespace ActionSequencer.Editor {
         private void OnUndoRedoPerformed() {
             // 本来はプロパティの変更を監視したいが、監視ができないので強引だが開き直す
             Setup(_escapedClip, true);
+        }
+
+        /// <summary>
+        /// SequenceClipの中身をクリーンする
+        /// </summary>
+        private void CleanSequenceClipAsset(SequenceClip clip) {
+            if (clip == null) {
+                return;
+            }
+            
+            var serializedObj = new SerializedObject(clip);
+            serializedObj.Update();
+            var tracksProp = serializedObj.FindProperty("tracks");
+            for (var i = 0; i < tracksProp.arraySize; i++) {
+                var trackProp = tracksProp.GetArrayElementAtIndex(i);
+                if (trackProp.objectReferenceValue == null) {
+                    tracksProp.DeleteArrayElementAtIndex(i);
+                    i--;
+                    continue;
+                }
+
+                var sequenceEventsProp = trackProp.FindPropertyRelative("sequenceEvents");
+                for (var j = 0; j < sequenceEventsProp.arraySize; j++) {
+                    var sequenceEventProp = sequenceEventsProp.GetArrayElementAtIndex(j);
+                    if (sequenceEventProp.objectReferenceValue == null) {
+                        sequenceEventProp.DeleteArrayElementAtIndex(j);
+                        j--;
+                    }
+                }
+            }
+            serializedObj.ApplyModifiedPropertiesWithoutUndo();
         }
     }
 }
