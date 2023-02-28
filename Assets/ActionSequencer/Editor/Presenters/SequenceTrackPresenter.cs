@@ -226,8 +226,10 @@ namespace ActionSequencer.Editor {
             menu.AddSeparator("");
 
             // Create
-            var signalTypes = TypeCache.GetTypesDerivedFrom<SignalSequenceEvent>();
-            var rangeTypes = TypeCache.GetTypesDerivedFrom<RangeSequenceEvent>();
+            var signalTypes = TypeCache.GetTypesDerivedFrom<SignalSequenceEvent>()
+                .Where(x => !x.IsAbstract && !x.IsGenericType);
+            var rangeTypes = TypeCache.GetTypesDerivedFrom<RangeSequenceEvent>()
+                .Where(x => !x.IsAbstract && !x.IsGenericType);
             foreach (var signalType in signalTypes) {
                 var t = signalType;
                 var displayName = SequenceEditorUtility.GetDisplayName(t);
