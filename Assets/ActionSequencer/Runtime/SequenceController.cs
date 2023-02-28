@@ -147,11 +147,25 @@ namespace ActionSequencer {
         }
 
         /// <summary>
+        /// 単体イベント用のハンドラを一括設定解除
+        /// </summary>
+        public static void ResetGlobalSignalEventHandlers() {
+            _globalSignalEventHandlerInfos.Clear();
+        }
+
+        /// <summary>
         /// 単体イベント用のハンドラの設定解除
         /// </summary>
         public void ResetSignalEventHandler<TEvent>()
             where TEvent : SignalSequenceEvent {
             _signalEventHandlerInfos.Remove(typeof(TEvent));
+        }
+
+        /// <summary>
+        /// 単体イベント用のハンドラを一括設定解除
+        /// </summary>
+        public void ResetSignalEventHandlers() {
+            _signalEventHandlerInfos.Clear();
         }
 
         /// <summary>
@@ -225,11 +239,41 @@ namespace ActionSequencer {
         }
 
         /// <summary>
+        /// 範囲イベント用のハンドラを一括設定解除
+        /// </summary>
+        public static void ResetGlobalRangeEventHandlers() {
+            _globalRangeEventHandlerInfos.Clear();
+        }
+
+        /// <summary>
         /// 範囲イベント用のハンドラの設定解除
         /// </summary>
         public void ResetRangeEventHandler<TEvent>()
             where TEvent : RangeSequenceEvent {
             _rangeEventHandlerInfos.Remove(typeof(TEvent));
+        }
+
+        /// <summary>
+        /// 範囲イベント用のハンドラを一括設定解除
+        /// </summary>
+        public void ResetRangeEventHandlers() {
+            _rangeEventHandlerInfos.Clear();
+        }
+
+        /// <summary>
+        /// イベント用のハンドラを一括設定解除
+        /// </summary>
+        public static void ResetGlobalEventHandlers() {
+            ResetGlobalSignalEventHandlers();
+            ResetGlobalSignalEventHandlers();
+        }
+
+        /// <summary>
+        /// イベント用のハンドラを一括設定解除
+        /// </summary>
+        public void ResetEventHandlers() {
+            ResetSignalEventHandlers();
+            ResetRangeEventHandlers();
         }
 
         /// <summary>

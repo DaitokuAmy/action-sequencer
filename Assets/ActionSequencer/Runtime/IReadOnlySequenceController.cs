@@ -27,6 +27,11 @@ namespace ActionSequencer {
             where TEvent : SignalSequenceEvent;
 
         /// <summary>
+        /// 単体イベント用のハンドラを一括設定解除
+        /// </summary>
+        void ResetSignalEventHandlers();
+
+        /// <summary>
         /// 範囲イベント用のハンドラを設定
         /// </summary>
         /// <param name="onInit">ハンドラ生成時の処理</param>
@@ -50,5 +55,15 @@ namespace ActionSequencer {
         /// </summary>
         void ResetRangeEventHandler<TEvent>()
             where TEvent : RangeSequenceEvent;
+        
+        /// <summary>
+        /// 範囲イベント用のハンドラを一括設定解除
+        /// </summary>
+        void ResetRangeEventHandlers();
+
+        /// <summary>
+        /// イベント用のハンドラを一括設定解除
+        /// </summary>
+        void ResetEventHandlers();
     }
 }
