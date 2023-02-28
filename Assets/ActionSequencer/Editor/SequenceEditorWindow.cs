@@ -383,7 +383,7 @@ namespace ActionSequencer.Editor {
                 for (var j = 0; j < sequenceEventsProp.arraySize; j++) {
                     var sequenceEventProp = sequenceEventsProp.GetArrayElementAtIndex(j);
                     if (sequenceEventProp.objectReferenceValue == null) {
-                        sequenceEventProp.DeleteArrayElementAtIndex(j);
+                        sequenceEventsProp.DeleteArrayElementAtIndex(j);
                         j--;
                     }
                 }
