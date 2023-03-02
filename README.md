@@ -66,7 +66,6 @@ _sequenceController.Stop(_sequenceHandle);
 基本機能のままだと何も出来ないため、アプリケーション固有のイベントクラスを以下の様に作成します
 * SignalEventの場合(任意のタイミングでの処理を定義したい場合)
 ```C#
-[SequenceEvent("ログ出力", "#88FF88")]
 public class LogSignalSequenceEvent : SignalSequenceEvent
 {
     [Tooltip("出力用のログ")]
@@ -75,7 +74,6 @@ public class LogSignalSequenceEvent : SignalSequenceEvent
 ```
 * RangeEventの場合(任意の範囲での処理を定義したい場合)
 ```C#
-[SequenceEvent("時間計測", "#FF8888")]
 public class TimerRangeSequenceEvent : RangeSequenceEvent
 {
     [Tooltip("出力用のフォーマット")]
