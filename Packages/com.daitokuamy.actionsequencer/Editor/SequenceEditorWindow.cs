@@ -6,8 +6,6 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using ActionSequencer.Editor.VisualElements;
 using UnityEditor.Callbacks;
-using UnityEditor.SceneManagement;
-using UnityEngine.SceneManagement;
 using ObjectField = UnityEditor.UIElements.ObjectField;
 using ToolbarMenu = UnityEditor.UIElements.ToolbarMenu;
 using ToolbarToggle = UnityEditor.UIElements.ToolbarToggle;
@@ -151,9 +149,9 @@ namespace ActionSequencer.Editor {
 
             // Xml, Style読み込み
             var root = rootVisualElement;
-            var uxml = Resources.Load<VisualTreeAsset>("sequence_editor_window");
+            var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.daitokuamy.actionsequencer/Editor/Layouts/sequence_editor_window.uxml");
             uxml.CloneTree(root);
-            var styleSheet = Resources.Load<StyleSheet>("sequence_editor_window");
+            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/com.daitokuamy.actionsequencer/Editor/Layouts/sequence_editor_window.uss");
             root.styleSheets.Add(styleSheet);
 
             // キー入力受け取れるように設定
