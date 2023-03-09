@@ -244,6 +244,13 @@ namespace ActionSequencer.Editor {
             var objectField = root.Q<ObjectField>("TargetObjectField");
             objectField.RegisterValueChangedCallback(evt => { Setup(evt.newValue as SequenceClip); });
 
+            // PreviewObjectField
+            var previewObjectField = root.Q<ObjectField>("PreviewObjectField");
+            var preview = root.Q<AnimationClipView>("Preview");
+            previewObjectField.RegisterValueChangedCallback(evt => {
+                preview.SetTarget(evt.newValue as AnimationClip);
+            });
+
             // RulerMode
             var rulerMode = root.Q<DropdownField>("RulerMode");
             rulerMode.choices = new List<string>(Enum.GetNames(typeof(SequenceEditorModel.TimeMode)));
@@ -264,11 +271,11 @@ namespace ActionSequencer.Editor {
             refreshButton.clicked += () => { Setup(_escapedClip, true); };
 
             // InspectorView
-            var inspectorView = root.Q<InspectorView>();
+            var inspector = root.Q<InspectorView>("Inspector");
             _disposables.Add(_editorModel.CurrentTimeMode
-                .Subscribe(timeMode => inspectorView.TimeMode = timeMode));
+                .Subscribe(timeMode => inspector.TimeMode = timeMode));
             _disposables.Add(_editorModel.ChangedSelectedTargetsSubject
-                .Subscribe(inspectorView.SetTarget));
+                .Subscribe(inspector.SetTarget));
 
             // Seekbar
             _seekbarView = root.Q<VisualElement>("TrackSeekbar");
