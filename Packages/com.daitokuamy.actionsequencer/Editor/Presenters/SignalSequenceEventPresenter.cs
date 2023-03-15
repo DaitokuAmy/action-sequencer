@@ -6,7 +6,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SignalSequenceEvent用のPresenter
     /// </summary>
-    public class SignalSequenceEventPresenter : SequenceEventPresenter {
+    internal class SignalSequenceEventPresenter : SequenceEventPresenter {
         private SignalSequenceEventModel _model;
         private SignalSequenceEventView _view;
 

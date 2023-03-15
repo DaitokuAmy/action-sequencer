@@ -10,7 +10,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceEditor用のModel
     /// </summary>
-    public class SequenceEditorModel : Model {
+    internal class SequenceEditorModel : Model {
         // 時間モード
         public enum TimeMode {
             Seconds,

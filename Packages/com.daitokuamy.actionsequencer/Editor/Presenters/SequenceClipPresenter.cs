@@ -9,7 +9,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceClip用のPresenter
     /// </summary>
-    public class SequenceClipPresenter : Presenter<SequenceClipModel, VisualElement> {
+    internal class SequenceClipPresenter : Presenter<SequenceClipModel, VisualElement> {
         // Editor用Model
         private SequenceEditorModel _editorModel;
 

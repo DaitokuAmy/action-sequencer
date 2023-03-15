@@ -12,7 +12,7 @@ namespace ActionSequencer.Editor.VisualElements {
         private IMGUIContainer _container;
         private UnityEditor.Editor _inspectorEditor;
 
-        public SequenceEditorModel.TimeMode TimeMode { get; set; } = SequenceEditorModel.TimeMode.Seconds;
+        internal SequenceEditorModel.TimeMode TimeMode { get; set; } = SequenceEditorModel.TimeMode.Seconds;
 
         /// <summary>
         /// コンストラクタ

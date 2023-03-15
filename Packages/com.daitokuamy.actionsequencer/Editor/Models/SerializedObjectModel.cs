@@ -5,7 +5,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SerializedObjectを保持するModel
     /// </summary>
-    public abstract class SerializedObjectModel : Model {
+    internal abstract class SerializedObjectModel : Model {
         public Object Target { get; private set; }
         public SerializedObject SerializedObject { get; private set; }
 

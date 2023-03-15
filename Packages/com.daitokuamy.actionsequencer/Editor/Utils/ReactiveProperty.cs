@@ -4,7 +4,7 @@ namespace ActionSequencer.Editor.Utils {
     /// <summary>
     /// 通知機能付きプロパティ
     /// </summary>
-    public class ReactiveProperty<T> : IReadonlyReactiveProperty<T> {
+    internal class ReactiveProperty<T> : IReadOnlyReactiveProperty<T> {
         private T _value;
         private bool _initialized;
         private Func<T, T> _preprocess;
@@ -75,7 +75,7 @@ namespace ActionSequencer.Editor.Utils {
     /// <summary>
     /// 読み取り専用インターフェース
     /// </summary>
-    public interface IReadonlyReactiveProperty<T> {
+    internal interface IReadOnlyReactiveProperty<T> {
         T Value { get; }
         IDisposable Subscribe(Action<T> func);
     }

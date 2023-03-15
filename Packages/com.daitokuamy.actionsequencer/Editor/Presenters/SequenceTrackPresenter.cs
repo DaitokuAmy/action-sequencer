@@ -10,7 +10,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceTrack用のPresenter
     /// </summary>
-    public class SequenceTrackPresenter : Presenter<SequenceTrackModel, SequenceTrackLabelView> {
+    internal class SequenceTrackPresenter : Presenter<SequenceTrackModel, SequenceTrackLabelView> {
         private SequenceEditorModel _editorModel;
         private List<SequenceEventPresenter> _eventPresenters = new List<SequenceEventPresenter>();
 
