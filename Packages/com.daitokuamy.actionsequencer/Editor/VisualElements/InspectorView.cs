@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
 namespace ActionSequencer.Editor.VisualElements {
     /// <summary>
@@ -43,7 +45,7 @@ namespace ActionSequencer.Editor.VisualElements {
         /// Editor情報の解放
         /// </summary>
         public void ClearTarget() {
-            if (_inspectorEditor == null) {
+            if (_inspectorEditor != null) {
                 Object.DestroyImmediate(_inspectorEditor);
                 _inspectorEditor = null;
             }
@@ -64,7 +66,13 @@ namespace ActionSequencer.Editor.VisualElements {
 
                 var prevMode = SequenceEditorGUI.TimeMode;
                 SequenceEditorGUI.TimeMode = TimeMode;
-                _inspectorEditor.OnInspectorGUI();
+                try {
+                    _inspectorEditor.OnInspectorGUI();
+                }
+                catch (Exception ex) {
+                    Debug.LogException(ex);
+                    ClearTarget();
+                }
                 SequenceEditorGUI.TimeMode = prevMode;
             });
             Add(_container);

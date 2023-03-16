@@ -149,9 +149,12 @@ namespace ActionSequencer.Editor {
 
             // Xml, Style読み込み
             var root = rootVisualElement;
-            var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.daitokuamy.actionsequencer/Editor/Layouts/sequence_editor_window.uxml");
+            var uxml = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
+                "Packages/com.daitokuamy.actionsequencer/Editor/Layouts/sequence_editor_window.uxml");
             uxml.CloneTree(root);
-            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/com.daitokuamy.actionsequencer/Editor/Layouts/sequence_editor_window.uss");
+            var styleSheet =
+                AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                    "Packages/com.daitokuamy.actionsequencer/Editor/Layouts/sequence_editor_window.uss");
             root.styleSheets.Add(styleSheet);
 
             // キー入力受け取れるように設定
@@ -364,6 +367,7 @@ namespace ActionSequencer.Editor {
                 return;
             }
 
+            var cleanAsset = false;
             var serializedObj = new SerializedObject(clip);
             serializedObj.Update();
             var tracksProp = serializedObj.FindProperty("tracks");
@@ -372,6 +376,7 @@ namespace ActionSequencer.Editor {
                 if (trackProp.objectReferenceValue == null) {
                     tracksProp.DeleteArrayElementAtIndex(i);
                     i--;
+                    cleanAsset = true;
                     continue;
                 }
 
@@ -383,6 +388,7 @@ namespace ActionSequencer.Editor {
                     if (sequenceEventProp.objectReferenceValue == null) {
                         sequenceEventsProp.DeleteArrayElementAtIndex(j);
                         j--;
+                        cleanAsset = true;
                     }
                 }
 
@@ -390,6 +396,64 @@ namespace ActionSequencer.Editor {
             }
 
             serializedObj.ApplyModifiedPropertiesWithoutUndo();
+
+            // 破損ファイルがあった場合、SubAssetsをクリーンアップする
+            if (cleanAsset) {
+                RemoveMissingSubAssets(clip);
+            }
+        }
+
+        /// <summary>
+        /// MissingしたSubAssetsを削除する
+        /// </summary>
+        public static void RemoveMissingSubAssets(UnityEngine.Object targetAsset) {
+            // 退避用のInstanceの生成
+            var targetName = targetAsset.name;
+            var newInstance = ScriptableObject.CreateInstance(targetAsset.GetType());
+            EditorUtility.CopySerialized(targetAsset, newInstance);
+
+            var oldPath = AssetDatabase.GetAssetPath(targetAsset);
+            var newPath = oldPath.Replace(".asset", "CLONE.asset");
+            AssetDatabase.CreateAsset(newInstance, newPath);
+            AssetDatabase.ImportAsset(newPath);
+
+            // SubAssetsをクローンした物の子に退避
+            var assets = AssetDatabase.LoadAllAssetsAtPath(oldPath);
+            for (var i = 0; i < assets.Length; i++) {
+                // 破損した物
+                if (assets[i] == null) {
+                    continue;
+                }
+
+                // MainAsset
+                if (assets[i] == targetAsset) {
+                    continue;
+                }
+
+                // サブアセットを移動させる
+                AssetDatabase.RemoveObjectFromAsset(assets[i]);
+                AssetDatabase.AddObjectToAsset(assets[i], newInstance);
+            }
+
+            // 名前を直す
+            newInstance.name = targetName;
+
+            EditorUtility.SetDirty(newInstance);
+            AssetDatabase.SaveAssets();
+
+            AssetDatabase.ImportAsset(oldPath);
+            AssetDatabase.ImportAsset(newPath);
+
+            // metaを残しつつ、新しいインスタンスに差し替える
+            var directoryName = System.IO.Path.GetDirectoryName(Application.dataPath) ?? "";
+            var globalOldPath = System.IO.Path.Combine(directoryName, oldPath);
+            var globalNewPath = System.IO.Path.Combine(directoryName, newPath);
+
+            System.IO.File.Delete(globalOldPath);
+            System.IO.File.Delete(globalNewPath + ".meta");
+            System.IO.File.Move(globalNewPath, globalOldPath);
+
+            AssetDatabase.Refresh();
         }
     }
 }
