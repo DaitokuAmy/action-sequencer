@@ -129,7 +129,10 @@ namespace ActionSequencer.Editor.VisualElements {
                 }
 
                 // 基本操作を回している部分
-                _animationClipEditor.Editor.OnInspectorGUI();
+                using (new EditorGUI.DisabledScope(true)) {
+                    _animationClipEditor.Editor.OnInspectorGUI();
+                }
+                
                 if (!_initializedField) {
                     _animationClipEditor.SetupFields();
                     _initializedField = true;
