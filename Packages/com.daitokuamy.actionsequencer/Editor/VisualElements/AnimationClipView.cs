@@ -90,22 +90,10 @@ namespace ActionSequencer.Editor.VisualElements {
         }
 
         /// <summary>
-        /// ターゲットの設定
+        /// 外部からのTargetClipの変更
         /// </summary>
-        public void SetTarget(AnimationClip target) {
-            if (_animationClipEditor != null && _animationClipEditor.Target == target) {
-                return;
-            }
-            
-            ClearTarget();
-            CreateEditor(target);
-        }
-
-        /// <summary>
-        /// Editor情報の解放
-        /// </summary>
-        public void ClearTarget() {
-            CreateEditor(null);
+        public void ChangeTarget(AnimationClip targetClip) {
+            SetTarget(targetClip, false);
         }
 
         /// <summary>
@@ -176,9 +164,27 @@ namespace ActionSequencer.Editor.VisualElements {
         }
 
         /// <summary>
+        /// ターゲットの設定
+        /// </summary>
+        private void SetTarget(AnimationClip target, bool invokeEvent = true) {
+            if (_animationClipEditor != null && _animationClipEditor.Target == target) {
+                return;
+            }
+            
+            CreateEditor(target, invokeEvent);
+        }
+
+        /// <summary>
+        /// Editor情報の解放
+        /// </summary>
+        private void ClearTarget(bool invokeEvent = true) {
+            CreateEditor(null, invokeEvent);
+        }
+
+        /// <summary>
         /// AnimationClip用のEditorを生成
         /// </summary>
-        private void CreateEditor(AnimationClip clip, bool invokeEvent = true) {
+        private void CreateEditor(AnimationClip clip, bool invokeEvent) {
             if (_animationClipEditor != null && _animationClipEditor.Target == clip) {
                 return;
             }

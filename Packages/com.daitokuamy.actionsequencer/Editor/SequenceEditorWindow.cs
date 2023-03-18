@@ -88,7 +88,7 @@ namespace ActionSequencer.Editor {
             _editorModel.SetSequenceClip(clip);
             
             // Previewの読み込み
-            _previewView.SetTarget(LoadUserPreviewClip(_escapedClip));
+            _previewView.ChangeTarget(LoadUserPreviewClip(_escapedClip));
 
             // Windowのタイトル変更
             titleContent =
@@ -282,11 +282,7 @@ namespace ActionSequencer.Editor {
 
             // PreviewView
             _previewView = root.Q<AnimationClipView>();
-            _previewView.OnChangedClipEvent += clip => {
-                if (_editorModel?.ClipModel?.Target is SequenceClip sequenceClip) {
-                    SaveUserPreviewClip(sequenceClip, clip);
-                }
-            };
+            _previewView.OnChangedClipEvent += OnChangedPreviewClip;
 
             // Seekbar
             _seekbarView = root.Q<VisualElement>("TrackSeekbar");
@@ -318,6 +314,8 @@ namespace ActionSequencer.Editor {
         /// </summary>
         private void OnDisable() {
             Undo.undoRedoPerformed -= OnUndoRedoPerformed;
+            
+            _previewView.OnChangedClipEvent -= OnChangedPreviewClip;
 
             foreach (var disposable in _disposables) {
                 disposable.Dispose();
@@ -432,6 +430,15 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
+        /// PreviewClip変更通知
+        /// </summary>
+        private void OnChangedPreviewClip(AnimationClip clip) {
+            if (_editorModel?.ClipModel?.Target is SequenceClip sequenceClip) {
+                SaveUserPreviewClip(sequenceClip, clip);
+            }
+        }
+
+        /// <summary>
         /// Preview用のClipをユーザーデータとして保存
         /// </summary>
         private void SaveUserPreviewClip(SequenceClip sequenceClip, AnimationClip animationClip) {
@@ -471,7 +478,7 @@ namespace ActionSequencer.Editor {
             try {
                 JsonUtility.FromJsonOverwrite(importer.userData, userData);
             }
-            catch (Exception _) {
+            catch {
                 SaveUserPreviewClip(sequenceClip, null);
                 return null;
             }
