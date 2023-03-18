@@ -130,11 +130,12 @@ namespace ActionSequencer.Editor.VisualElements {
                 }
 
                 // 基本操作を回している部分
-                EditorGUI.BeginDisabledGroup(true);
-                using (new EditorGUILayout.VerticalScope(GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight))) {
-                    _animationClipEditor.Editor.OnInspectorGUI();
+                // ※表示範囲を限定するため、強引だがScrollで範囲制限を行う
+                using (new EditorGUILayout.ScrollViewScope(Vector2.zero, false, false, GUIStyle.none, GUIStyle.none, GUIStyle.none, GUILayout.Height(EditorGUIUtility.singleLineHeight))) {
+                    using (new EditorGUI.DisabledScope(true)) {
+                        _animationClipEditor.Editor.OnInspectorGUI();
+                    }
                 }
-                EditorGUI.EndDisabledGroup();
                 
                 if (!_initializedField) {
                     _animationClipEditor.SetupFields();
@@ -147,19 +148,12 @@ namespace ActionSequencer.Editor.VisualElements {
                 // Preview描画
                 if (_animationClipEditor.Editor.HasPreviewGUI()) {
                     rect.yMin += EditorGUIUtility.singleLineHeight;
-                    GUILayout.BeginArea(rect);
                     
                     using (new GUILayout.HorizontalScope()) {
-                        var leftRect = rect;
-                        leftRect.height = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-                        leftRect.y = 0.0f;
-                        leftRect.xMax -= 150;
-                        EditorGUI.DrawRect(leftRect, new Color(0.15f, 0.15f, 0.15f));
-                        EditorGUILayout.Space(leftRect.width - 10);
+                        EditorGUILayout.Space(rect.width - 160);
                         _animationClipEditor.Editor.OnPreviewSettings();
                     }
-                
-                    GUILayout.EndArea();
+                    
                     rect.yMin += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
                     _animationClipEditor.Editor.OnInteractivePreviewGUI(rect, _previewStyle);
                 }
