@@ -91,7 +91,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5ec08f2e03b1d49a8aa03fbf2f4ddcce, type: 3}
-  m_Name: sequence_clip_damaged01
+  m_Name: sequence_clip_test
   m_EditorClassIdentifier: 
   tracks:
   - {fileID: 5437382844919294764}

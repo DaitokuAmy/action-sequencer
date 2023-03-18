@@ -736,3 +736,330 @@ MonoBehaviour:
   - fullName: TimerRangeSequenceEvent
     label: "\u5171\u901A/\u6642\u9593\u8A08\u6E2C"
     color: {r: 0.36320752, g: 0.6020047, b: 1, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: a
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: 
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u30AD"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u30AD\u30E3"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u30AD\u30E3\u30E9"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u30AD\u30E3"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u30AD"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: 
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u3048"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u3048\u3075"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u3048\u3075\u3047"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u3048\u3075\u3047\u4E5D"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u3048\u3075\u3047\u4E5Dt"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u3048\u3075\u3047\u4E5D"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u3048\u3075\u3047"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u3048\u3075"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u3048"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.53367525, g: 0.7264151, b: 0.46942863, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.5406061, g: 0.735849, b: 0.47552508, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.5613986, g: 0.764151, b: 0.49381453, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.73241144, g: 0.9339623, b: 0.66522783, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.8054245, g: 1, b: 0.740566, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.8266509, g: 1, b: 0.7688679, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.8549528, g: 1, b: 0.8066038, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.8761792, g: 1, b: 0.8349056, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.8903302, g: 1, b: 0.8537736, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.8903302, g: 1, b: 0.8537736, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.8903302, g: 1, b: 0.8537736, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.8337264, g: 1, b: 0.7783019, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.7346698, g: 1, b: 0.6462264, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.6214622, g: 1, b: 0.495283, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.5082547, g: 1, b: 0.3443396, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.39504716, g: 1, b: 0.19339621, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.2889151, g: 1, b: 0.051886797, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 0}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 0.7921569}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 0.85882354}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 0.92941177}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.25, g: 1, b: 0, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.35734114, g: 1, b: 0.14199996, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.3625843, g: 1, b: 0.14899999, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.37831372, g: 1, b: 0.17000002, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.39404312, g: 1, b: 0.19099998, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.41576472, g: 1, b: 0.22000003, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.43673727, g: 1, b: 0.24800003, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.45321566, g: 1, b: 0.26999998, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.47943136, g: 1, b: 0.305, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.49516076, g: 1, b: 0.32599998, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.51688236, g: 1, b: 0.35500002, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.54309803, g: 1, b: 0.39, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.5640706, g: 1, b: 0.41799998, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.580549, g: 1, b: 0.44, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.60676473, g: 1, b: 0.47500002, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.6337294, g: 1, b: 0.511, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.65470195, g: 1, b: 0.53900003, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.6704314, g: 1, b: 0.56, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.7026392, g: 1, b: 0.603, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.71836865, g: 1, b: 0.624, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.734098, g: 1, b: 0.645, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.75057644, g: 1, b: 0.667, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.76106274, g: 1, b: 0.681, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.76630586, g: 1, b: 0.68799996, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.771549, g: 1, b: 0.695, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.76630586, g: 1, b: 0.68799996, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.7558196, g: 1, b: 0.674, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.7393412, g: 1, b: 0.652, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.7236118, g: 1, b: 0.631, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.70788234, g: 1, b: 0.61, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.6809176, g: 1, b: 0.574, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.6704314, g: 1, b: 0.56, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.66518825, g: 1, b: 0.553, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.6494588, g: 1, b: 0.532, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.6389725, g: 1, b: 0.518, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.6337294, g: 1, b: 0.511, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - fullName: PlayEffectSignalSequenceEvent
+    label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+    color: {r: 0.96254903, g: 1, b: 0.95, a: 1}

@@ -69,9 +69,7 @@ namespace ActionSequencer.Editor.VisualElements {
                 try {
                     _inspectorEditor.OnInspectorGUI();
                 }
-                catch (Exception ex) {
-                    Debug.LogException(ex);
-                    ClearTarget();
+                catch {
                 }
                 SequenceEditorGUI.TimeMode = prevMode;
             });

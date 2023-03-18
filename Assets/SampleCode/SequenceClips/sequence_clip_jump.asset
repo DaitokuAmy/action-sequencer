@@ -1,0 +1,266 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8506457779462893098
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: LogSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u30ED\u30B0\u51FA\u529B"
+  active: 1
+  time: 0
+  text: 
+--- !u!114 &-7540210036600917106
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03d5a44d3d23160488ba30478c4f6ec8, type: 3}
+  m_Name: PlayEffectSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u30B8\u30E3\u30F3\u30D7\u958B\u59CB"
+  active: 1
+  time: 0.325
+  prefab: {fileID: 8846004282753536196, guid: 8e7585cfe058d3044a74307dc2b1780b, type: 3}
+  offsetPosition: {x: 0, y: 0, z: 0}
+  offsetAngles: {x: 0, y: 0, z: 0}
+--- !u!114 &-6161374162411101724
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc24e13f709b247bbba00cef11701e68, type: 3}
+  m_Name: TimerRangeSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u6642\u9593\u8A08\u6E2C"
+  active: 1
+  enterTime: 2.0333333
+  exitTime: 3.7
+  format: Time:{0:0.000}
+--- !u!114 &-1014740740111705095
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: LogSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u30ED\u30B0\u51FA\u529B2"
+  active: 1
+  time: 1
+  text: 
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ec08f2e03b1d49a8aa03fbf2f4ddcce, type: 3}
+  m_Name: sequence_clip_jump
+  m_EditorClassIdentifier: 
+  tracks:
+  - {fileID: 497499553068626419}
+  frameRate: -1
+--- !u!114 &274821728735001683
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: LogSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u30ED\u30B0\u51FA\u529B"
+  active: 1
+  time: 0.75
+  text: 
+--- !u!114 &497499553068626419
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f3dc1b502acd48ad9608fc38cadbbcb, type: 3}
+  m_Name: SequenceTrack
+  m_EditorClassIdentifier: 
+  label: Effect
+  sequenceEvents:
+  - {fileID: -7540210036600917106}
+  - {fileID: 5492008818865290078}
+--- !u!114 &1089560651283321477
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: LogSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u30ED\u30B0\u51FA\u529B"
+  active: 1
+  time: 0
+  text: 
+--- !u!114 &2833249897527526069
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: LogSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u30ED\u30B0\u51FA\u529B"
+  active: 1
+  time: 0.75
+  text: 
+--- !u!114 &3211581508525000918
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc24e13f709b247bbba00cef11701e68, type: 3}
+  m_Name: TimerRangeSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u6642\u9593\u8A08\u6E2C"
+  active: 1
+  enterTime: 0
+  exitTime: 0
+  format: Time:{0:0.000}
+--- !u!114 &3789569887080717367
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc24e13f709b247bbba00cef11701e68, type: 3}
+  m_Name: TimerRangeSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u6642\u9593\u8A08\u6E2C"
+  active: 1
+  enterTime: 1
+  exitTime: 1.8333334
+  format: Time:{0:0.000}
+--- !u!114 &4748742041284091303
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc24e13f709b247bbba00cef11701e68, type: 3}
+  m_Name: TimerRangeSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u6642\u9593\u8A08\u6E2C"
+  active: 1
+  enterTime: 1.0666667
+  exitTime: 2.6666667
+  format: Time:{0:0.000}
+--- !u!114 &5492008818865290078
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03d5a44d3d23160488ba30478c4f6ec8, type: 3}
+  m_Name: PlayEffectSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u30B8\u30E3\u30F3\u30D7\u7D42\u4E86"
+  active: 1
+  time: 1.175
+  prefab: {fileID: 8846004282753536196, guid: 8e7585cfe058d3044a74307dc2b1780b, type: 3}
+  offsetPosition: {x: 0, y: 0, z: 0}
+  offsetAngles: {x: 0, y: 0, z: 0}
+--- !u!114 &7690251550523528495
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc24e13f709b247bbba00cef11701e68, type: 3}
+  m_Name: TimerRangeSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u6642\u9593\u8A08\u6E2C"
+  active: 1
+  enterTime: 0.23333333
+  exitTime: 0.45
+  format: Time:{0:0.000}
+--- !u!114 &7748103785699484379
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: LogSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+  active: 1
+  time: 1.35
+  text: 
+--- !u!114 &8776490537020078489
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: LogSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u30ED\u30B0\u51FA\u529B3"
+  active: 1
+  time: 1.5
+  text: 
