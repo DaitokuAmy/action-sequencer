@@ -124,14 +124,17 @@ namespace ActionSequencer.Editor.VisualElements {
                     _previewStyle = new GUIStyle {
                         normal = {
                             background = Texture2D.grayTexture
-                        }
+                        },
+                        
                     };
                 }
 
                 // 基本操作を回している部分
-                using (new EditorGUI.DisabledScope(true)) {
+                EditorGUI.BeginDisabledGroup(true);
+                using (new EditorGUILayout.VerticalScope(GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight))) {
                     _animationClipEditor.Editor.OnInspectorGUI();
                 }
+                EditorGUI.EndDisabledGroup();
                 
                 if (!_initializedField) {
                     _animationClipEditor.SetupFields();
