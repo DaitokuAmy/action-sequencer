@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/ActionSequencer/Editor/Resources/sequence_editor_window.uss?fileID=7433441132597879392&amp;guid=1fa74295071c045a0a7f3915c99d18c7&amp;type=3#sequence_editor_window" />
+    <Style src="project://database/Packages/com.daitokuamy.actionsequencer/Editor/Layouts/sequence_editor_window.uss?fileID=7433441132597879392&amp;guid=1fa74295071c045a0a7f3915c99d18c7&amp;type=3#sequence_editor_window" />
     <ActionSequencer.Editor.VisualElements.Toolbar>
         <ActionSequencer.Editor.VisualElements.ToolbarToggle focusable="false" name="PlayPauseToggle" class="pause_icon" />
         <ActionSequencer.Editor.VisualElements.ObjectField name="TargetObjectField" type="ActionSequencer.SequenceClip, ActionSequencer" />
@@ -45,13 +45,21 @@
                 <ui:VisualElement name="TrackSeekbar" class="track_seekbar" style="position: absolute; height: 100%; width: 2px;" />
             </ui:VisualElement>
         </ActionSequencer.Editor.VisualElements.SplitView>
-        <ui:VisualElement name="InspectorArea" style="min-width: 100px;">
-            <ui:VisualElement name="InspectorHeader" style="height: 20px; background-color: rgb(64, 64, 64);">
-                <ui:Label text="Inspector" display-tooltip-when-elided="true" style="-unity-font-style: bold; font-size: 12px; -unity-text-align: visible; height: 100%; margin-left: 0; padding-left: 6px;" />
+        <ActionSequencer.Editor.VisualElements.SplitView orientation="Vertical">
+            <ui:VisualElement name="InspectorArea" style="min-width: 100px;">
+                <ui:VisualElement name="InspectorHeader" style="height: 20px; background-color: rgb(64, 64, 64);">
+                    <ui:Label text="Inspector" display-tooltip-when-elided="true" style="-unity-font-style: bold; font-size: 12px; -unity-text-align: visible; height: 100%; margin-left: 0; padding-left: 6px;" />
+                </ui:VisualElement>
+                <ui:ScrollView name="InspectorScrollView">
+                    <ActionSequencer.Editor.VisualElements.InspectorView text="Sample&#10;" name="Inspector" style="padding-left: 4px; padding-right: 4px; padding-top: 4px; padding-bottom: 4px; min-width: 100px;" />
+                </ui:ScrollView>
             </ui:VisualElement>
-            <ui:ScrollView name="InspectorScrollView">
-                <ActionSequencer.Editor.VisualElements.InspectorView text="Sample&#10;" style="padding-left: 4px; padding-right: 4px; padding-top: 4px; padding-bottom: 4px; min-width: 100px;" />
-            </ui:ScrollView>
-        </ui:VisualElement>
+            <ui:VisualElement name="PreviewArea" style="min-height: 20px;">
+                <ui:VisualElement name="PreviewHeader" style="height: 20px; background-color: rgb(64, 64, 64); min-height: 20px; max-height: 20px;">
+                    <ui:Label text="Preview" display-tooltip-when-elided="true" style="height: 100%; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 6px; -unity-font-style: bold;" />
+                </ui:VisualElement>
+                <ActionSequencer.Editor.VisualElements.AnimationClipView name="Preview" style="height: 100%;" />
+            </ui:VisualElement>
+        </ActionSequencer.Editor.VisualElements.SplitView>
     </ActionSequencer.Editor.VisualElements.SplitView>
 </ui:UXML>

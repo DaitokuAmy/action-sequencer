@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -15,28 +16,31 @@ namespace ActionSequencer.Editor {
     /// Sequence編集用Window
     /// </summary>
     public class SequenceEditorWindow : EditorWindow {
+        // .metaのUserDataに保存される情報
+        [Serializable]
+        private class UserData {
+            public string Guid = "";
+            public long LocalId = 0L;
+        }
+        
         // リセット対策用SequenceClipキャッシュ
         [SerializeField]
         private SequenceClip _escapedClip;
 
         // Editor用のModel
         private SequenceEditorModel _editorModel;
-
         // TrackのPresenterリスト
         private SequenceClipPresenter _sequenceClipPresenter;
-
         // ルーラー表示用View
         private RulerView _rulerView;
-
+        // Preview用View
+        private AnimationClipView _previewView;
         // シークバー表示用View
         private VisualElement _seekbarView;
-
         // スクロールオフセット値
         private float _trackScrollOffsetX;
-
         // OnDisableで廃棄されるDisposablesのリスト
         private List<IDisposable> _disposables = new List<IDisposable>();
-
         // 再生主
         private GameObject _controllerProviderOwner;
         private ISequenceControllerProvider _controllerProvider;
@@ -82,6 +86,9 @@ namespace ActionSequencer.Editor {
 
             // Clipの設定
             _editorModel.SetSequenceClip(clip);
+            
+            // Previewの読み込み
+            _previewView.SetTarget(LoadUserPreviewClip(_escapedClip));
 
             // Windowのタイトル変更
             titleContent =
@@ -267,11 +274,19 @@ namespace ActionSequencer.Editor {
             refreshButton.clicked += () => { Setup(_escapedClip, true); };
 
             // InspectorView
-            var inspectorView = root.Q<InspectorView>();
+            var inspector = root.Q<InspectorView>("Inspector");
             _disposables.Add(_editorModel.CurrentTimeMode
-                .Subscribe(timeMode => inspectorView.TimeMode = timeMode));
+                .Subscribe(timeMode => inspector.TimeMode = timeMode));
             _disposables.Add(_editorModel.ChangedSelectedTargetsSubject
-                .Subscribe(inspectorView.SetTarget));
+                .Subscribe(inspector.SetTarget));
+
+            // PreviewView
+            _previewView = root.Q<AnimationClipView>();
+            _previewView.OnChangedClipEvent += clip => {
+                if (_editorModel?.ClipModel?.Target is SequenceClip sequenceClip) {
+                    SaveUserPreviewClip(sequenceClip, clip);
+                }
+            };
 
             // Seekbar
             _seekbarView = root.Q<VisualElement>("TrackSeekbar");
@@ -323,11 +338,24 @@ namespace ActionSequencer.Editor {
 
             UpdateControllerProvider();
 
-            // Seekbarの調整
-            var clip = _editorModel.ClipModel.Target as SequenceClip;
-            if (_seekbarView != null) {
+            float GetSeekTime(SequenceClip clip) {
+                var result = -1.0f;
+
+                // SequenceControllerがあれば優先させる
                 var sequenceController = _controllerProvider?.SequenceController;
-                var time = sequenceController != null ? sequenceController.GetSequenceTime(clip) : -1.0f;
+                result = sequenceController?.GetSequenceTime(clip) ?? -1.0f;
+                if (result >= 0.0f) {
+                    return result;
+                }
+
+                // 無ければPreviewに設定された物を採用
+                result = _previewView.IsValid ? _previewView.CurrentTime : -1.0f;
+                return result;
+            }
+
+            // Seekbarの調整
+            if (_seekbarView != null) {
+                var time = GetSeekTime(_editorModel.ClipModel.Target as SequenceClip);
                 _seekbarView.visible = time >= 0.0f;
                 if (_seekbarView.visible) {
                     // 時間をSeekbarに反映
@@ -404,12 +432,72 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
+        /// Preview用のClipをユーザーデータとして保存
+        /// </summary>
+        private void SaveUserPreviewClip(SequenceClip sequenceClip, AnimationClip animationClip) {
+            if (sequenceClip == null) {
+                return;
+            }
+
+            var path = AssetDatabase.GetAssetPath(sequenceClip);
+            var importer = AssetImporter.GetAtPath(path);
+
+            var userData = new UserData();
+            if (animationClip != null && AssetDatabase.TryGetGUIDAndLocalFileIdentifier(animationClip.GetInstanceID(), out var guid,
+                    out long localId)) {
+                userData.Guid = guid;
+                userData.LocalId = localId;
+            }
+            importer.userData = JsonUtility.ToJson(userData, true);
+            
+            importer.SaveAndReimport();
+        }
+
+        /// <summary>
+        /// Preview用のClipを読み込み
+        /// </summary>
+        private AnimationClip LoadUserPreviewClip(SequenceClip sequenceClip) {
+            if (sequenceClip == null) {
+                return null;
+            }
+
+            var path = AssetDatabase.GetAssetPath(sequenceClip);
+            var importer = AssetImporter.GetAtPath(path);
+            if (string.IsNullOrEmpty(importer.userData)) {
+                return null;
+            }
+
+            var userData = new UserData();
+            try {
+                JsonUtility.FromJsonOverwrite(importer.userData, userData);
+            }
+            catch (Exception _) {
+                SaveUserPreviewClip(sequenceClip, null);
+                return null;
+            }
+            
+            if (string.IsNullOrEmpty(userData.Guid)) {
+                return null;
+            }
+
+            var assets = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GUIDToAssetPath(userData.Guid));
+            var targetAnimationClip = assets.FirstOrDefault(x => {
+                if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier(x, out var _, out long id)) {
+                    return id == userData.LocalId;
+                }
+
+                return false;
+            }) as AnimationClip;
+            return targetAnimationClip;
+        }
+
+        /// <summary>
         /// MissingしたSubAssetsを削除する
         /// </summary>
-        public static void RemoveMissingSubAssets(UnityEngine.Object targetAsset) {
+        private void RemoveMissingSubAssets(UnityEngine.Object targetAsset) {
             // 退避用のInstanceの生成
             var targetName = targetAsset.name;
-            var newInstance = ScriptableObject.CreateInstance(targetAsset.GetType());
+            var newInstance = CreateInstance(targetAsset.GetType());
             EditorUtility.CopySerialized(targetAsset, newInstance);
 
             var oldPath = AssetDatabase.GetAssetPath(targetAsset);
