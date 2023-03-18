@@ -64,7 +64,7 @@ MonoBehaviour:
   active: 1
   enterTime: 2.0333333
   exitTime: 3.7
-  format: Time:{0.000}
+  format: Time:{0:0.000}
 --- !u!114 &-1014740740111705095
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -181,7 +181,7 @@ MonoBehaviour:
   active: 1
   enterTime: 0
   exitTime: 0
-  format: Time:{0.000}
+  format: Time:{0:0.000}
 --- !u!114 &3789569887080717367
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -198,7 +198,7 @@ MonoBehaviour:
   active: 1
   enterTime: 1
   exitTime: 1.8333334
-  format: Time:{0.000}
+  format: Time:{0:0.000}
 --- !u!114 &4748742041284091303
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -215,7 +215,7 @@ MonoBehaviour:
   active: 1
   enterTime: 1.0666667
   exitTime: 2.6666667
-  format: Time:{0.000}
+  format: Time:{0:0.000}
 --- !u!114 &5437382844919294764
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -248,9 +248,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   label: "\u6642\u9593\u8A08\u6E2C"
   active: 1
-  enterTime: 0.26666668
-  exitTime: 1.45
-  format: Time:{0.000}
+  enterTime: 0.23333333
+  exitTime: 0.45
+  format: Time:{0:0.000}
 --- !u!114 &7748103785699484379
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -9,7 +9,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceEvent用のPresenter基底
     /// </summary>
-    public abstract class SequenceEventPresenter : Presenter<SequenceEventModel, SequenceEventView> {
+    internal abstract class SequenceEventPresenter : Presenter<SequenceEventModel, SequenceEventView> {
         public SequenceTrackLabelElementView LabelElementView { get; private set; }
         protected SequenceTrackModel TrackModel { get; private set; }
         protected SequenceEditorModel EditorModel { get; private set; }

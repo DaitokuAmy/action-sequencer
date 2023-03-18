@@ -10,7 +10,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceTrack用Model
     /// </summary>
-    public class SequenceTrackModel : SerializedObjectModel {
+    internal class SequenceTrackModel : SerializedObjectModel {
         private SerializedProperty _label;
         private SerializedProperty _sequenceEvents;
         private List<SequenceEventModel> _eventModels = new List<SequenceEventModel>();

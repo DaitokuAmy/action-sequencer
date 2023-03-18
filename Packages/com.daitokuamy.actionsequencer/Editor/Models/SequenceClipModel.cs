@@ -9,7 +9,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceEditor用のModel
     /// </summary>
-    public class SequenceClipModel : SerializedObjectModel {
+    internal class SequenceClipModel : SerializedObjectModel {
         private SerializedProperty _tracks;
         private SerializedProperty _frameRate;
         private List<SequenceTrackModel> _trackModels = new List<SequenceTrackModel>();

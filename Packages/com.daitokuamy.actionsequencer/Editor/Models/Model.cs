@@ -5,7 +5,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// Model基底
     /// </summary>
-    public abstract class Model : IDisposable {
+    internal abstract class Model : IDisposable {
         private List<IDisposable> _disposables = new List<IDisposable>();
 
         /// <summary>

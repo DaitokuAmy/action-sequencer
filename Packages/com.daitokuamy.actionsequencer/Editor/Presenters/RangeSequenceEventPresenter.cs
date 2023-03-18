@@ -6,7 +6,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// RangeSequenceEvent用のPresenter
     /// </summary>
-    public class RangeSequenceEventPresenter : SequenceEventPresenter {
+    internal class RangeSequenceEventPresenter : SequenceEventPresenter {
         private RangeSequenceEventModel _model;
         private RangeSequenceEventView _view;
 

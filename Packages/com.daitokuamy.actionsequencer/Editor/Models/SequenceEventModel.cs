@@ -7,7 +7,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceEvent用Model基底
     /// </summary>
-    public abstract class SequenceEventModel : SerializedObjectModel {
+    internal abstract class SequenceEventModel : SerializedObjectModel {
         private SerializedProperty _active;
         private SerializedProperty _label;
 

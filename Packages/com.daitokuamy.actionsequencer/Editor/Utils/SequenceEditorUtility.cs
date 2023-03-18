@@ -6,7 +6,7 @@ namespace ActionSequencer.Editor.Utils {
     /// <summary>
     /// SequenceEditor用のユーティリティ
     /// </summary>
-    public static class SequenceEditorUtility {
+    internal static class SequenceEditorUtility {
         /// <summary>
         /// SequenceEventの表示名を取得
         /// </summary>
