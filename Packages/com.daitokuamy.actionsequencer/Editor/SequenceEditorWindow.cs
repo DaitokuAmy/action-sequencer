@@ -189,7 +189,7 @@ namespace ActionSequencer.Editor {
             };
             rulerArea.RegisterCallback<WheelEvent>(evt => {
                 // WheelによってTimeToSize変更
-                _editorModel.TimeToSize.Value -= evt.delta.y;
+                _editorModel.TimeToSize.Value -= evt.delta.y * 8;
             });
             _rulerView.OnGetThickLabel += thickIndex => {
                 if (thickIndex % 2 != 0) {
