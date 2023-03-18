@@ -33,6 +33,11 @@ Unityに搭載されている「Timeline」「AnimationEvent/AnimationCurve」�
 https://github.com/DaitokuAmy/action-sequencer.git?path=/Packages/com.daitokuamy.actionsequencer#1.0.0
 
 ## 機能
+#### プレビュー
+ActionSequencerにはAnimationClipをPreviewする機能がついています  
+また、この機能はAnimationClip自体に依存関係を持っていないため、SequenceClipを読み込んでもAnimationClipは読み込まれない点に注意してください
+![action_sequencer_preview](https://user-images.githubusercontent.com/6957962/226096510-3aa669d6-4112-413e-8f07-d561603a4c4e.gif)
+
 #### ライフサイクル
 初期化はSequenceControllerというクラス(Sequenceを実行するためのクラス)を作成する所から始まります
 ```C#
