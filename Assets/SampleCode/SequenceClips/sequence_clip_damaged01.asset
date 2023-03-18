@@ -91,14 +91,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5ec08f2e03b1d49a8aa03fbf2f4ddcce, type: 3}
-  m_Name: sequence_clip
+  m_Name: sequence_clip_damaged01
   m_EditorClassIdentifier: 
   tracks:
   - {fileID: 5437382844919294764}
   - {fileID: -9018245876484903352}
   - {fileID: -6814886901204156338}
   - {fileID: 497499553068626419}
-  frameRate: 60
+  frameRate: -1
 --- !u!114 &274821728735001683
 MonoBehaviour:
   m_ObjectHideFlags: 1
