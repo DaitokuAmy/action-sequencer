@@ -96,9 +96,8 @@ namespace ActionSequencer.Editor {
             foreach (var type in eventTypes) {
                 var fullName = type.FullName;
                 
-                if (!_settings.SequenceEventTypeSettings.TryGetValue(fullName ?? "", out var sequenceEventSetting)) {
-                    continue;
-                }
+                // 既存設定の取り出し
+                _settings.SequenceEventTypeSettings.TryGetValue(fullName ?? "", out var sequenceEventSetting);
 
                 // 設定部分描画
                 using (var changeCheckScope = new EditorGUI.ChangeCheckScope()) {
