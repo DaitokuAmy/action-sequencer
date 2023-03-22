@@ -18,6 +18,8 @@ public class Sample : MonoBehaviour, ISequenceControllerProvider {
     [SerializeField, Tooltip("アクション情報リスト")]
     private ActionInfo[] _actionInfos;
 
+    public float startOffset;
+
     // SequenceClip制御用コントローラ
     private SequenceController _sequenceController;
     // 以前再生したActionによるSequenceHandle
@@ -75,6 +77,6 @@ public class Sample : MonoBehaviour, ISequenceControllerProvider {
         // モーション再生と同時にシーケンスを流す
         var actionInfo = _actionInfos[actionIndex];
         _animator.SetTrigger(actionInfo.triggerName);
-        _actionSequenceHandle = _sequenceController.Play(actionInfo.SequenceClip);
+        _actionSequenceHandle = _sequenceController.Play(actionInfo.SequenceClip, startOffset);
     }
 }

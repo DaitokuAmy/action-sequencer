@@ -290,7 +290,7 @@ namespace ActionSequencer {
         /// <param name="startOffset">開始時間オフセット</param>
         public SequenceHandle Play(SequenceClip clip, float startOffset = 0.0f) {
             // 再生用の情報を追加
-            var playingInfo = CreatePlayingInfo(clip);
+            var playingInfo = CreatePlayingInfo(clip, startOffset);
             _playingInfos.Add(playingInfo);
 
             return new SequenceHandle(playingInfo);
@@ -428,10 +428,10 @@ namespace ActionSequencer {
         /// <summary>
         /// 再生用情報の作成
         /// </summary>
-        private PlayingInfo CreatePlayingInfo(SequenceClip clip) {
+        private PlayingInfo CreatePlayingInfo(SequenceClip clip, float startOffset) {
             var playingInfo = new PlayingInfo();
             playingInfo.Clip = clip;
-            playingInfo.Time = 0.0f;
+            playingInfo.Time = startOffset;
 
             var events = clip.tracks
                 .SelectMany(x => x.sequenceEvents)
