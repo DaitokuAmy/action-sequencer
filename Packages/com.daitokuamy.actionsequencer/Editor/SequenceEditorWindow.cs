@@ -21,6 +21,7 @@ namespace ActionSequencer.Editor {
         private class UserData {
             public string Guid = "";
             public long LocalId = 0L;
+            public float OffsetTime = 0.0f;
         }
         
         // リセット対策用SequenceClipキャッシュ
@@ -88,7 +89,9 @@ namespace ActionSequencer.Editor {
             _editorModel.SetSequenceClip(clip);
             
             // Previewの読み込み
-            _previewView.ChangeTarget(LoadUserPreviewClip(_escapedClip));
+            (var animClip, var offsetTime) = LoadUserPreviewClip(_escapedClip); 
+            _previewView.ChangeTarget(animClip);
+            _previewView.ChangeOffsetTime(offsetTime);
 
             // Windowのタイトル変更
             titleContent =
@@ -283,6 +286,7 @@ namespace ActionSequencer.Editor {
             // PreviewView
             _previewView = root.Q<AnimationClipView>();
             _previewView.OnChangedClipEvent += OnChangedPreviewClip;
+            _previewView.OnChangedOffsetTimeEvent += OnChangedPreviewOffsetTime;
 
             // Seekbar
             _seekbarView = root.Q<VisualElement>("TrackSeekbar");
@@ -316,6 +320,7 @@ namespace ActionSequencer.Editor {
             Undo.undoRedoPerformed -= OnUndoRedoPerformed;
             
             _previewView.OnChangedClipEvent -= OnChangedPreviewClip;
+            _previewView.OnChangedOffsetTimeEvent -= OnChangedPreviewOffsetTime;
 
             foreach (var disposable in _disposables) {
                 disposable.Dispose();
@@ -434,14 +439,23 @@ namespace ActionSequencer.Editor {
         /// </summary>
         private void OnChangedPreviewClip(AnimationClip clip) {
             if (_editorModel?.ClipModel?.Target is SequenceClip sequenceClip) {
-                SaveUserPreviewClip(sequenceClip, clip);
+                SaveUserPreviewClip(sequenceClip, clip, _previewView.OffsetTime);
+            }
+        }
+
+        /// <summary>
+        /// PreviewOffsetTime変更通知
+        /// </summary>
+        private void OnChangedPreviewOffsetTime(float offsetTime) {
+            if (_editorModel?.ClipModel?.Target is SequenceClip sequenceClip) {
+                SaveUserPreviewClip(sequenceClip, _previewView.CurrentClip, offsetTime);
             }
         }
 
         /// <summary>
         /// Preview用のClipをユーザーデータとして保存
         /// </summary>
-        private void SaveUserPreviewClip(SequenceClip sequenceClip, AnimationClip animationClip) {
+        private void SaveUserPreviewClip(SequenceClip sequenceClip, AnimationClip animationClip, float offsetTime) {
             if (sequenceClip == null) {
                 return;
             }
@@ -455,6 +469,7 @@ namespace ActionSequencer.Editor {
                 userData.Guid = guid;
                 userData.LocalId = localId;
             }
+            userData.OffsetTime = offsetTime;
             importer.userData = JsonUtility.ToJson(userData, true);
             
             importer.SaveAndReimport();
@@ -463,15 +478,15 @@ namespace ActionSequencer.Editor {
         /// <summary>
         /// Preview用のClipを読み込み
         /// </summary>
-        private AnimationClip LoadUserPreviewClip(SequenceClip sequenceClip) {
+        private (AnimationClip, float) LoadUserPreviewClip(SequenceClip sequenceClip) {
             if (sequenceClip == null) {
-                return null;
+                return (null, 0.0f);
             }
 
             var path = AssetDatabase.GetAssetPath(sequenceClip);
             var importer = AssetImporter.GetAtPath(path);
             if (string.IsNullOrEmpty(importer.userData)) {
-                return null;
+                return (null, 0.0f);
             }
 
             var userData = new UserData();
@@ -479,12 +494,12 @@ namespace ActionSequencer.Editor {
                 JsonUtility.FromJsonOverwrite(importer.userData, userData);
             }
             catch {
-                SaveUserPreviewClip(sequenceClip, null);
-                return null;
+                SaveUserPreviewClip(sequenceClip, null, 0.0f);
+                return (null, 0.0f);
             }
             
             if (string.IsNullOrEmpty(userData.Guid)) {
-                return null;
+                return (null, 0.0f);
             }
 
             var assets = AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GUIDToAssetPath(userData.Guid));
@@ -495,7 +510,7 @@ namespace ActionSequencer.Editor {
 
                 return false;
             }) as AnimationClip;
-            return targetAnimationClip;
+            return (targetAnimationClip, userData.OffsetTime);
         }
 
         /// <summary>

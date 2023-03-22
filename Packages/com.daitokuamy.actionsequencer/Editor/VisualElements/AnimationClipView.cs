@@ -74,13 +74,19 @@ namespace ActionSequencer.Editor.VisualElements {
         private AnimationClipEditor _animationClipEditor;
         private bool _initializedField;
         private GUIStyle _previewStyle;
+        private float _previewOffsetTime;
 
         // Preview使用中か
         public bool IsValid => _animationClipEditor?.Target != null;
         // 現在の再生時間
-        public float CurrentTime => _animationClipEditor?.CurrentTime ?? 0.0f;
+        public float CurrentTime => (_animationClipEditor?.CurrentTime ?? 0.0f) + _previewOffsetTime;
+        // オフセット時間
+        public float OffsetTime => _previewOffsetTime;
+        // 現在設定されているClip
+        public AnimationClip CurrentClip => _animationClipEditor?.Target as AnimationClip; 
         // 変更通知
         public event Action<AnimationClip> OnChangedClipEvent; 
+        public event Action<float> OnChangedOffsetTimeEvent; 
 
         /// <summary>
         /// コンストラクタ
@@ -97,6 +103,13 @@ namespace ActionSequencer.Editor.VisualElements {
         }
 
         /// <summary>
+        /// 時間オフセットの変更
+        /// </summary>
+        public void ChangeOffsetTime(float offset) {
+            SetOffsetTimeInternal(offset);
+        }
+
+        /// <summary>
         /// Inspector用コンテナの生成
         /// </summary>
         private void CreateContainer() {
@@ -105,13 +118,23 @@ namespace ActionSequencer.Editor.VisualElements {
             }
 
             _container = new IMGUIContainer(() => {
-                // Clipの指定
-                using (var changeScope = new EditorGUI.ChangeCheckScope()) {
-                    var clip = _animationClipEditor?.Target as AnimationClip;
-                    clip = EditorGUILayout.ObjectField(clip, typeof(AnimationClip), false) as AnimationClip;
-                    if (changeScope.changed) {
-                        SetTarget(clip);
-                        return;
+                using (new EditorGUILayout.HorizontalScope()) {
+                    // Clipの指定
+                    using (var changeScope = new EditorGUI.ChangeCheckScope()) {
+                        var clip = _animationClipEditor?.Target as AnimationClip;
+                        clip = EditorGUILayout.ObjectField(clip, typeof(AnimationClip), false) as AnimationClip;
+                        if (changeScope.changed) {
+                            SetTarget(clip);
+                            return;
+                        }
+                    }
+                    // 開始時間オフセット
+                    using (var changeScope = new EditorGUI.ChangeCheckScope()) {
+                        var offsetTime = Mathf.Max(0.0f,
+                            EditorGUILayout.FloatField(_previewOffsetTime, GUILayout.Width(50)));
+                        if (changeScope.changed) {
+                            SetOffsetTimeInternal(offsetTime);
+                        }
                     }
                 }
                 
@@ -172,6 +195,19 @@ namespace ActionSequencer.Editor.VisualElements {
             }
             
             CreateEditor(target, invokeEvent);
+        }
+
+        /// <summary>
+        /// OffsetTimeの反映
+        /// </summary>
+        private void SetOffsetTimeInternal(float offset) {
+            offset = Mathf.Max(0.0f, offset);
+            if ((offset - _previewOffsetTime) * (offset - _previewOffsetTime) <= float.Epsilon) {
+                return;
+            }
+
+            _previewOffsetTime = offset;
+            OnChangedOffsetTimeEvent?.Invoke(_previewOffsetTime);
         }
 
         /// <summary>
