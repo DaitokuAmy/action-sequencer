@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -47,6 +48,12 @@ namespace ActionSequencer.Editor {
         /// </summary>
         private void RefreshSettingDict() {
             _sequenceEventTypeSettingDict.Clear();
+
+            // 重複設定が混ざってしまっている不具合があったので、暫定的にここで除外
+            _sequenceEventTypeSettings = _sequenceEventTypeSettings
+                .GroupBy(x => x.fullName)
+                .Select(x => x.First())
+                .ToArray();
 
             foreach (var setting in _sequenceEventTypeSettings) {
                 _sequenceEventTypeSettingDict[setting.fullName] = setting;

@@ -68,7 +68,7 @@ namespace ActionSequencer.Editor {
                 // 該当のFullNameを持った設定を探す
                 var foundIndex = -1;
                 for (var i = 0; i < settingsProp.arraySize; i++) {
-                    if (settingsProp.GetArrayElementAtIndex(i).FindPropertyRelative("label").stringValue != fullName) {
+                    if (settingsProp.GetArrayElementAtIndex(i).FindPropertyRelative("fullName").stringValue != fullName) {
                         continue;
                     }
 
@@ -97,7 +97,7 @@ namespace ActionSequencer.Editor {
                 var fullName = type.FullName;
                 
                 if (!_settings.SequenceEventTypeSettings.TryGetValue(fullName ?? "", out var sequenceEventSetting)) {
-                    sequenceEventSetting = null;
+                    continue;
                 }
 
                 // 設定部分描画
