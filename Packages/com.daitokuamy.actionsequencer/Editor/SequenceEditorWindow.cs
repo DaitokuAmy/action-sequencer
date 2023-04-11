@@ -51,7 +51,7 @@ namespace ActionSequencer.Editor {
         /// </summary>
         public static void Open(SequenceClip clip) {
             var window =
-                CreateWindow<SequenceEditorWindow>(ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow)));
+                GetWindow<SequenceEditorWindow>(ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow)));
             window.Setup(clip);
         }
 
