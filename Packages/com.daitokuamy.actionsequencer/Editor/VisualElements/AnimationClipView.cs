@@ -20,12 +20,16 @@ namespace ActionSequencer.Editor.VisualElements {
             private UnityEditor.Editor _editor;
             private object _timeControl;
             private FieldInfo _currentTimeFieldInfo;
+            private FieldInfo _playingFieldInfo;
 
             public Object Target => _editor != null ? _editor.target : null;
             public UnityEditor.Editor Editor => _editor;
             public float CurrentTime => (_timeControl != null && _currentTimeFieldInfo != null)
                 ? (float)_currentTimeFieldInfo.GetValue(_timeControl)
                 : 0.0f;
+            public bool IsPlaying => (_timeControl != null && _playingFieldInfo != null)
+                ? (bool)_playingFieldInfo.GetValue(_timeControl)
+                : false;
 
             /// <summary>
             /// コンストラクタ
@@ -52,6 +56,7 @@ namespace ActionSequencer.Editor.VisualElements {
                     _timeControl = timeControlFieldInfo?.GetValue(avatarPreview);
                     if (_timeControl != null) {
                         _currentTimeFieldInfo = _timeControl.GetType().GetField("currentTime");
+                        _playingFieldInfo = _timeControl.GetType().GetField("m_Playing", BindingFlags.Instance | BindingFlags.NonPublic);
                     }
                 }
             }
@@ -181,7 +186,10 @@ namespace ActionSequencer.Editor.VisualElements {
                     _animationClipEditor.Editor.OnInteractivePreviewGUI(rect, _previewStyle);
                 }
             
-                MarkDirtyRepaint();
+                // 再生中はRepaint
+                if (_animationClipEditor.IsPlaying) {
+                    MarkDirtyRepaint();
+                }
             });
             Add(_container);
         }
