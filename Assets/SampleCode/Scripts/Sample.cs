@@ -34,6 +34,8 @@ public class Sample : MonoBehaviour, ISequenceControllerProvider {
     /// 開始処理
     /// </summary>
     private void Start() {
+        Application.targetFrameRate = 30;
+        
         _sequenceController = new SequenceController();
 
         // 各種イベントと振る舞いを紐づける

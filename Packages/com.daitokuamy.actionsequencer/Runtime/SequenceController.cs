@@ -391,20 +391,26 @@ namespace ActionSequencer {
 
                     if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handler)) {
                         var elapsedTime = Mathf.Min(playingInfo.Time - rangeEvent.enterTime, rangeEvent.Duration);
+                        var enterFrame = false;
+                        
                         // EnterしてなければEnter実行
                         if (!handler.IsEntered) {
+                            enterFrame = true;
                             handler.Enter(rangeEvent);
                         }
 
                         handler.Update(rangeEvent, elapsedTime);
 
-                        // 終了していたらExit実行
+                        // 終了していたらExit実行してリストから除外
                         if (rangeEvent.exitTime <= playingInfo.Time) {
-                            handler.Exit(rangeEvent);
+                            // Enter/Exitが同時に呼ばれるのを回避する対応
+                            if (!enterFrame || !rangeEvent.MustOneFrame) {
+                                handler.Exit(rangeEvent);
+                                playingInfo.ActiveRangeEvents.RemoveAt(j);
+                            }
                         }
                     }
-
-                    if (rangeEvent.exitTime <= playingInfo.Time) {
+                    else {
                         // リストから除外
                         playingInfo.ActiveRangeEvents.RemoveAt(j);
                     }
