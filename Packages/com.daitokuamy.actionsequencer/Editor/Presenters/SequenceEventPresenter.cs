@@ -187,6 +187,9 @@ namespace ActionSequencer.Editor {
             // イベントの削除
             menu.AddItem(new GUIContent("Delete Event"), false,
                 () => { TrackModel.RemoveEvent(Model.Target as SequenceEvent); });
+            // イベントのアクティブ切り替え
+            menu.AddItem(new GUIContent(Model.Active ? "Deactivate" : "Activate"), false,
+                () => { Model.Active ^= true; });
             // イベントの移動
             for (var i = 0; i < EditorModel.ClipModel.TrackModels.Count; i++) {
                 var trackModel = EditorModel.ClipModel.TrackModels[i];
