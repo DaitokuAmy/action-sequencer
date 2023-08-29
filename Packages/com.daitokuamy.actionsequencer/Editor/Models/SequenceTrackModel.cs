@@ -219,6 +219,39 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
+        /// Eventの貼り付け(CopyDataのjson)
+        /// </summary>
+        public void PasteEvents(string json) {
+            var copyData = new CopyData();
+            JsonUtility.FromJsonOverwrite(json, copyData);
+
+            if (copyData.sequenceEvents == null || copyData.sequenceEvents.Length <= 0) {
+                return;
+            }
+
+            foreach (var sequenceEvent in copyData.sequenceEvents) {
+                if (sequenceEvent == null) {
+                    continue;
+                }
+            
+                // 要素の追加
+                var evt = PasteEventAsset(sequenceEvent);
+
+                // Modelの生成
+                var model = default(SequenceEventModel);
+                if (evt is SignalSequenceEvent signalSequenceEvent) {
+                    model = new SignalSequenceEventModel(signalSequenceEvent, this);
+                }
+                else if (evt is RangeSequenceEvent rangeSequenceEvent) {
+                    model = new RangeSequenceEventModel(rangeSequenceEvent, this);
+                }
+
+                _eventModels.Add(model);
+                AddedEventModelSubject.Invoke(model);
+            }
+        }
+
+        /// <summary>
         /// 含まれているEventをターゲットのTrackに移動する
         /// </summary>
         public void TransportEvent(SequenceEventModel eventModel, SequenceTrackModel target) {
@@ -311,7 +344,7 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
-        /// SequenceEventアセットの生成
+        /// SequenceEventアセットのコピー
         /// </summary>
         private TEvent DuplicateEventAsset<TEvent>(TEvent sourceEvent)
             where TEvent : SequenceEvent {
@@ -327,6 +360,10 @@ namespace ActionSequencer.Editor {
             if (index < 0) {
                 return null;
             }
+            
+            // 同時に複数削除した際にReferenceが復帰しない不具合があったため、Undoを個別に登録
+            var groupId = Undo.GetCurrentGroup();
+            Undo.IncrementCurrentGroup();
 
             // Assetの生成
             var evt = Object.Instantiate(sourceEvent);
@@ -339,6 +376,36 @@ namespace ActionSequencer.Editor {
             _sequenceEvents.InsertArrayElementAtIndex(index + 1);
             _sequenceEvents.GetArrayElementAtIndex(index + 1).objectReferenceValue = evt;
             SerializedObject.ApplyModifiedProperties();
+
+            Undo.CollapseUndoOperations(groupId);
+
+            return evt;
+        }
+
+        /// <summary>
+        /// SequenceEventアセットの貼り付け
+        /// </summary>
+        private SequenceEvent PasteEventAsset(SequenceEvent sourceEvent) {
+            // 末尾に挿入
+            var index = _sequenceEvents.arraySize;
+            
+            // 同時に複数削除した際にReferenceが復帰しない不具合があったため、Undoを個別に登録
+            var groupId = Undo.GetCurrentGroup();
+            Undo.IncrementCurrentGroup();
+
+            // Assetの生成
+            var evt = Object.Instantiate(sourceEvent);
+            evt.name = sourceEvent.name;
+            AssetDatabase.AddObjectToAsset(evt, Target);
+            Undo.RegisterCreatedObjectUndo(evt, "Paste Event");
+
+            // 要素の追加
+            SerializedObject.Update();
+            _sequenceEvents.arraySize++;
+            _sequenceEvents.GetArrayElementAtIndex(index).objectReferenceValue = evt;
+            SerializedObject.ApplyModifiedProperties();
+
+            Undo.CollapseUndoOperations(groupId);
 
             return evt;
         }

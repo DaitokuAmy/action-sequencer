@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ActionSequencer.Editor.Utils;
-using ActionSequencer.Editor.VisualElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 

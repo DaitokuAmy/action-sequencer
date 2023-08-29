@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -113,8 +114,15 @@ namespace ActionSequencer.Editor {
                 return;
             }
 
+            if (View.Selected && evt.button == 1) {
+                return;
+            }
+
             if (evt.commandKey || evt.ctrlKey) {
                 EditorModel.AddSelectedTarget(Model.Target);
+            }
+            else if (evt.shiftKey) {
+                EditorModel.AddRangeSelectedTarget(Model.Target);
             }
             else {
                 EditorModel.SetSelectedTarget(Model.Target);
@@ -131,12 +139,18 @@ namespace ActionSequencer.Editor {
             else if (evt.commandName == "Delete" || evt.commandName == "SoftDelete") {
                 DeleteSelectedEvents();
             }
+            else if (evt.commandName == "Copy") {
+                CopySelectedEvents();
+            }
+            else if (evt.commandName == "Paste") {
+                PasteEvents();
+            }
         }
 
         /// <summary>
         /// 選択対象の変更通知
         /// </summary>
-        private void ChangedSelectedTargetsSubject(Object[] targets) {
+        private void ChangedSelectedTargetsSubject(IReadOnlyList<Object> targets) {
             var selected = targets.Contains(Model.Target);
             View.Selected = selected;
         }
@@ -224,8 +238,10 @@ namespace ActionSequencer.Editor {
         /// コンテキストメニューを開いた時の処理
         /// </summary>
         private void OpenContextMenuSubject(ContextualMenuPopulateEvent evt) {
-            evt.menu.AppendAction("Duplicate", action => { DuplicateSelectedEvents(); });
-            evt.menu.AppendAction("Delete", action => { DeleteSelectedEvents(); });
+            evt.menu.AppendAction("Duplicate", _ => { DuplicateSelectedEvents(); });
+            evt.menu.AppendAction("Delete", _ => { DeleteSelectedEvents(); });
+            evt.menu.AppendAction("Copy", _ => { CopySelectedEvents(); });
+            evt.menu.AppendAction("Paste", _ => { PasteEvents(); });
             evt.menu.AppendAction(Model.Active ? "Deactivate" : "Activate",
                 action => { SetActiveSelectedEvents(!Model.Active); });
         }
@@ -235,7 +251,8 @@ namespace ActionSequencer.Editor {
         /// </summary>
         private void DuplicateSelectedEvents() {
             var events = EditorModel.SelectedTargets
-                .OfType<SequenceEvent>();
+                .OfType<SequenceEvent>()
+                .ToArray();
             foreach (var evt in events) {
                 Model.TrackModel.DuplicateEvent(evt);
             }
@@ -246,10 +263,29 @@ namespace ActionSequencer.Editor {
         /// </summary>
         private void DeleteSelectedEvents() {
             var events = EditorModel.SelectedTargets
-                .OfType<SequenceEvent>();
+                .OfType<SequenceEvent>()
+                .ToArray();
             foreach (var evt in events) {
                 Model.TrackModel.RemoveEvent(evt);
             }
+        }
+
+        /// <summary>
+        /// 選択中のEventをコピー
+        /// </summary>
+        private void CopySelectedEvents() {
+            var events = EditorModel.SelectedTargets
+                .OfType<SequenceEvent>();
+            var copyData = new CopyData();
+            copyData.sequenceEvents = events.ToArray();
+            EditorGUIUtility.systemCopyBuffer = JsonUtility.ToJson(copyData);
+        }
+
+        /// <summary>
+        /// 選択中のEvent以下に貼り付け
+        /// </summary>
+        private void PasteEvents() {
+            Model.TrackModel.PasteEvents(EditorGUIUtility.systemCopyBuffer);
         }
 
         /// <summary>

@@ -25,29 +25,21 @@ namespace ActionSequencer.Editor {
             public bool timeFit;
         }
 
-        private List<Object> _selectedTargets = new List<Object>();
+        private List<Object> _selectedTargets = new();
+        private Object _lastSelectedTarget;
 
-        public Subject<Object[]> ChangedSelectedTargetsSubject { get; } = new Subject<Object[]>();
+        public Subject<IReadOnlyList<Object>> ChangedSelectedTargetsSubject { get; } = new();
+        public Subject<Object, SequenceEventManipulator.DragType> EventDragStartSubject { get; } = new();
+        public Subject<Object, SequenceEventManipulator.DragInfo> EventDraggingSubject { get; } = new();
+        public Subject<SequenceClipModel> ChangeClipModelSubject { get; } = new();
 
-        public Subject<Object, SequenceEventManipulator.DragType> EventDragStartSubject { get; } =
-            new Subject<Object, SequenceEventManipulator.DragType>();
-
-        public Subject<Object, SequenceEventManipulator.DragInfo> EventDraggingSubject { get; } =
-            new Subject<Object, SequenceEventManipulator.DragInfo>();
-
-        public Subject<SequenceClipModel> ChangeClipModelSubject { get; } = new Subject<SequenceClipModel>();
-
-        public Object[] SelectedTargets => _selectedTargets.ToArray();
+        public ReactiveProperty<float> TimeToSize { get; private set; } = new(200.0f, x => Mathf.Max(40.0f, x));
+        public ReactiveProperty<TimeMode> CurrentTimeMode { get; private set; } = new(TimeMode.Seconds);
+        public ReactiveProperty<bool> TimeFit { get; private set; } = new(true);
+        
+        public IReadOnlyList<Object> SelectedTargets => _selectedTargets;
         public VisualElement RootElement { get; private set; }
         public SequenceClipModel ClipModel { get; private set; }
-
-        public ReactiveProperty<float> TimeToSize { get; private set; } =
-            new ReactiveProperty<float>(200.0f, x => Mathf.Max(40.0f, x));
-
-        public ReactiveProperty<TimeMode> CurrentTimeMode { get; private set; } =
-            new ReactiveProperty<TimeMode>(TimeMode.Seconds);
-
-        public ReactiveProperty<bool> TimeFit { get; private set; } = new ReactiveProperty<bool>(true);
 
         /// <summary>
         /// コンストラクタ
@@ -107,6 +99,7 @@ namespace ActionSequencer.Editor {
         /// </summary>
         public void SetSelectedTarget(Object target) {
             _selectedTargets.Clear();
+            _lastSelectedTarget = null;
             AddSelectedTarget(target);
         }
 
@@ -118,7 +111,56 @@ namespace ActionSequencer.Editor {
                 return;
             }
 
-            _selectedTargets.Add(target);
+            if (target != null) {
+                // 追加
+                _selectedTargets.Add(target);
+                _lastSelectedTarget = target;
+            
+                // 並び順にソート
+                _selectedTargets = _selectedTargets.OrderBy(GetTargetOrder).ToList();
+            }
+            
+            ChangedSelectedTargetsSubject.Invoke(SelectedTargets);
+        }
+
+        /// <summary>
+        /// 選択対象までの範囲を追加
+        /// </summary>
+        public void AddRangeSelectedTarget(Object target) {
+            if (_selectedTargets.Contains(target)) {
+                return;
+            }
+
+            if (target == null) {
+                return;
+            }
+
+            if (_lastSelectedTarget == null) {
+                SetSelectedTarget(target);
+                return;
+            }
+            
+            // 範囲を計算
+            var startIndex = GetTargetOrder(_lastSelectedTarget);
+            var endIndex = GetTargetOrder(target);
+
+            if (startIndex < 0 || endIndex < 0) {
+                return;
+            }
+
+            if (startIndex > endIndex) {
+                (startIndex, endIndex) = (endIndex, startIndex);
+            }
+            
+            // 選択中のTargetから渡されたTargetまでの間を列挙する
+            _selectedTargets.Clear();
+            for (var i = startIndex; i <= endIndex; i++) {
+                _selectedTargets.Add(GetTargetByOrder(i));
+            }
+            
+            // 並び順にソート
+            _selectedTargets = _selectedTargets.OrderBy(GetTargetOrder).ToList();
+            
             ChangedSelectedTargetsSubject.Invoke(SelectedTargets);
         }
 
@@ -130,6 +172,10 @@ namespace ActionSequencer.Editor {
                 return;
             }
 
+            if (target == _lastSelectedTarget) {
+                _lastSelectedTarget = null;
+            }
+            
             ChangedSelectedTargetsSubject.Invoke(SelectedTargets);
         }
 
@@ -138,7 +184,60 @@ namespace ActionSequencer.Editor {
         /// </summary>
         public void RemoveSelectedTargets() {
             _selectedTargets.Clear();
+            _lastSelectedTarget = null;
             ChangedSelectedTargetsSubject.Invoke(SelectedTargets);
+        }
+
+        /// <summary>
+        /// 並び順を取得
+        /// </summary>
+        public int GetTargetOrder(Object target) {
+            var index = 0;
+            foreach (var trackModel in ClipModel.TrackModels) {
+                if (target == trackModel.Target) {
+                    return index;
+                }
+
+                index++;
+                
+                foreach (var eventModel in trackModel.EventModels) {
+                    if (target == eventModel.Target) {
+                        return index;
+                    }
+
+                    index++;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// 並び順をもとにTargetを取得
+        /// </summary>
+        public Object GetTargetByOrder(int order) {
+            if (order < 0) {
+                return null;
+            }
+            
+            var index = 0;
+            foreach (var trackModel in ClipModel.TrackModels) {
+                if (index == order) {
+                    return trackModel.Target;
+                }
+
+                index++;
+                
+                foreach (var eventModel in trackModel.EventModels) {
+                    if (index == order) {
+                        return eventModel.Target;
+                    }
+
+                    index++;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>

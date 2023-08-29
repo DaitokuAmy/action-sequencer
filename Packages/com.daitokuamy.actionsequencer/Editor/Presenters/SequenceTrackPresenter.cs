@@ -224,6 +224,14 @@ namespace ActionSequencer.Editor {
             menu.AddItem(new GUIContent("Down"), false, () => { _editorModel.ClipModel.MoveNextTrack(Model); });
 
             menu.AddSeparator("");
+            
+            // Select
+            menu.AddItem(new GUIContent("Select All"), false, () => {
+                _editorModel.RemoveSelectedTargets();
+                foreach (var eventModel in Model.EventModels) {
+                    _editorModel.AddSelectedTarget(eventModel.Target);
+                } 
+            });
 
             // Create
             var signalTypes = TypeCache.GetTypesDerivedFrom<SignalSequenceEvent>()
