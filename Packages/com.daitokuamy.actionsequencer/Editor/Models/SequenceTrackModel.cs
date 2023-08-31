@@ -16,16 +16,12 @@ namespace ActionSequencer.Editor {
         private List<SequenceEventModel> _eventModels = new List<SequenceEventModel>();
 
         public Subject<string> ChangedLabelSubject { get; } = new Subject<string>();
-
         public Subject<SequenceEventModel> AddedEventModelSubject { get; } =
             new Subject<SequenceEventModel>();
-
         public Subject<SequenceEventModel> RemovedEventModelSubject { get; } =
             new Subject<SequenceEventModel>();
-
         public Subject MovedEventModelSubject { get; } =
             new Subject();
-
         public Subject ChangedEventTimeSubject { get; } = new Subject();
 
         public string Label {
@@ -171,10 +167,10 @@ namespace ActionSequencer.Editor {
         /// <summary>
         /// Eventの削除
         /// </summary>
-        public void RemoveEvent(SequenceEvent sequenceEvent) {
+        public bool RemoveEvent(SequenceEvent sequenceEvent) {
             var model = _eventModels.FirstOrDefault(x => x.Target == sequenceEvent);
             if (model == null) {
-                return;
+                return false;
             }
 
             // Modelの削除
@@ -186,6 +182,7 @@ namespace ActionSequencer.Editor {
             // 通知
             RemovedEventModelSubject.Invoke(model);
             model.Dispose();
+            return true;
         }
 
         /// <summary>
@@ -201,21 +198,27 @@ namespace ActionSequencer.Editor {
         /// <summary>
         /// Eventの複製
         /// </summary>
-        public void DuplicateEvent(SequenceEvent sequenceEvent) {
+        public bool DuplicateEvent(SequenceEvent sequenceEvent) {
+            var model = _eventModels.FirstOrDefault(x => x.Target == sequenceEvent);
+            if (model == null) {
+                return false;
+            }
+            
             // 要素の追加
             var evt = DuplicateEventAsset(sequenceEvent);
 
             // Modelの生成
-            var model = default(SequenceEventModel);
+            var newModel = default(SequenceEventModel);
             if (evt is SignalSequenceEvent signalSequenceEvent) {
-                model = new SignalSequenceEventModel(signalSequenceEvent, this);
+                newModel = new SignalSequenceEventModel(signalSequenceEvent, this);
             }
             else if (evt is RangeSequenceEvent rangeSequenceEvent) {
-                model = new RangeSequenceEventModel(rangeSequenceEvent, this);
+                newModel = new RangeSequenceEventModel(rangeSequenceEvent, this);
             }
 
-            _eventModels.Add(model);
-            AddedEventModelSubject.Invoke(model);
+            _eventModels.Add(newModel);
+            AddedEventModelSubject.Invoke(newModel);
+            return true;
         }
 
         /// <summary>

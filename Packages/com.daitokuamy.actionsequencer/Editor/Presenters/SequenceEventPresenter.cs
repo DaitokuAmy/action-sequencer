@@ -43,7 +43,6 @@ namespace ActionSequencer.Editor {
 
             // イベント監視
             AddChangedCallback<MouseDownEvent>(View, OnMouseDownEvent);
-            AddChangedCallback<ValidateCommandEvent>(View, OnValidateCommandEvent);
 
             // アクティブ状態の監視
             AddDisposable(Model.ChangedActiveSubject
@@ -126,24 +125,6 @@ namespace ActionSequencer.Editor {
             }
             else {
                 EditorModel.SetSelectedTarget(Model.Target);
-            }
-        }
-
-        /// <summary>
-        /// コマンド要求処理
-        /// </summary>
-        private void OnValidateCommandEvent(ValidateCommandEvent evt) {
-            if (evt.commandName == "Duplicate") {
-                DuplicateSelectedEvents();
-            }
-            else if (evt.commandName == "Delete" || evt.commandName == "SoftDelete") {
-                DeleteSelectedEvents();
-            }
-            else if (evt.commandName == "Copy") {
-                CopySelectedEvents();
-            }
-            else if (evt.commandName == "Paste") {
-                PasteEvents();
             }
         }
 

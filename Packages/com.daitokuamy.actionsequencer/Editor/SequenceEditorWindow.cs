@@ -73,6 +73,21 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
+        /// 状態のリフレッシュ
+        /// </summary>
+        private void Refresh() {
+            if (_editorModel.ClipModel?.Target == null || _escapedClip == null) {
+                return;
+            }
+            
+            // SequenceClipのクリーンアップ
+            CleanSequenceClipAsset(_escapedClip);
+
+            // ModelのRefresh
+            _editorModel.Refresh();
+        }
+
+        /// <summary>
         /// 初期化処理
         /// </summary>
         private void Setup(SequenceClip clip, bool force = false) {
@@ -94,8 +109,7 @@ namespace ActionSequencer.Editor {
             _previewView.ChangeOffsetTime(offsetTime);
 
             // Windowのタイトル変更
-            titleContent =
-                new GUIContent(clip != null ? clip.name : ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow)));
+            titleContent = new GUIContent(clip != null ? clip.name : ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow)));
 
             // Viewの整理
             var root = rootVisualElement;
@@ -116,8 +130,7 @@ namespace ActionSequencer.Editor {
 
             // Presenterの生成
             if (_editorModel.ClipModel != null) {
-                _sequenceClipPresenter =
-                    new SequenceClipPresenter(_editorModel.ClipModel, trackLabelList, trackList, _editorModel);
+                _sequenceClipPresenter =　new SequenceClipPresenter(_editorModel.ClipModel, trackLabelList, trackList, _editorModel);
             }
         }
 
@@ -300,6 +313,9 @@ namespace ActionSequencer.Editor {
                     }
                 }
             });
+            
+            // Command監視
+            root.RegisterCallback<ValidateCommandEvent>(OnValidateCommandEvent);
 
             // ViewDataKey
             var splitViews = root.Query<SplitView>().ToList();
@@ -386,8 +402,7 @@ namespace ActionSequencer.Editor {
         /// Undo/Redo通知
         /// </summary>
         private void OnUndoRedoPerformed() {
-            // 本来はプロパティの変更を監視したいが、監視ができないので強引だが開き直す
-            Setup(_escapedClip, true);
+            Refresh();
         }
 
         /// <summary>
@@ -564,6 +579,77 @@ namespace ActionSequencer.Editor {
             System.IO.File.Move(globalNewPath, globalOldPath);
 
             AssetDatabase.Refresh();
+        }
+
+        /// <summary>
+        /// コマンド要求処理
+        /// </summary>
+        private void OnValidateCommandEvent(ValidateCommandEvent evt) {            
+            if (evt.commandName == "Duplicate") {
+                DuplicateSelectedEvents();
+            }
+            else if (evt.commandName == "Delete" || evt.commandName == "SoftDelete") {
+                DeleteSelectedEvents();
+            }
+            else if (evt.commandName == "Copy") {
+                CopySelectedEvents();
+            }
+            else if (evt.commandName == "Paste") {
+                PasteEvents();
+            }
+        }
+
+        /// <summary>
+        /// 選択中のEventを複製
+        /// </summary>
+        private void DuplicateSelectedEvents() {
+            var events = _editorModel.SelectedTargets
+                .OfType<SequenceEvent>()
+                .ToArray();
+            foreach (var evt in events) {
+                foreach (var trackModel in _editorModel.ClipModel.TrackModels) {
+                    if (trackModel.DuplicateEvent(evt)) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 選択中のEventを削除
+        /// </summary>
+        private void DeleteSelectedEvents() {
+            var events = _editorModel.SelectedTargets
+                .OfType<SequenceEvent>()
+                .ToArray();
+            foreach (var evt in events) {
+                foreach (var trackModel in _editorModel.ClipModel.TrackModels) {
+                    if (trackModel.RemoveEvent(evt)) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 選択中のEventをコピー
+        /// </summary>
+        private void CopySelectedEvents() {
+            var events = _editorModel.SelectedTargets
+                .OfType<SequenceEvent>();
+            var copyData = new CopyData();
+            copyData.sequenceEvents = events.ToArray();
+            EditorGUIUtility.systemCopyBuffer = JsonUtility.ToJson(copyData);
+        }
+
+        /// <summary>
+        /// 選択中のEvent以下に貼り付け
+        /// </summary>
+        private void PasteEvents() {
+            var trackModel = _editorModel.ClipModel.TrackModels.LastOrDefault();
+            if (trackModel != null) {
+                trackModel.PasteEvents(EditorGUIUtility.systemCopyBuffer);
+            }
         }
     }
 }

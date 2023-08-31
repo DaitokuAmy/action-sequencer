@@ -40,6 +40,9 @@ namespace ActionSequencer.Editor {
         public IReadOnlyList<Object> SelectedTargets => _selectedTargets;
         public VisualElement RootElement { get; private set; }
         public SequenceClipModel ClipModel { get; private set; }
+        
+        // リフレッシュ中
+        public bool Refreshing { get; private set; }
 
         /// <summary>
         /// コンストラクタ
@@ -74,6 +77,22 @@ namespace ActionSequencer.Editor {
         /// <summary>
         /// SequenceClipの設定
         /// </summary>
+        public void Refresh() {
+            if (ClipModel == null) {
+                return;
+            }
+
+            Refreshing = true;
+            ClipModel.RefreshTracks();
+            Refreshing = false;
+            
+            // 選択状態を反映
+            ChangedSelectedTargetsSubject.Invoke(SelectedTargets);
+        }
+
+        /// <summary>
+        /// SequenceClipの設定
+        /// </summary>
         public SequenceClipModel SetSequenceClip(SequenceClip clip) {
             RemoveSelectedTargets();
 
@@ -98,6 +117,11 @@ namespace ActionSequencer.Editor {
         /// 選択対象の変更
         /// </summary>
         public void SetSelectedTarget(Object target) {
+            // Refresh中は選択対象を変更しない
+            if (Refreshing) {
+                return;
+            }
+            
             _selectedTargets.Clear();
             _lastSelectedTarget = null;
             AddSelectedTarget(target);
@@ -107,6 +131,10 @@ namespace ActionSequencer.Editor {
         /// 選択対象の追加
         /// </summary>
         public void AddSelectedTarget(Object target) {
+            if (Refreshing) {
+                return;
+            }
+            
             if (_selectedTargets.Contains(target)) {
                 return;
             }
@@ -127,6 +155,10 @@ namespace ActionSequencer.Editor {
         /// 選択対象までの範囲を追加
         /// </summary>
         public void AddRangeSelectedTarget(Object target) {
+            if (Refreshing) {
+                return;
+            }
+            
             if (_selectedTargets.Contains(target)) {
                 return;
             }
@@ -168,6 +200,10 @@ namespace ActionSequencer.Editor {
         /// 選択対象の削除
         /// </summary>
         public void RemoveSelectedTarget(Object target) {
+            if (Refreshing) {
+                return;
+            }
+            
             if (!_selectedTargets.Remove(target)) {
                 return;
             }
@@ -183,6 +219,10 @@ namespace ActionSequencer.Editor {
         /// 全選択対象の削除
         /// </summary>
         public void RemoveSelectedTargets() {
+            if (Refreshing) {
+                return;
+            }
+            
             _selectedTargets.Clear();
             _lastSelectedTarget = null;
             ChangedSelectedTargetsSubject.Invoke(SelectedTargets);
