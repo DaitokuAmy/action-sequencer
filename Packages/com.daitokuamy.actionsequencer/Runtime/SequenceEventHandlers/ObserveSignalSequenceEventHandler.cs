@@ -1,9 +1,11 @@
 using System;
+using UnityEngine.Scripting;
 
 namespace ActionSequencer {
     /// <summary>
     /// 監視するだけのSequenceEventHandler
     /// </summary>
+    [Preserve]
     public class ObserveSignalSequenceEventHandler<TEvent> : SignalSequenceEventHandler<TEvent>
         where TEvent : SignalSequenceEvent {
         private Action<TEvent> _invokeAction;

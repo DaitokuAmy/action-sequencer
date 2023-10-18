@@ -1,9 +1,11 @@
 using System;
+using UnityEngine.Scripting;
 
 namespace ActionSequencer {
     /// <summary>
     /// 監視するだけのSequenceEventHandler
     /// </summary>
+    [Preserve]
     public class ObserveRangeSequenceEventHandler<TEvent> : RangeSequenceEventHandler<TEvent>
         where TEvent : RangeSequenceEvent {
         private Action<TEvent> _enterAction;
