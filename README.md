@@ -85,13 +85,10 @@ public class TimerRangeSequenceEvent : RangeSequenceEvent
     public string format = "Time:{0.000}";
 }
 ```
-ちなみに、SequenceEventAttributeは以下の様な指定が可能です
-- displayName
-  - SequenceClip編集Windowでのイベント表示名
-- colorCode
-  - SequenceClip編集Windowでのイベント表示色
-
-![image](https://user-images.githubusercontent.com/6957962/209447528-0f084136-b448-4051-9788-a7d1ba144835.png)
+#### イベントクラスの登録
+クラスを追加しただけでも使用は可能ですが、より見やすくするために以下の設定を行う事を推奨します  
+Project Settings > Action Sequencer にて、「各クラスの表示名(イベント作成時の階層)」と「表示色」を設定できるようになっています
+![image](https://github.com/DaitokuAmy/action-sequencer/assets/6957962/6fefd72a-8f86-4bd1-9d90-382ec1881db9)
 #### イベントのハンドリング(実行処理の記述)
 * SignalEventの場合
 ```C#
