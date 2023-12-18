@@ -431,6 +431,9 @@ namespace ActionSequencer.Editor {
 
                 _sequenceEvents.DeleteArrayElementAtIndex(i);
             }
+            
+            // Eventを削除
+            Undo.DestroyObjectImmediate(sequenceEvent);
 
             SerializedObject.ApplyModifiedProperties();
 

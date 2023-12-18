@@ -1,3 +1,4 @@
+using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,6 +18,18 @@ namespace ActionSequencer.Editor {
 
             if (GUILayout.Button("Open")) {
                 SequenceEditorWindow.Open(target as SequenceClip);
+            }
+        }
+
+        /// <summary>
+        /// アクティブ時処理
+        /// </summary>
+        private void OnEnable() {
+            // 選択中アセットのクリーンアップ
+            foreach (var t in targets) {
+                if (t is SequenceClip clip) {
+                    SequenceEditorUtility.CleanUnusedSubAssets(clip);
+                }
             }
         }
     }

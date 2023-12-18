@@ -1,5 +1,8 @@
 using System;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace ActionSequencer.Editor.Utils {
@@ -95,6 +98,61 @@ namespace ActionSequencer.Editor.Utils {
             }
 
             return 20;
+        }
+
+        /// <summary>
+        /// シーケンスクリップ内に含まれる未使用なSubAssetをクリーンする
+        /// </summary>
+        public static void CleanUnusedSubAssets(SequenceClip clip) {
+            if (clip == null) {
+                return;
+            }
+
+            bool ContainsTrack(SequenceClip ownerClip, SequenceTrack targetTrack) {
+                return ownerClip.tracks.Contains(targetTrack);
+            }
+
+            bool ContainsEvent(SequenceClip ownerClip, SequenceEvent targetEvent) {
+                foreach (var track in ownerClip.tracks) {
+                    if (track.sequenceEvents.Contains(targetEvent)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            var path = AssetDatabase.GetAssetPath(clip);
+            var allAssets = AssetDatabase.LoadAllAssetsAtPath(path);
+            var sequenceTracks = allAssets.OfType<SequenceTrack>();
+            var sequenceEvents = allAssets.OfType<SequenceEvent>();
+            var dirty = false;
+            
+            foreach (var sequenceTrack in sequenceTracks) {
+                if (ContainsTrack(clip, sequenceTrack)) {
+                    continue;
+                }
+                
+                // 削除
+                Object.DestroyImmediate(sequenceTrack, true);
+                dirty = true;
+            }
+            
+            foreach (var sequenceEvent in sequenceEvents) {
+                if (ContainsEvent(clip, sequenceEvent)) {
+                    continue;
+                }
+                
+                // 削除
+                Object.DestroyImmediate(sequenceEvent, true);
+                dirty = true;
+            }
+
+            if (dirty) {
+                EditorUtility.SetDirty(clip);
+                AssetDatabase.Refresh();
+                AssetDatabase.SaveAssets();
+            }
         }
     }
 }
