@@ -20,18 +20,24 @@ namespace ActionSequencer.Editor {
             _view = view;
 
             _view.TrackPropertyValue(Model.SerializedObject.FindProperty("time"),
-                prop => { _model.Time = prop.floatValue; });
+                prop => {
+                    _model.Time = prop.floatValue;
+                });
+            _view.TrackSerializedObjectValue(Model.SerializedObject, obj => {
+                SetViewDuration(_model.ViewDuration);
+            });
 
             labelElementView.LabelColor = model.ThemeColor;
 
             AddDisposable(EditorModel.TimeToSize
                 .Subscribe(_ => ChangedTimeSubject(_model.Time)));
 
-            // Modelの時間変更監視
+            // Modelの変更監視
             AddDisposable(_model.ChangedTimeSubject
                 .Subscribe(ChangedTimeSubject));
 
             ChangedTimeSubject(_model.Time);
+            SetViewDuration(_model.ViewDuration);
         }
 
         protected override void OnDragStart(SequenceEventManipulator.DragType dragType, bool otherEvent) {
@@ -45,7 +51,13 @@ namespace ActionSequencer.Editor {
 
         private void ChangedTimeSubject(float time) {
             // 位置として反映
-            _view.style.marginLeft = TimeToSize(time);
+            _view.Position = TimeToSize(time);
+            EditorModel.RootElement.MarkDirtyRepaint();
+        }
+
+        private void SetViewDuration(float duration) {
+            // 幅として反映
+            _view.Width = TimeToSize(duration);
             EditorModel.RootElement.MarkDirtyRepaint();
         }
     }

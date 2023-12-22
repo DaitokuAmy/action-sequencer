@@ -94,8 +94,8 @@ namespace ActionSequencer.Editor {
             var leftPos = TimeToSize(enterTime);
             leftPos = centerPos + Mathf.Min(leftPos - centerPos, -5);
             rightPos = centerPos + Mathf.Max(rightPos - centerPos, 5);
-            _view.style.marginLeft = leftPos;
-            _view.style.width = rightPos - leftPos;
+            _view.LeftPosition = leftPos;
+            _view.RightPosition = rightPos;
             EditorModel.RootElement.MarkDirtyRepaint();
         }
     }

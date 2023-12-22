@@ -8,7 +8,9 @@ namespace ActionSequencer.Editor {
     /// SignalEvent用Model
     /// </summary>
     internal class SignalSequenceEventModel : SequenceEventModel {
+        private SignalSequenceEvent _targetEvent;
         private SerializedProperty _time;
+        private SerializedProperty _viewDuration;
 
         public Subject<float> ChangedTimeSubject { get; } = new Subject<float>();
 
@@ -22,12 +24,16 @@ namespace ActionSequencer.Editor {
                 SetDirty();
             }
         }
+        public float ViewDuration {
+            get => _targetEvent != null ? _targetEvent.ViewDuration : 0.0f;
+        }
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         public SignalSequenceEventModel(SignalSequenceEvent target, SequenceTrackModel trackModel)
             : base(target, trackModel) {
+            _targetEvent = target;
             _time = SerializedObject.FindProperty("time");
         }
     }
