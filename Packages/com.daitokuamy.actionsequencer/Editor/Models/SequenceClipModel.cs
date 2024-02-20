@@ -153,6 +153,27 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
+        /// TrackModelの検索
+        /// </summary>
+        public SequenceTrackModel FindTrackModel(SequenceTrack sequenceTrack) {
+            return _trackModels.FirstOrDefault(x => x.Target == sequenceTrack);
+        }
+
+        /// <summary>
+        /// EventModelの検索
+        /// </summary>
+        public SequenceEventModel FindEventModel(SequenceEvent sequenceEvent) {
+            foreach (var track in _trackModels) {
+                var foundEventModel = track.FindEventModel(sequenceEvent);
+                if (foundEventModel != null) {
+                    return foundEventModel;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// トラックの追加
         /// </summary>
         public SequenceTrackModel AddTrack() {
@@ -183,7 +204,7 @@ namespace ActionSequencer.Editor {
         /// Trackの削除
         /// </summary>
         public void RemoveTrack(SequenceTrack track) {
-            var model = _trackModels.FirstOrDefault(x => x.Target == track);
+            var model = FindTrackModel(track);
             if (model == null) {
                 return;
             }

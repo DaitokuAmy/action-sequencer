@@ -150,6 +150,13 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
+        /// EventModelの検索
+        /// </summary>
+        public SequenceEventModel FindEventModel(SequenceEvent sequenceEvent) {
+            return _eventModels.FirstOrDefault(x => x.Target == sequenceEvent);
+        }
+
+        /// <summary>
         /// Eventの追加
         /// </summary>
         public SequenceEventModel AddEvent(Type eventType) {
@@ -168,7 +175,7 @@ namespace ActionSequencer.Editor {
         /// Eventの削除
         /// </summary>
         public bool RemoveEvent(SequenceEvent sequenceEvent) {
-            var model = _eventModels.FirstOrDefault(x => x.Target == sequenceEvent);
+            var model = FindEventModel(sequenceEvent);
             if (model == null) {
                 return false;
             }
@@ -199,7 +206,7 @@ namespace ActionSequencer.Editor {
         /// Eventの複製
         /// </summary>
         public bool DuplicateEvent(SequenceEvent sequenceEvent) {
-            var model = _eventModels.FirstOrDefault(x => x.Target == sequenceEvent);
+            var model = FindEventModel(sequenceEvent);
             if (model == null) {
                 return false;
             }

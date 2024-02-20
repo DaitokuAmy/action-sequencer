@@ -23,7 +23,7 @@ namespace ActionSequencer.Editor {
             public long LocalId = 0L;
             public float OffsetTime = 0.0f;
         }
-        
+
         // リセット対策用SequenceClipキャッシュ
         [SerializeField]
         private SequenceClip _escapedClip;
@@ -79,7 +79,7 @@ namespace ActionSequencer.Editor {
             if (_editorModel.ClipModel?.Target == null || _escapedClip == null) {
                 return;
             }
-            
+
             // SequenceClipのクリーンアップ
             CleanSequenceClipAsset(_escapedClip);
 
@@ -102,14 +102,15 @@ namespace ActionSequencer.Editor {
 
             // Clipの設定
             _editorModel.SetSequenceClip(clip);
-            
+
             // Previewの読み込み
-            (var animClip, var offsetTime) = LoadUserPreviewClip(_escapedClip); 
+            (var animClip, var offsetTime) = LoadUserPreviewClip(_escapedClip);
             _previewView.ChangeTarget(animClip);
             _previewView.ChangeOffsetTime(offsetTime);
 
             // Windowのタイトル変更
-            titleContent = new GUIContent(clip != null ? clip.name : ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow)));
+            titleContent =
+                new GUIContent(clip != null ? clip.name : ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow)));
 
             // Viewの整理
             var root = rootVisualElement;
@@ -130,7 +131,8 @@ namespace ActionSequencer.Editor {
 
             // Presenterの生成
             if (_editorModel.ClipModel != null) {
-                _sequenceClipPresenter =　new SequenceClipPresenter(_editorModel.ClipModel, trackLabelList, trackList, _editorModel);
+                _sequenceClipPresenter =
+                    new SequenceClipPresenter(_editorModel.ClipModel, trackLabelList, trackList, _editorModel);
             }
         }
 
@@ -307,13 +309,36 @@ namespace ActionSequencer.Editor {
             // Sizeのフィット
             var trackArea = root.Q<VisualElement>("TrackArea");
             root.RegisterCallback<KeyDownEvent>(evt => {
-                if (evt.keyCode == KeyCode.F) {
+                if (evt.keyCode == KeyCode.F || evt.keyCode == KeyCode.A) {
                     if (_editorModel.SetBestTimeToSize(trackArea.layout.width - 20.0f)) {
                         trackScrollView.horizontalScroller.value = 0.0f;
                     }
                 }
             });
-            
+
+            // イベントの移動
+            root.RegisterCallback<KeyDownEvent>(evt => {
+                if (evt.shiftKey && evt.keyCode == KeyCode.UpArrow) {
+                    var targets = _editorModel.SelectedTargets.OfType<SequenceEvent>()
+                        .Select(x => _editorModel.ClipModel.FindEventModel(x))
+                        .Where(x => x != null)
+                        .OrderBy(x => x.TrackModel.GetEventIndex(x));
+                    foreach (var eventModel in targets) {
+                        eventModel.TrackModel.MovePrevEvent(eventModel);
+                    }
+                }
+
+                if (evt.shiftKey && evt.keyCode == KeyCode.DownArrow) {
+                    var targets = _editorModel.SelectedTargets.OfType<SequenceEvent>()
+                        .Select(x => _editorModel.ClipModel.FindEventModel(x))
+                        .Where(x => x != null)
+                        .OrderByDescending(x => x.TrackModel.GetEventIndex(x));
+                    foreach (var eventModel in targets) {
+                        eventModel.TrackModel.MoveNextEvent(eventModel);
+                    }
+                }
+            });
+
             // Command監視
             root.RegisterCallback<ValidateCommandEvent>(OnValidateCommandEvent);
 
@@ -334,7 +359,7 @@ namespace ActionSequencer.Editor {
         /// </summary>
         private void OnDisable() {
             Undo.undoRedoPerformed -= OnUndoRedoPerformed;
-            
+
             _previewView.OnChangedClipEvent -= OnChangedPreviewClip;
             _previewView.OnChangedOffsetTimeEvent -= OnChangedPreviewOffsetTime;
 
@@ -479,14 +504,16 @@ namespace ActionSequencer.Editor {
             var importer = AssetImporter.GetAtPath(path);
 
             var userData = new UserData();
-            if (animationClip != null && AssetDatabase.TryGetGUIDAndLocalFileIdentifier(animationClip.GetInstanceID(), out var guid,
+            if (animationClip != null && AssetDatabase.TryGetGUIDAndLocalFileIdentifier(animationClip.GetInstanceID(),
+                    out var guid,
                     out long localId)) {
                 userData.Guid = guid;
                 userData.LocalId = localId;
             }
+
             userData.OffsetTime = offsetTime;
             importer.userData = JsonUtility.ToJson(userData, true);
-            
+
             importer.SaveAndReimport();
         }
 
@@ -512,7 +539,7 @@ namespace ActionSequencer.Editor {
                 SaveUserPreviewClip(sequenceClip, null, 0.0f);
                 return (null, 0.0f);
             }
-            
+
             if (string.IsNullOrEmpty(userData.Guid)) {
                 return (null, 0.0f);
             }
@@ -584,7 +611,7 @@ namespace ActionSequencer.Editor {
         /// <summary>
         /// コマンド要求処理
         /// </summary>
-        private void OnValidateCommandEvent(ValidateCommandEvent evt) {            
+        private void OnValidateCommandEvent(ValidateCommandEvent evt) {
             if (evt.commandName == "Duplicate") {
                 DuplicateSelectedEvents();
             }
