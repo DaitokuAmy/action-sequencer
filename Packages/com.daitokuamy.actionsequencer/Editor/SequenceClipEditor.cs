@@ -6,7 +6,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceClipのEditor拡張
     /// </summary>
-    [CustomEditor(typeof(SequenceClip))]
+    [CustomEditor(typeof(SequenceClip)), CanEditMultipleObjects]
     public class SequenceClipEditor : UnityEditor.Editor {
         /// <summary>
         /// インスペクタ描画
@@ -21,8 +21,10 @@ namespace ActionSequencer.Editor {
             EditorGUILayout.PropertyField(filterData);
             serializedObject.ApplyModifiedProperties();
 
-            if (GUILayout.Button("Open")) {
-                SequenceEditorWindow.Open(target as SequenceClip);
+            if (targets.Length == 1) {
+                if (GUILayout.Button("Open")) {
+                    SequenceEditorWindow.Open(target as SequenceClip);
+                }
             }
         }
 
