@@ -16,6 +16,11 @@ namespace ActionSequencer.Editor {
                 base.OnInspectorGUI();
             }
 
+            serializedObject.Update();
+            var filterData = serializedObject.FindProperty("filterData");
+            EditorGUILayout.PropertyField(filterData);
+            serializedObject.ApplyModifiedProperties();
+
             if (GUILayout.Button("Open")) {
                 SequenceEditorWindow.Open(target as SequenceClip);
             }

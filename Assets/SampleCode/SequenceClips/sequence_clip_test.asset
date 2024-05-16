@@ -99,6 +99,7 @@ MonoBehaviour:
   - {fileID: -6814886901204156338}
   - {fileID: 497499553068626419}
   frameRate: -1
+  filterData: {fileID: 0}
 --- !u!114 &274821728735001683
 MonoBehaviour:
   m_ObjectHideFlags: 1

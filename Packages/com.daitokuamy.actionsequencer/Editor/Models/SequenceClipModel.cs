@@ -12,6 +12,7 @@ namespace ActionSequencer.Editor {
     internal class SequenceClipModel : SerializedObjectModel {
         private SerializedProperty _tracks;
         private SerializedProperty _frameRate;
+        private SerializedProperty _filterData;
         private List<SequenceTrackModel> _trackModels = new List<SequenceTrackModel>();
 
         public Subject<SequenceTrackModel> AddedTrackModelSubject { get; } = new Subject<SequenceTrackModel>();
@@ -29,6 +30,7 @@ namespace ActionSequencer.Editor {
             : base(target) {
             _tracks = SerializedObject.FindProperty("tracks");
             _frameRate = SerializedObject.FindProperty("frameRate");
+            _filterData = SerializedObject.FindProperty("filterData");
 
             RefreshTracks();
         }
@@ -55,6 +57,71 @@ namespace ActionSequencer.Editor {
                     AddedTrackModelSubject.Invoke(model);
                 }
             }
+        }
+
+        /// <summary>
+        /// Namespaceのフィルタ
+        /// </summary>
+        public bool FilterNamespace(Type type) {
+            var filterData = _filterData.objectReferenceValue as SequenceEventFilterData;
+            if (filterData == null) {
+                return true;
+            }
+
+            var ns = type.Namespace;
+            if (ns == null) {
+                ns = "";
+            }
+
+            if (filterData.ignoreNamespaces.Length > 0) {
+                foreach (var ignoreNamespace in filterData.ignoreNamespaces) {
+                    if (ns.Contains(ignoreNamespace)) {
+                        return false;
+                    }
+                }
+            }
+
+            if (filterData.namespaceFilters.Length > 0) {
+                foreach (var pathFilter in filterData.namespaceFilters) {
+                    if (ns.Contains(pathFilter)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// パスのフィルタ
+        /// </summary>
+        public bool FilterPath(string path) {
+            var filterData = _filterData.objectReferenceValue as SequenceEventFilterData;
+            if (filterData == null) {
+                return true;
+            }
+
+            if (filterData.ignorePaths.Length > 0) {
+                foreach (var ignorePath in filterData.ignorePaths) {
+                    if (ignorePath != "" && path.Contains(ignorePath)) {
+                        return false;
+                    }
+                }
+            }
+
+            if (filterData.pathFilters.Length > 0) {
+                foreach (var pathFilter in filterData.pathFilters) {
+                    if (pathFilter != "" && path.Contains(pathFilter)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

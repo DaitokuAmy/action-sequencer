@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &-4994571175697340153
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -33,6 +33,7 @@ MonoBehaviour:
   tracks:
   - {fileID: 497499553068626419}
   frameRate: 30
+  filterData: {fileID: 11400000, guid: 730d052bb6be34f408db59a018d4126b, type: 2}
 --- !u!114 &497499553068626419
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -51,7 +52,7 @@ MonoBehaviour:
   - {fileID: -4994571175697340153}
 --- !u!114 &7063308268429188455
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}

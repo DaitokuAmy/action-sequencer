@@ -241,6 +241,15 @@ namespace ActionSequencer.Editor {
             foreach (var signalType in signalTypes) {
                 var t = signalType;
                 var displayName = SequenceEditorUtility.GetDisplayName(t);
+
+                if (!_editorModel.ClipModel.FilterNamespace(t)) {
+                    continue;
+                }
+                
+                if (!_editorModel.ClipModel.FilterPath(displayName)) {
+                    continue;
+                }
+                
                 menu.AddItem(new GUIContent($"Create Event/Signal/{displayName}"), false, () => {
                     var target = _editorModel.ClipModel?.Target;
                     if (target == null) {
@@ -255,6 +264,15 @@ namespace ActionSequencer.Editor {
             foreach (var rangeType in rangeTypes) {
                 var t = rangeType;
                 var displayName = SequenceEditorUtility.GetDisplayName(t);
+
+                if (!_editorModel.ClipModel.FilterNamespace(t)) {
+                    continue;
+                }
+                
+                if (!_editorModel.ClipModel.FilterPath(displayName)) {
+                    continue;
+                }
+                
                 menu.AddItem(new GUIContent($"Create Event/Range/{displayName}"), false, () => {
                     var target = _editorModel.ClipModel?.Target;
                     if (target == null) {

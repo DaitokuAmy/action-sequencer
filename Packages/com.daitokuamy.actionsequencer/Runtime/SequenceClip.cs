@@ -11,5 +11,7 @@ namespace ActionSequencer {
         public SequenceTrack[] tracks = Array.Empty<SequenceTrack>();
         [Tooltip("フレームレート")]
         public int frameRate = 60;
+        [Tooltip("イベントフィルター"), HideInInspector]
+        public SequenceEventFilterData filterData;
     }
 }
