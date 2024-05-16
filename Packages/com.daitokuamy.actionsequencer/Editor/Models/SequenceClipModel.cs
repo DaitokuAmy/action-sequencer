@@ -75,7 +75,7 @@ namespace ActionSequencer.Editor {
 
             if (filterData.ignoreNamespaces.Length > 0) {
                 foreach (var ignoreNamespace in filterData.ignoreNamespaces) {
-                    if (ns == ignoreNamespace) {
+                    if (ns.StartsWith(ignoreNamespace)) {
                         return false;
                     }
                 }
@@ -83,7 +83,7 @@ namespace ActionSequencer.Editor {
 
             if (filterData.namespaceFilters.Length > 0) {
                 foreach (var pathFilter in filterData.namespaceFilters) {
-                    if (ns == pathFilter) {
+                    if (ns.StartsWith(pathFilter)) {
                         return true;
                     }
                 }
@@ -105,7 +105,7 @@ namespace ActionSequencer.Editor {
 
             if (filterData.ignorePaths.Length > 0) {
                 foreach (var ignorePath in filterData.ignorePaths) {
-                    if (ignorePath != "" && path.Contains(ignorePath)) {
+                    if (ignorePath != "" && path.StartsWith(ignorePath)) {
                         return false;
                     }
                 }
@@ -113,7 +113,7 @@ namespace ActionSequencer.Editor {
 
             if (filterData.pathFilters.Length > 0) {
                 foreach (var pathFilter in filterData.pathFilters) {
-                    if (pathFilter != "" && path.Contains(pathFilter)) {
+                    if (pathFilter != "" && path.StartsWith(pathFilter)) {
                         return true;
                     }
                 }
