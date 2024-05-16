@@ -75,7 +75,7 @@ namespace ActionSequencer.Editor {
 
             if (filterData.ignoreNamespaces.Length > 0) {
                 foreach (var ignoreNamespace in filterData.ignoreNamespaces) {
-                    if (ns.StartsWith(ignoreNamespace)) {
+                    if (ns == ignoreNamespace) {
                         return false;
                     }
                 }
@@ -83,7 +83,7 @@ namespace ActionSequencer.Editor {
 
             if (filterData.namespaceFilters.Length > 0) {
                 foreach (var pathFilter in filterData.namespaceFilters) {
-                    if (ns.StartsWith(pathFilter)) {
+                    if (ns == pathFilter) {
                         return true;
                     }
                 }
