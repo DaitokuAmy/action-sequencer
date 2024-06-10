@@ -5,6 +5,9 @@ namespace ActionSequencer {
     /// 外部公開用のSequenceController
     /// </summary>
     public interface IReadOnlySequenceController {
+        /// <summary>再生中のSequenceClipが存在するか</summary>
+        bool HasPlayingClip { get; }
+        
         /// <summary>
         /// 単体イベント用のハンドラを設定
         /// </summary>

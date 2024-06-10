@@ -75,20 +75,21 @@ namespace ActionSequencer {
         }
 
         // Event > EventHandler情報の紐付け
-        private static Dictionary<Type, EventHandlerInfo> _globalSignalEventHandlerInfos =
+        private static readonly Dictionary<Type, EventHandlerInfo> GlobalSignalEventHandlerInfos =
+            new Dictionary<Type, EventHandlerInfo>();
+        private static readonly Dictionary<Type, EventHandlerInfo> GlobalRangeEventHandlerInfos =
             new Dictionary<Type, EventHandlerInfo>();
 
-        private static Dictionary<Type, EventHandlerInfo> _globalRangeEventHandlerInfos =
-            new Dictionary<Type, EventHandlerInfo>();
-
-        private Dictionary<Type, EventHandlerInfo> _signalEventHandlerInfos = new Dictionary<Type, EventHandlerInfo>();
-        private Dictionary<Type, EventHandlerInfo> _rangeEventHandlerInfos = new Dictionary<Type, EventHandlerInfo>();
+        private readonly Dictionary<Type, EventHandlerInfo> _signalEventHandlerInfos = new Dictionary<Type, EventHandlerInfo>();
+        private readonly Dictionary<Type, EventHandlerInfo> _rangeEventHandlerInfos = new Dictionary<Type, EventHandlerInfo>();
 
         // 再生中情報リスト
-        private List<PlayingInfo> _playingInfos = new List<PlayingInfo>();
-
+        private readonly List<PlayingInfo> _playingInfos = new List<PlayingInfo>();
         // 削除対象のPlayingInfoIndexリスト（高速化用にメンバー化）
-        private List<int> _removePlayingIndices = new List<int>();
+        private readonly List<int> _removePlayingIndices = new List<int>();
+
+        /// <summary>再生中のSequenceClipが存在するか</summary>
+        public bool HasPlayingClip => _playingInfos.Count > 0;
 
         /// <summary>
         /// 単体イベント用のハンドラを設定
@@ -97,7 +98,7 @@ namespace ActionSequencer {
         public static void BindGlobalSignalEventHandler<TEvent, THandler>(Action<THandler> onInit = null)
             where TEvent : SignalSequenceEvent
             where THandler : SignalSequenceEventHandler<TEvent> {
-            _globalSignalEventHandlerInfos[typeof(TEvent)] = new EventHandlerInfo {
+            GlobalSignalEventHandlerInfos[typeof(TEvent)] = new EventHandlerInfo {
                 Type = typeof(THandler),
                 InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null
             };
@@ -143,14 +144,14 @@ namespace ActionSequencer {
         /// </summary>
         public static void ResetGlobalSignalEventHandler<TEvent>()
             where TEvent : SignalSequenceEvent {
-            _globalSignalEventHandlerInfos.Remove(typeof(TEvent));
+            GlobalSignalEventHandlerInfos.Remove(typeof(TEvent));
         }
 
         /// <summary>
         /// 単体イベント用のハンドラを一括設定解除
         /// </summary>
         public static void ResetGlobalSignalEventHandlers() {
-            _globalSignalEventHandlerInfos.Clear();
+            GlobalSignalEventHandlerInfos.Clear();
         }
 
         /// <summary>
@@ -175,7 +176,7 @@ namespace ActionSequencer {
         public static void BindGlobalRangeEventHandler<TEvent, THandler>(Action<THandler> onInit = null)
             where TEvent : RangeSequenceEvent
             where THandler : RangeSequenceEventHandler<TEvent> {
-            _globalRangeEventHandlerInfos[typeof(TEvent)] = new EventHandlerInfo {
+            GlobalRangeEventHandlerInfos[typeof(TEvent)] = new EventHandlerInfo {
                 Type = typeof(THandler),
                 InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null
             };
@@ -235,14 +236,14 @@ namespace ActionSequencer {
         /// </summary>
         public static void ResetGlobalRangeEventHandler<TEvent>()
             where TEvent : RangeSequenceEvent {
-            _globalRangeEventHandlerInfos.Remove(typeof(TEvent));
+            GlobalRangeEventHandlerInfos.Remove(typeof(TEvent));
         }
 
         /// <summary>
         /// 範囲イベント用のハンドラを一括設定解除
         /// </summary>
         public static void ResetGlobalRangeEventHandlers() {
-            _globalRangeEventHandlerInfos.Clear();
+            GlobalRangeEventHandlerInfos.Clear();
         }
 
         /// <summary>
@@ -464,7 +465,7 @@ namespace ActionSequencer {
 
                 if (ev is RangeSequenceEvent rangeEvent) {
                     // Handlerの生成
-                    if (TryGetHandlerInfo(_rangeEventHandlerInfos, _globalRangeEventHandlerInfos, ev.GetType(),
+                    if (TryGetHandlerInfo(_rangeEventHandlerInfos, GlobalRangeEventHandlerInfos, ev.GetType(),
                             out var handlerInfo)) {
                         var constructorInfo = handlerInfo.Type.GetConstructor(Type.EmptyTypes);
                         if (constructorInfo != null) {
@@ -479,7 +480,7 @@ namespace ActionSequencer {
                 }
                 else if (ev is SignalSequenceEvent signalEvent) {
                     // Handlerの生成
-                    if (TryGetHandlerInfo(_signalEventHandlerInfos, _globalSignalEventHandlerInfos, ev.GetType(),
+                    if (TryGetHandlerInfo(_signalEventHandlerInfos, GlobalSignalEventHandlerInfos, ev.GetType(),
                             out var handlerInfo)) {
                         var constructorInfo = handlerInfo.Type.GetConstructor(Type.EmptyTypes);
                         if (constructorInfo != null) {
