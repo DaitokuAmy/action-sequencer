@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace ActionSequencer {
     /// <summary>
@@ -79,9 +80,12 @@ namespace ActionSequencer {
         private readonly Dictionary<Type, EventHandlerInfo> _rangeEventHandlerInfos = new();
 
         // 再生中情報リスト
-        private readonly List<PlayingInfo> _playingInfos = new List<PlayingInfo>();
+        private readonly List<PlayingInfo> _playingInfos = new();
         // 削除対象のPlayingInfoIndexリスト（高速化用にメンバー化）
-        private readonly List<int> _removePlayingIndices = new List<int>();
+        private readonly List<int> _removePlayingIndices = new();
+        // ハンドラインスタンス用Pool
+        private readonly Dictionary<Type, ObjectPool<ISignalSequenceEventHandler>> _signalHandlerPools = new();
+        private readonly Dictionary<Type, ObjectPool<IRangeSequenceEventHandler>> _rangeHandlerPools = new();
 
         /// <summary>再生中のSequenceClipが存在するか</summary>
         public bool HasPlayingClip => _playingInfos.Count > 0;
@@ -277,6 +281,9 @@ namespace ActionSequencer {
         /// </summary>
         public void Dispose() {
             StopAll();
+            ResetEventHandlers();
+            _signalHandlerPools.Clear();
+            _rangeHandlerPools.Clear();
         }
 
         /// <summary>
@@ -303,12 +310,21 @@ namespace ActionSequencer {
             }
 
             // 実行中の物を全部キャンセル
+            for (var i = playingInfo.ActiveSignalEvents.Count - 1; i >= 0; i--) {
+                var signalEvent = playingInfo.ActiveSignalEvents[i];
+                if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handler)) {
+                    ReleaseSignalEventHandler(handler);
+                }
+            }
+
             for (var i = playingInfo.ActiveRangeEvents.Count - 1; i >= 0; i--) {
                 var rangeEvent = playingInfo.ActiveRangeEvents[i];
                 if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handler)) {
                     if (handler.IsEntered) {
                         handler.Cancel(rangeEvent);
                     }
+
+                    ReleaseRangeEventHandler(handler);
                 }
             }
 
@@ -322,12 +338,21 @@ namespace ActionSequencer {
         public void StopAll() {
             foreach (var playingInfo in _playingInfos) {
                 // 実行中の物を全部キャンセル
+                for (var i = playingInfo.ActiveSignalEvents.Count - 1; i >= 0; i--) {
+                    var signalEvent = playingInfo.ActiveSignalEvents[i];
+                    if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handler)) {
+                        ReleaseSignalEventHandler(handler);
+                    }
+                }
+
                 for (var i = playingInfo.ActiveRangeEvents.Count - 1; i >= 0; i--) {
                     var rangeEvent = playingInfo.ActiveRangeEvents[i];
                     if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handler)) {
                         if (handler.IsEntered) {
                             handler.Cancel(rangeEvent);
                         }
+
+                        ReleaseRangeEventHandler(handler);
                     }
                 }
             }
@@ -372,6 +397,8 @@ namespace ActionSequencer {
                     if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handler)) {
                         // 発火通知
                         handler.Invoke(signalEvent);
+                        // 解放
+                        ReleaseSignalEventHandler(handler);
                     }
 
                     // リストから除外
@@ -402,6 +429,9 @@ namespace ActionSequencer {
                             // Enter/Exitが同時に呼ばれるのを回避する対応
                             if (!enterFrame || !rangeEvent.MustOneFrame) {
                                 handler.Exit(rangeEvent);
+                                // 解放
+                                ReleaseRangeEventHandler(handler);
+                                // リストから除外
                                 playingInfo.ActiveRangeEvents.RemoveAt(j);
                             }
                         }
@@ -460,9 +490,8 @@ namespace ActionSequencer {
                         // Handlerの生成
                         if (TryGetHandlerInfo(_rangeEventHandlerInfos, GlobalRangeEventHandlerInfos, ev.GetType(),
                                 out var handlerInfo)) {
-                            var constructorInfo = handlerInfo.Type.GetConstructor(Type.EmptyTypes);
-                            if (constructorInfo != null) {
-                                var handler = (IRangeSequenceEventHandler)constructorInfo.Invoke(Array.Empty<object>());
+                            var handler = GetRangeEventHandler(handlerInfo.Type);
+                            if (handler != null) {
                                 playingInfo.RangeEventHandlers[rangeEvent] = handler;
                                 handlerInfo.InitAction?.Invoke(handler);
                             }
@@ -475,10 +504,8 @@ namespace ActionSequencer {
                         // Handlerの生成
                         if (TryGetHandlerInfo(_signalEventHandlerInfos, GlobalSignalEventHandlerInfos, ev.GetType(),
                                 out var handlerInfo)) {
-                            var constructorInfo = handlerInfo.Type.GetConstructor(Type.EmptyTypes);
-                            if (constructorInfo != null) {
-                                var handler =
-                                    (ISignalSequenceEventHandler)constructorInfo.Invoke(Array.Empty<object>());
+                            var handler = GetSignalEventHandler(handlerInfo.Type);
+                            if (handler != null) {
                                 playingInfo.SignalEventHandlers[signalEvent] = handler;
                                 handlerInfo.InitAction?.Invoke(handler);
                             }
@@ -495,6 +522,64 @@ namespace ActionSequencer {
             playingInfo.ActiveSignalEvents.Sort((a, b) => b.time.CompareTo(a.time));
 
             return playingInfo;
+        }
+
+        /// <summary>
+        /// イベントハンドラの取得
+        /// </summary>
+        private ISignalSequenceEventHandler GetSignalEventHandler(Type type) {
+            if (!_signalHandlerPools.TryGetValue(type, out var pool)) {
+                pool = new ObjectPool<ISignalSequenceEventHandler>(() => {
+                    var constructorInfo = type.GetConstructor(Type.EmptyTypes);
+                    if (constructorInfo == null) {
+                        return null;
+                    }
+
+                    return (ISignalSequenceEventHandler)constructorInfo.Invoke(Array.Empty<object>());
+                }, handler => { }, handler => { }, handler => { });
+                _signalHandlerPools[type] = pool;
+            }
+
+            return pool.Get();
+        }
+
+        /// <summary>
+        /// イベントハンドラの取得
+        /// </summary>
+        private IRangeSequenceEventHandler GetRangeEventHandler(Type type) {
+            if (!_rangeHandlerPools.TryGetValue(type, out var pool)) {
+                pool = new ObjectPool<IRangeSequenceEventHandler>(() => {
+                    var constructorInfo = type.GetConstructor(Type.EmptyTypes);
+                    if (constructorInfo == null) {
+                        return null;
+                    }
+
+                    return (IRangeSequenceEventHandler)constructorInfo.Invoke(Array.Empty<object>());
+                }, handler => { }, handler => { }, handler => { });
+                _rangeHandlerPools[type] = pool;
+            }
+
+            return pool.Get();
+        }
+
+        /// <summary>
+        /// イベントハンドラの開放
+        /// </summary>
+        private void ReleaseSignalEventHandler(ISignalSequenceEventHandler handler) {
+            var type = handler.GetType();
+            if (_signalHandlerPools.TryGetValue(type, out var pool)) {
+                pool.Release(handler);
+            }
+        }
+
+        /// <summary>
+        /// イベントハンドラの開放
+        /// </summary>
+        private void ReleaseRangeEventHandler(IRangeSequenceEventHandler handler) {
+            var type = handler.GetType();
+            if (_rangeHandlerPools.TryGetValue(type, out var pool)) {
+                pool.Release(handler);
+            }
         }
     }
 }
