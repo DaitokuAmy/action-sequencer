@@ -49,11 +49,8 @@ namespace ActionSequencer {
             public SequenceClip Clip;
 
             // イベントとHandlerの紐付け
-            public Dictionary<SignalSequenceEvent, ISignalSequenceEventHandler> SignalEventHandlers =
-                new Dictionary<SignalSequenceEvent, ISignalSequenceEventHandler>();
-
-            public Dictionary<RangeSequenceEvent, IRangeSequenceEventHandler> RangeEventHandlers =
-                new Dictionary<RangeSequenceEvent, IRangeSequenceEventHandler>();
+            public Dictionary<SignalSequenceEvent, ISignalSequenceEventHandler> SignalEventHandlers = new();
+            public Dictionary<RangeSequenceEvent, IRangeSequenceEventHandler> RangeEventHandlers = new();
 
             // 有効なイベント
             public List<SignalSequenceEvent> ActiveSignalEvents = new List<SignalSequenceEvent>();
@@ -75,13 +72,11 @@ namespace ActionSequencer {
         }
 
         // Event > EventHandler情報の紐付け
-        private static readonly Dictionary<Type, EventHandlerInfo> GlobalSignalEventHandlerInfos =
-            new Dictionary<Type, EventHandlerInfo>();
-        private static readonly Dictionary<Type, EventHandlerInfo> GlobalRangeEventHandlerInfos =
-            new Dictionary<Type, EventHandlerInfo>();
+        private static readonly Dictionary<Type, EventHandlerInfo> GlobalSignalEventHandlerInfos = new();
+        private static readonly Dictionary<Type, EventHandlerInfo> GlobalRangeEventHandlerInfos = new();
 
-        private readonly Dictionary<Type, EventHandlerInfo> _signalEventHandlerInfos = new Dictionary<Type, EventHandlerInfo>();
-        private readonly Dictionary<Type, EventHandlerInfo> _rangeEventHandlerInfos = new Dictionary<Type, EventHandlerInfo>();
+        private readonly Dictionary<Type, EventHandlerInfo> _signalEventHandlerInfos = new();
+        private readonly Dictionary<Type, EventHandlerInfo> _rangeEventHandlerInfos = new();
 
         // 再生中情報リスト
         private readonly List<PlayingInfo> _playingInfos = new List<PlayingInfo>();
@@ -393,7 +388,7 @@ namespace ActionSequencer {
                     if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handler)) {
                         var elapsedTime = Mathf.Min(playingInfo.Time - rangeEvent.enterTime, rangeEvent.Duration);
                         var enterFrame = false;
-                        
+
                         // EnterしてなければEnter実行
                         if (!handler.IsEntered) {
                             enterFrame = true;
@@ -436,13 +431,10 @@ namespace ActionSequencer {
         /// 再生用情報の作成
         /// </summary>
         private PlayingInfo CreatePlayingInfo(SequenceClip clip, float startOffset) {
-            var playingInfo = new PlayingInfo();
-            playingInfo.Clip = clip;
-            playingInfo.Time = startOffset;
-
-            var events = clip.tracks
-                .SelectMany(x => x.sequenceEvents)
-                .ToArray();
+            var playingInfo = new PlayingInfo {
+                Clip = clip,
+                Time = startOffset
+            };
 
             bool TryGetHandlerInfo(Dictionary<Type, EventHandlerInfo> localInfos,
                 Dictionary<Type, EventHandlerInfo> globalInfos, Type type, out EventHandlerInfo handlerInfo) {
@@ -457,41 +449,44 @@ namespace ActionSequencer {
                 return false;
             }
 
-            foreach (var ev in events) {
-                // 無効状態のEventは処理しない
-                if (!ev.active) {
-                    continue;
-                }
-
-                if (ev is RangeSequenceEvent rangeEvent) {
-                    // Handlerの生成
-                    if (TryGetHandlerInfo(_rangeEventHandlerInfos, GlobalRangeEventHandlerInfos, ev.GetType(),
-                            out var handlerInfo)) {
-                        var constructorInfo = handlerInfo.Type.GetConstructor(Type.EmptyTypes);
-                        if (constructorInfo != null) {
-                            var handler = (IRangeSequenceEventHandler)constructorInfo.Invoke(Array.Empty<object>());
-                            playingInfo.RangeEventHandlers[rangeEvent] = handler;
-                            handlerInfo.InitAction?.Invoke(handler);
-                        }
+            foreach (var track in clip.tracks) {
+                foreach (var ev in track.sequenceEvents) {
+                    // 無効状態のEventは処理しない
+                    if (!ev.active) {
+                        continue;
                     }
 
-                    // 待機リストへ登録
-                    playingInfo.ActiveRangeEvents.Add(rangeEvent);
-                }
-                else if (ev is SignalSequenceEvent signalEvent) {
-                    // Handlerの生成
-                    if (TryGetHandlerInfo(_signalEventHandlerInfos, GlobalSignalEventHandlerInfos, ev.GetType(),
-                            out var handlerInfo)) {
-                        var constructorInfo = handlerInfo.Type.GetConstructor(Type.EmptyTypes);
-                        if (constructorInfo != null) {
-                            var handler = (ISignalSequenceEventHandler)constructorInfo.Invoke(Array.Empty<object>());
-                            playingInfo.SignalEventHandlers[signalEvent] = handler;
-                            handlerInfo.InitAction?.Invoke(handler);
+                    if (ev is RangeSequenceEvent rangeEvent) {
+                        // Handlerの生成
+                        if (TryGetHandlerInfo(_rangeEventHandlerInfos, GlobalRangeEventHandlerInfos, ev.GetType(),
+                                out var handlerInfo)) {
+                            var constructorInfo = handlerInfo.Type.GetConstructor(Type.EmptyTypes);
+                            if (constructorInfo != null) {
+                                var handler = (IRangeSequenceEventHandler)constructorInfo.Invoke(Array.Empty<object>());
+                                playingInfo.RangeEventHandlers[rangeEvent] = handler;
+                                handlerInfo.InitAction?.Invoke(handler);
+                            }
                         }
-                    }
 
-                    // 待機リストへ登録
-                    playingInfo.ActiveSignalEvents.Add(signalEvent);
+                        // 待機リストへ登録
+                        playingInfo.ActiveRangeEvents.Add(rangeEvent);
+                    }
+                    else if (ev is SignalSequenceEvent signalEvent) {
+                        // Handlerの生成
+                        if (TryGetHandlerInfo(_signalEventHandlerInfos, GlobalSignalEventHandlerInfos, ev.GetType(),
+                                out var handlerInfo)) {
+                            var constructorInfo = handlerInfo.Type.GetConstructor(Type.EmptyTypes);
+                            if (constructorInfo != null) {
+                                var handler =
+                                    (ISignalSequenceEventHandler)constructorInfo.Invoke(Array.Empty<object>());
+                                playingInfo.SignalEventHandlers[signalEvent] = handler;
+                                handlerInfo.InitAction?.Invoke(handler);
+                            }
+                        }
+
+                        // 待機リストへ登録
+                        playingInfo.ActiveSignalEvents.Add(signalEvent);
+                    }
                 }
             }
 
