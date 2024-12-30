@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -10,14 +11,30 @@ namespace ActionSequencer.Editor.Utils {
     /// SequenceEditor用のユーティリティ
     /// </summary>
     internal static class SequenceEditorUtility {
+        private static ActionSequencerSettings s_settings;
+        
+        /// <summary>Assets配下に存在する設定ファイルへの参照</summary>
+        private static ActionSequencerSettings Settings {
+            get {
+                if (s_settings == null) {
+                    var foundGuids = AssetDatabase.FindAssets($"t:{nameof(ActionSequencerSettings)}");
+                    if (foundGuids.Length > 0) {
+                        s_settings = AssetDatabase.LoadAssetAtPath<ActionSequencerSettings>(AssetDatabase.GUIDToAssetPath(foundGuids[0]));
+                    }
+                }
+
+                return s_settings;
+            }
+        }
+
         /// <summary>
         /// SequenceEventの表示名を取得
         /// </summary>
         public static string GetDisplayName(Type eventType) {
-            var settings = ActionSequencerSettings.instance;
+            var settings = Settings;
             var displayName = "";
-            if (settings != null && settings.SequenceEventTypeSettings.TryGetValue(eventType.FullName, out var setting)) {
-                displayName = setting.label;
+            if (settings != null && settings.TryGetSequenceEventTypeInfo(eventType.FullName, out var info)) {
+                displayName = info.label;
             }
 
             return string.IsNullOrWhiteSpace(displayName) ? eventType.Name : displayName;
@@ -27,10 +44,10 @@ namespace ActionSequencer.Editor.Utils {
         /// SequenceEventのテーマカラーを取得
         /// </summary>
         public static Color GetThemeColor(Type eventType) {
-            var settings = ActionSequencerSettings.instance;
+            var settings = Settings;
             var themeColor = Color.clear;
-            if (settings != null && settings.SequenceEventTypeSettings.TryGetValue(eventType.FullName, out var setting)) {
-                themeColor = setting.color;
+            if (settings != null && settings.TryGetSequenceEventTypeInfo(eventType.FullName, out var info)) {
+                themeColor = info.color;
             }
 
             // 無ければ自動生成
@@ -40,7 +57,7 @@ namespace ActionSequencer.Editor.Utils {
                 themeColor = Random.ColorHSV(0.0f, 1.0f, 0.4f, 0.4f, 0.9f, 0.9f);
                 Random.state = prevState;
             }
-            
+
             return themeColor;
         }
 
@@ -83,7 +100,7 @@ namespace ActionSequencer.Editor.Utils {
 
             return new[] { 20, 10, 5, 2 };
         }
-        
+
         /// <summary>
         /// ThickCycleの取得
         /// </summary>
@@ -127,22 +144,22 @@ namespace ActionSequencer.Editor.Utils {
             var sequenceTracks = allAssets.OfType<SequenceTrack>();
             var sequenceEvents = allAssets.OfType<SequenceEvent>();
             var dirty = false;
-            
+
             foreach (var sequenceTrack in sequenceTracks) {
                 if (ContainsTrack(clip, sequenceTrack)) {
                     continue;
                 }
-                
+
                 // 削除
                 Object.DestroyImmediate(sequenceTrack, true);
                 dirty = true;
             }
-            
+
             foreach (var sequenceEvent in sequenceEvents) {
                 if (ContainsEvent(clip, sequenceEvent)) {
                     continue;
                 }
-                
+
                 // 削除
                 Object.DestroyImmediate(sequenceEvent, true);
                 dirty = true;

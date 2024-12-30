@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d5a44d3d23160488ba30478c4f6ec8, type: 3}
   m_Name: PlayEffectSignalSequenceEvent
   m_EditorClassIdentifier: 
-  label: "\u30B8\u30E3\u30F3\u30D7\u958B\u59CB"
+  label: "\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
   active: 1
   time: 0.325
   prefab: {fileID: 8846004282753536196, guid: 8e7585cfe058d3044a74307dc2b1780b, type: 3}
@@ -33,6 +33,7 @@ MonoBehaviour:
   tracks:
   - {fileID: 497499553068626419}
   frameRate: -1
+  filterData: {fileID: 0}
 --- !u!114 &497499553068626419
 MonoBehaviour:
   m_ObjectHideFlags: 1
