@@ -87,7 +87,7 @@ public class TimerRangeSequenceEvent : RangeSequenceEvent
 ```
 #### イベントクラスの登録
 クラスを追加しただけでも使用は可能ですが、より見やすくするために以下の設定を行う事を推奨します  
-Tools > Action Sequencer > Create Settings を実行し、設定ファイルを生成した後、  
+**Tools > Action Sequencer > Create Settings** を実行し、設定ファイルを生成した後、  
 以下のように設定を入れる事で「**各クラスの表示名(イベント作成時の階層)**」と「**表示色**」を設定できるようになっています  
 ![image](https://github.com/user-attachments/assets/40e0d389-a051-47ec-9b60-77d18b9998a1)
 ![image](https://github.com/DaitokuAmy/action-sequencer/assets/6957962/56e1691f-089e-492b-89eb-94decf7ea2a4)
