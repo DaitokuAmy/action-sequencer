@@ -9,32 +9,51 @@ namespace ActionSequencer {
     /// <summary>
     /// Sequence再生管理用ハンドル
     /// </summary>
-    public struct SequenceHandle : IEnumerator {
+    public readonly struct SequenceHandle : IEnumerator, IDisposable {
+        private readonly SequenceController _controller;
         private readonly SequenceController.PlayingInfo _playingInfo;
 
-        // 再生完了しているか
-        public bool IsDone => _playingInfo != null ? _playingInfo.IsDone : true;
+        /// <summary>再生完了しているか</summary>
+        public bool IsDone => _controller == null || _playingInfo == null || _playingInfo.IsDone;
 
-        // IEnumerator用
+        /// <summary>IEnumerator用</summary>
         object IEnumerator.Current => null;
 
-        public SequenceHandle(SequenceController.PlayingInfo playingInfo) {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        internal SequenceHandle(SequenceController controller, SequenceController.PlayingInfo playingInfo) {
+            _controller = controller;
             _playingInfo = playingInfo;
         }
 
-        public override int GetHashCode() => _playingInfo != null ? _playingInfo.GetHashCode() : 0;
-
-        public override bool Equals(object obj) {
-            if (obj == null) {
-                return _playingInfo == null;
-            }
-
-            return GetHashCode() == obj.GetHashCode();
+        /// <summary>
+        /// 廃棄時処理
+        /// </summary>
+        public void Dispose() {
+            Stop();
         }
 
+        /// <summary>
+        /// IEnumerator用
+        /// </summary>
         bool IEnumerator.MoveNext() => !IsDone;
 
+        /// <summary>
+        /// IEnumerator用
+        /// </summary>
         void IEnumerator.Reset() {
+        }
+
+        /// <summary>
+        /// 停止
+        /// </summary>
+        public void Stop() {
+            if (_controller == null || _playingInfo == null || _playingInfo.IsDone) {
+                return;
+            }
+
+            _controller.Stop(_playingInfo);
         }
     }
 
@@ -46,21 +65,22 @@ namespace ActionSequencer {
         /// 再生中情報
         /// </summary>
         public class PlayingInfo {
-            // 再生しているClip
+            /// <summary>SignalEventのHandlerリスト</summary>
+            public readonly Dictionary<SignalSequenceEvent, ISignalSequenceEventHandler> SignalEventHandlers = new();
+            /// <summary>RangeEventのHandlerリスト</summary>
+            public readonly Dictionary<RangeSequenceEvent, IRangeSequenceEventHandler> RangeEventHandlers = new();
+
+            /// <summary>有効なSignalイベント</summary>
+            public readonly List<SignalSequenceEvent> ActiveSignalEvents = new();
+            /// <summary>有効なRangeイベント</summary>
+            public readonly List<RangeSequenceEvent> ActiveRangeEvents = new();
+
+            /// <summary>再生しているClip</summary>
             public SequenceClip Clip;
-
-            // イベントとHandlerの紐付け
-            public Dictionary<SignalSequenceEvent, ISignalSequenceEventHandler> SignalEventHandlers = new();
-            public Dictionary<RangeSequenceEvent, IRangeSequenceEventHandler> RangeEventHandlers = new();
-
-            // 有効なイベント
-            public List<SignalSequenceEvent> ActiveSignalEvents = new List<SignalSequenceEvent>();
-            public List<RangeSequenceEvent> ActiveRangeEvents = new List<RangeSequenceEvent>();
-
-            // 現在の再生時間
+            /// <summary>現在の再生時間</summary>
             public float Time;
 
-            // 再生完了しているか
+            /// <summary>再生完了しているか</summary>
             public bool IsDone => ActiveSignalEvents.Count <= 0 && ActiveRangeEvents.Count <= 0;
         }
 
@@ -70,6 +90,7 @@ namespace ActionSequencer {
         private class EventHandlerInfo {
             public Type Type;
             public Action<object> InitAction;
+            public Action<object> ReadyAction;
         }
 
         // Event > EventHandler情報の紐付け
@@ -81,6 +102,7 @@ namespace ActionSequencer {
 
         // 再生中情報リスト
         private readonly List<PlayingInfo> _playingInfos = new();
+        private readonly ObjectPool<PlayingInfo> _playingInfoPool;
         // 削除対象のPlayingInfoIndexリスト（高速化用にメンバー化）
         private readonly List<int> _removePlayingIndices = new();
         // ハンドラインスタンス用Pool
@@ -91,15 +113,24 @@ namespace ActionSequencer {
         public bool HasPlayingClip => _playingInfos.Count > 0;
 
         /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public SequenceController() {
+            _playingInfoPool = new ObjectPool<PlayingInfo>(() => new PlayingInfo());
+        }
+
+        /// <summary>
         /// 単体イベント用のハンドラを設定
         /// </summary>
-        /// <param name="onInit">ハンドラ生成時の処理</param>
-        public static void BindGlobalSignalEventHandler<TEvent, THandler>(Action<THandler> onInit = null)
+        /// <param name="onInit">ハンドラ生成時の処理(1回)</param>
+        /// <param name="onReady">ハンドラ準備時の処理(再生毎)</param>
+        public static void BindGlobalSignalEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
             where TEvent : SignalSequenceEvent
             where THandler : SignalSequenceEventHandler<TEvent> {
             GlobalSignalEventHandlerInfos[typeof(TEvent)] = new EventHandlerInfo {
                 Type = typeof(THandler),
-                InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null
+                InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null,
+                ReadyAction = onReady != null ? obj => { onReady.Invoke(obj as THandler); } : null
             };
         }
 
@@ -109,33 +140,7 @@ namespace ActionSequencer {
         /// <param name="onInvoke">イベント発火時処理</param>
         public static void BindGlobalSignalEventHandler<TEvent>(Action<TEvent> onInvoke)
             where TEvent : SignalSequenceEvent {
-            BindGlobalSignalEventHandler<TEvent, ObserveSignalSequenceEventHandler<TEvent>>(handler => {
-                handler.SetInvokeAction(onInvoke);
-            });
-        }
-
-        /// <summary>
-        /// 単体イベント用のハンドラを設定
-        /// </summary>
-        /// <param name="onInit">ハンドラ生成時の処理</param>
-        public void BindSignalEventHandler<TEvent, THandler>(Action<THandler> onInit = null)
-            where TEvent : SignalSequenceEvent
-            where THandler : SignalSequenceEventHandler<TEvent> {
-            _signalEventHandlerInfos[typeof(TEvent)] = new EventHandlerInfo {
-                Type = typeof(THandler),
-                InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null
-            };
-        }
-
-        /// <summary>
-        /// 単体イベント用のハンドラを設定
-        /// </summary>
-        /// <param name="onInvoke">イベント発火時処理</param>
-        public void BindSignalEventHandler<TEvent>(Action<TEvent> onInvoke)
-            where TEvent : SignalSequenceEvent {
-            BindSignalEventHandler<TEvent, ObserveSignalSequenceEventHandler<TEvent>>(handler => {
-                handler.SetInvokeAction(onInvoke);
-            });
+            BindGlobalSignalEventHandler<TEvent, ObserveSignalSequenceEventHandler<TEvent>>(handler => { handler.SetInvokeAction(onInvoke); });
         }
 
         /// <summary>
@@ -154,25 +159,11 @@ namespace ActionSequencer {
         }
 
         /// <summary>
-        /// 単体イベント用のハンドラの設定解除
-        /// </summary>
-        public void ResetSignalEventHandler<TEvent>()
-            where TEvent : SignalSequenceEvent {
-            _signalEventHandlerInfos.Remove(typeof(TEvent));
-        }
-
-        /// <summary>
-        /// 単体イベント用のハンドラを一括設定解除
-        /// </summary>
-        public void ResetSignalEventHandlers() {
-            _signalEventHandlerInfos.Clear();
-        }
-
-        /// <summary>
         /// 範囲イベント用のハンドラを設定
         /// </summary>
-        /// <param name="onInit">ハンドラ生成時の処理</param>
-        public static void BindGlobalRangeEventHandler<TEvent, THandler>(Action<THandler> onInit = null)
+        /// <param name="onInit">ハンドラ生成時の処理(1回)</param>
+        /// <param name="onReady">ハンドラ準備時の処理(再生毎)</param>
+        public static void BindGlobalRangeEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
             where TEvent : RangeSequenceEvent
             where THandler : RangeSequenceEventHandler<TEvent> {
             GlobalRangeEventHandlerInfos[typeof(TEvent)] = new EventHandlerInfo {
@@ -200,10 +191,73 @@ namespace ActionSequencer {
         }
 
         /// <summary>
+        /// 範囲イベント用のハンドラの設定解除
+        /// </summary>
+        public static void ResetGlobalRangeEventHandler<TEvent>()
+            where TEvent : RangeSequenceEvent {
+            GlobalRangeEventHandlerInfos.Remove(typeof(TEvent));
+        }
+
+        /// <summary>
+        /// 範囲イベント用のハンドラを一括設定解除
+        /// </summary>
+        public static void ResetGlobalRangeEventHandlers() {
+            GlobalRangeEventHandlerInfos.Clear();
+        }
+
+        /// <summary>
+        /// イベント用のハンドラを一括設定解除
+        /// </summary>
+        public static void ResetGlobalEventHandlers() {
+            ResetGlobalSignalEventHandlers();
+            ResetGlobalSignalEventHandlers();
+        }
+
+        /// <summary>
+        /// 単体イベント用のハンドラを設定
+        /// </summary>
+        /// <param name="onInit">ハンドラ生成時の処理(1回)</param>
+        /// <param name="onReady">ハンドラ準備時の処理(再生毎)</param>
+        public void BindSignalEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
+            where TEvent : SignalSequenceEvent
+            where THandler : SignalSequenceEventHandler<TEvent> {
+            _signalEventHandlerInfos[typeof(TEvent)] = new EventHandlerInfo {
+                Type = typeof(THandler),
+                InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null,
+                ReadyAction = onReady != null ? obj => { onReady.Invoke(obj as THandler); } : null
+            };
+        }
+
+        /// <summary>
+        /// 単体イベント用のハンドラを設定
+        /// </summary>
+        /// <param name="onInvoke">イベント発火時処理</param>
+        public void BindSignalEventHandler<TEvent>(Action<TEvent> onInvoke)
+            where TEvent : SignalSequenceEvent {
+            BindSignalEventHandler<TEvent, ObserveSignalSequenceEventHandler<TEvent>>(handler => { handler.SetInvokeAction(onInvoke); });
+        }
+
+        /// <summary>
+        /// 単体イベント用のハンドラの設定解除
+        /// </summary>
+        public void ResetSignalEventHandler<TEvent>()
+            where TEvent : SignalSequenceEvent {
+            _signalEventHandlerInfos.Remove(typeof(TEvent));
+        }
+
+        /// <summary>
+        /// 単体イベント用のハンドラを一括設定解除
+        /// </summary>
+        public void ResetSignalEventHandlers() {
+            _signalEventHandlerInfos.Clear();
+        }
+
+        /// <summary>
         /// 範囲イベント用のハンドラを設定
         /// </summary>
-        /// <param name="onInit">ハンドラ生成時の処理</param>
-        public void BindRangeEventHandler<TEvent, THandler>(Action<THandler> onInit = null)
+        /// <param name="onInit">ハンドラ生成時の処理(1回)</param>
+        /// <param name="onReady">ハンドラ準備時の処理(再生毎)</param>
+        public void BindRangeEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
             where TEvent : RangeSequenceEvent
             where THandler : RangeSequenceEventHandler<TEvent> {
             _rangeEventHandlerInfos[typeof(TEvent)] = new EventHandlerInfo {
@@ -233,21 +287,6 @@ namespace ActionSequencer {
         /// <summary>
         /// 範囲イベント用のハンドラの設定解除
         /// </summary>
-        public static void ResetGlobalRangeEventHandler<TEvent>()
-            where TEvent : RangeSequenceEvent {
-            GlobalRangeEventHandlerInfos.Remove(typeof(TEvent));
-        }
-
-        /// <summary>
-        /// 範囲イベント用のハンドラを一括設定解除
-        /// </summary>
-        public static void ResetGlobalRangeEventHandlers() {
-            GlobalRangeEventHandlerInfos.Clear();
-        }
-
-        /// <summary>
-        /// 範囲イベント用のハンドラの設定解除
-        /// </summary>
         public void ResetRangeEventHandler<TEvent>()
             where TEvent : RangeSequenceEvent {
             _rangeEventHandlerInfos.Remove(typeof(TEvent));
@@ -258,14 +297,6 @@ namespace ActionSequencer {
         /// </summary>
         public void ResetRangeEventHandlers() {
             _rangeEventHandlerInfos.Clear();
-        }
-
-        /// <summary>
-        /// イベント用のハンドラを一括設定解除
-        /// </summary>
-        public static void ResetGlobalEventHandlers() {
-            ResetGlobalSignalEventHandlers();
-            ResetGlobalSignalEventHandlers();
         }
 
         /// <summary>
@@ -296,40 +327,7 @@ namespace ActionSequencer {
             var playingInfo = CreatePlayingInfo(clip, startOffset);
             _playingInfos.Add(playingInfo);
 
-            return new SequenceHandle(playingInfo);
-        }
-
-        /// <summary>
-        /// 強制停止処理
-        /// </summary>
-        /// <param name="handle">停止対象を表すHandle</param>
-        public void Stop(SequenceHandle handle) {
-            var playingInfo = _playingInfos.FirstOrDefault(x => handle.GetHashCode() == x.GetHashCode());
-            if (playingInfo == null) {
-                return;
-            }
-
-            // 実行中の物を全部キャンセル
-            for (var i = playingInfo.ActiveSignalEvents.Count - 1; i >= 0; i--) {
-                var signalEvent = playingInfo.ActiveSignalEvents[i];
-                if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handler)) {
-                    ReleaseSignalEventHandler(handler);
-                }
-            }
-
-            for (var i = playingInfo.ActiveRangeEvents.Count - 1; i >= 0; i--) {
-                var rangeEvent = playingInfo.ActiveRangeEvents[i];
-                if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handler)) {
-                    if (handler.IsEntered) {
-                        handler.Cancel(rangeEvent);
-                    }
-
-                    ReleaseRangeEventHandler(handler);
-                }
-            }
-
-            // 再生中リストから除外
-            _playingInfos.Remove(playingInfo);
+            return new SequenceHandle(this, playingInfo);
         }
 
         /// <summary>
@@ -355,6 +353,8 @@ namespace ActionSequencer {
                         ReleaseRangeEventHandler(handler);
                     }
                 }
+
+                ReleasePlayingInfo(playingInfo);
             }
 
             _playingInfos.Clear();
@@ -458,13 +458,48 @@ namespace ActionSequencer {
         }
 
         /// <summary>
+        /// 停止処理
+        /// </summary>
+        internal void Stop(PlayingInfo playingInfo) {
+            if (playingInfo == null) {
+                return;
+            }
+
+            // リストから除外
+            if (!_playingInfos.Remove(playingInfo)) {
+                return;
+            }
+
+            // 実行中の物を全部キャンセル
+            for (var i = playingInfo.ActiveSignalEvents.Count - 1; i >= 0; i--) {
+                var signalEvent = playingInfo.ActiveSignalEvents[i];
+                if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handler)) {
+                    ReleaseSignalEventHandler(handler);
+                }
+            }
+
+            for (var i = playingInfo.ActiveRangeEvents.Count - 1; i >= 0; i--) {
+                var rangeEvent = playingInfo.ActiveRangeEvents[i];
+                if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handler)) {
+                    if (handler.IsEntered) {
+                        handler.Cancel(rangeEvent);
+                    }
+
+                    ReleaseRangeEventHandler(handler);
+                }
+            }
+
+            // プールから解放
+            ReleasePlayingInfo(playingInfo);
+        }
+
+        /// <summary>
         /// 再生用情報の作成
         /// </summary>
         private PlayingInfo CreatePlayingInfo(SequenceClip clip, float startOffset) {
-            var playingInfo = new PlayingInfo {
-                Clip = clip,
-                Time = startOffset
-            };
+            _playingInfoPool.Get(out var playingInfo);
+            playingInfo.Clip = clip;
+            playingInfo.Time = startOffset;
 
             bool TryGetHandlerInfo(Dictionary<Type, EventHandlerInfo> localInfos,
                 Dictionary<Type, EventHandlerInfo> globalInfos, Type type, out EventHandlerInfo handlerInfo) {
@@ -490,10 +525,10 @@ namespace ActionSequencer {
                         // Handlerの生成
                         if (TryGetHandlerInfo(_rangeEventHandlerInfos, GlobalRangeEventHandlerInfos, ev.GetType(),
                                 out var handlerInfo)) {
-                            var handler = GetRangeEventHandler(handlerInfo.Type);
+                            var handler = GetRangeEventHandler(handlerInfo);
                             if (handler != null) {
                                 playingInfo.RangeEventHandlers[rangeEvent] = handler;
-                                handlerInfo.InitAction?.Invoke(handler);
+                                handlerInfo.ReadyAction?.Invoke(handler);
                             }
                         }
 
@@ -504,10 +539,10 @@ namespace ActionSequencer {
                         // Handlerの生成
                         if (TryGetHandlerInfo(_signalEventHandlerInfos, GlobalSignalEventHandlerInfos, ev.GetType(),
                                 out var handlerInfo)) {
-                            var handler = GetSignalEventHandler(handlerInfo.Type);
+                            var handler = GetSignalEventHandler(handlerInfo);
                             if (handler != null) {
                                 playingInfo.SignalEventHandlers[signalEvent] = handler;
-                                handlerInfo.InitAction?.Invoke(handler);
+                                handlerInfo.ReadyAction?.Invoke(handler);
                             }
                         }
 
@@ -525,9 +560,23 @@ namespace ActionSequencer {
         }
 
         /// <summary>
+        /// 再生用情報のリリース
+        /// </summary>
+        private void ReleasePlayingInfo(PlayingInfo playingInfo) {
+            playingInfo.Clip = null;
+            playingInfo.Time = 0.0f;
+            playingInfo.ActiveSignalEvents.Clear();
+            playingInfo.ActiveRangeEvents.Clear();
+            playingInfo.SignalEventHandlers.Clear();
+            playingInfo.RangeEventHandlers.Clear();
+            _playingInfoPool.Release(playingInfo);
+        }
+
+        /// <summary>
         /// イベントハンドラの取得
         /// </summary>
-        private ISignalSequenceEventHandler GetSignalEventHandler(Type type) {
+        private ISignalSequenceEventHandler GetSignalEventHandler(EventHandlerInfo handlerInfo) {
+            var type = handlerInfo.Type;
             if (!_signalHandlerPools.TryGetValue(type, out var pool)) {
                 pool = new ObjectPool<ISignalSequenceEventHandler>(() => {
                     var constructorInfo = type.GetConstructor(Type.EmptyTypes);
@@ -535,8 +584,10 @@ namespace ActionSequencer {
                         return null;
                     }
 
-                    return (ISignalSequenceEventHandler)constructorInfo.Invoke(Array.Empty<object>());
-                }, handler => { }, handler => { }, handler => { });
+                    var handler = (ISignalSequenceEventHandler)constructorInfo.Invoke(Array.Empty<object>());
+                    handlerInfo.InitAction?.Invoke(handler);
+                    return handler;
+                }, _ => { }, _ => { }, _ => { });
                 _signalHandlerPools[type] = pool;
             }
 
@@ -546,7 +597,8 @@ namespace ActionSequencer {
         /// <summary>
         /// イベントハンドラの取得
         /// </summary>
-        private IRangeSequenceEventHandler GetRangeEventHandler(Type type) {
+        private IRangeSequenceEventHandler GetRangeEventHandler(EventHandlerInfo handlerInfo) {
+            var type = handlerInfo.Type;
             if (!_rangeHandlerPools.TryGetValue(type, out var pool)) {
                 pool = new ObjectPool<IRangeSequenceEventHandler>(() => {
                     var constructorInfo = type.GetConstructor(Type.EmptyTypes);
@@ -554,8 +606,10 @@ namespace ActionSequencer {
                         return null;
                     }
 
-                    return (IRangeSequenceEventHandler)constructorInfo.Invoke(Array.Empty<object>());
-                }, handler => { }, handler => { }, handler => { });
+                    var handler = (IRangeSequenceEventHandler)constructorInfo.Invoke(Array.Empty<object>());
+                    handlerInfo.InitAction?.Invoke(handler);
+                    return handler;
+                }, _ => { }, _ => { }, _ => { });
                 _rangeHandlerPools[type] = pool;
             }
 

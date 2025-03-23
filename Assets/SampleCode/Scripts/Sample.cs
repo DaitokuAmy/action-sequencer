@@ -75,7 +75,7 @@ public class Sample : MonoBehaviour, ISequenceControllerProvider {
         }
 
         // 以前流した物があれば止める
-        _sequenceController.Stop(_actionSequenceHandle);
+        _actionSequenceHandle.Stop();
 
         // モーション再生と同時にシーケンスを流す
         var actionInfo = _actionInfos[actionIndex];

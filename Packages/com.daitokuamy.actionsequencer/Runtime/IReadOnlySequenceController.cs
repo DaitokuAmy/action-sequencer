@@ -11,8 +11,9 @@ namespace ActionSequencer {
         /// <summary>
         /// 単体イベント用のハンドラを設定
         /// </summary>
-        /// <param name="onInit">ハンドラ生成時の処理</param>
-        void BindSignalEventHandler<TEvent, THandler>(Action<THandler> onInit = null)
+        /// <param name="onInit">ハンドラ生成時の処理(1回)</param>
+        /// <param name="onReady">ハンドラ準備時の処理(再生毎)</param>
+        void BindSignalEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
             where TEvent : SignalSequenceEvent
             where THandler : SignalSequenceEventHandler<TEvent>;
 
@@ -37,8 +38,9 @@ namespace ActionSequencer {
         /// <summary>
         /// 範囲イベント用のハンドラを設定
         /// </summary>
-        /// <param name="onInit">ハンドラ生成時の処理</param>
-        void BindRangeEventHandler<TEvent, THandler>(Action<THandler> onInit = null)
+        /// <param name="onInit">ハンドラ生成時の処理(1回)</param>
+        /// <param name="onReady">ハンドラ準備時の処理(再生毎)</param>
+        void BindRangeEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
             where TEvent : RangeSequenceEvent
             where THandler : RangeSequenceEventHandler<TEvent>;
 
