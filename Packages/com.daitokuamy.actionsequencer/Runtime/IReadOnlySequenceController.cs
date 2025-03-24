@@ -13,7 +13,7 @@ namespace ActionSequencer {
         /// </summary>
         /// <param name="onInit">ハンドラ生成時の処理(1回)</param>
         /// <param name="onReady">ハンドラ準備時の処理(再生毎)</param>
-        void BindSignalEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
+        IDisposable BindSignalEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
             where TEvent : SignalSequenceEvent
             where THandler : SignalSequenceEventHandler<TEvent>;
 
@@ -21,7 +21,7 @@ namespace ActionSequencer {
         /// 単体イベント用のハンドラを設定
         /// </summary>
         /// <param name="onInvoke">イベント発火時処理</param>
-        void BindSignalEventHandler<TEvent>(Action<TEvent> onInvoke)
+        IDisposable BindSignalEventHandler<TEvent>(Action<TEvent> onInvoke)
             where TEvent : SignalSequenceEvent;
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace ActionSequencer {
         /// </summary>
         /// <param name="onInit">ハンドラ生成時の処理(1回)</param>
         /// <param name="onReady">ハンドラ準備時の処理(再生毎)</param>
-        void BindRangeEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
+        IDisposable BindRangeEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
             where TEvent : RangeSequenceEvent
             where THandler : RangeSequenceEventHandler<TEvent>;
 
@@ -51,7 +51,7 @@ namespace ActionSequencer {
         /// <param name="onExit">区間終了時処理</param>
         /// <param name="onUpdate">区間中更新処理</param>
         /// <param name="onCancel">区間キャンセル時処理</param>
-        void BindRangeEventHandler<TEvent>(Action<TEvent> onEnter, Action<TEvent> onExit,
+        IDisposable BindRangeEventHandler<TEvent>(Action<TEvent> onEnter, Action<TEvent> onExit,
             Action<TEvent, float> onUpdate = null, Action<TEvent> onCancel = null)
             where TEvent : RangeSequenceEvent;
 

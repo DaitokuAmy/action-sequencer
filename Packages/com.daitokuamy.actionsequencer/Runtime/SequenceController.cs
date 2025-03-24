@@ -66,9 +66,9 @@ namespace ActionSequencer {
         /// </summary>
         public class PlayingInfo {
             /// <summary>SignalEventのHandlerリスト</summary>
-            public readonly Dictionary<SignalSequenceEvent, ISignalSequenceEventHandler> SignalEventHandlers = new();
+            public readonly Dictionary<SignalSequenceEvent, List<ISignalSequenceEventHandler>> SignalEventHandlers = new();
             /// <summary>RangeEventのHandlerリスト</summary>
-            public readonly Dictionary<RangeSequenceEvent, IRangeSequenceEventHandler> RangeEventHandlers = new();
+            public readonly Dictionary<RangeSequenceEvent, List<IRangeSequenceEventHandler>> RangeEventHandlers = new();
 
             /// <summary>有効なSignalイベント</summary>
             public readonly List<SignalSequenceEvent> ActiveSignalEvents = new();
@@ -93,12 +93,28 @@ namespace ActionSequencer {
             public Action<object> ReadyAction;
         }
 
-        // Event > EventHandler情報の紐付け
-        private static readonly Dictionary<Type, EventHandlerInfo> GlobalSignalEventHandlerInfos = new();
-        private static readonly Dictionary<Type, EventHandlerInfo> GlobalRangeEventHandlerInfos = new();
+        /// <summary>
+        /// Dispose時アクション登録用
+        /// </summary>
+        private class DisposableAction : IDisposable {
+            private Action _onDisposed;
+            
+            public DisposableAction(Action onDisposed) {
+                _onDisposed = onDisposed;
+            }
 
-        private readonly Dictionary<Type, EventHandlerInfo> _signalEventHandlerInfos = new();
-        private readonly Dictionary<Type, EventHandlerInfo> _rangeEventHandlerInfos = new();
+            void IDisposable.Dispose() {
+                _onDisposed?.Invoke();
+                _onDisposed = null;
+            }
+        }
+
+        // Event > EventHandler情報の紐付け
+        private static readonly Dictionary<Type, List<EventHandlerInfo>> GlobalSignalEventHandlerInfos = new();
+        private static readonly Dictionary<Type, List<EventHandlerInfo>> GlobalRangeEventHandlerInfos = new();
+
+        private readonly Dictionary<Type, List<EventHandlerInfo>> _signalEventHandlerInfos = new();
+        private readonly Dictionary<Type, List<EventHandlerInfo>> _rangeEventHandlerInfos = new();
 
         // 再生中情報リスト
         private readonly List<PlayingInfo> _playingInfos = new();
@@ -124,23 +140,34 @@ namespace ActionSequencer {
         /// </summary>
         /// <param name="onInit">ハンドラ生成時の処理(1回)</param>
         /// <param name="onReady">ハンドラ準備時の処理(再生毎)</param>
-        public static void BindGlobalSignalEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
+        public static IDisposable BindGlobalSignalEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
             where TEvent : SignalSequenceEvent
             where THandler : SignalSequenceEventHandler<TEvent> {
-            GlobalSignalEventHandlerInfos[typeof(TEvent)] = new EventHandlerInfo {
+            var type = typeof(TEvent);
+            if (!GlobalSignalEventHandlerInfos.TryGetValue(type, out var infos)) {
+                infos = new List<EventHandlerInfo>();
+                GlobalSignalEventHandlerInfos.Add(type, infos);
+            }
+
+            var info = new EventHandlerInfo {
                 Type = typeof(THandler),
                 InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null,
                 ReadyAction = onReady != null ? obj => { onReady.Invoke(obj as THandler); } : null
             };
+            infos.Add(info);
+
+            return new DisposableAction(() => {
+                infos.Remove(info);
+            });
         }
 
         /// <summary>
         /// 単体イベント用のハンドラを設定
         /// </summary>
         /// <param name="onInvoke">イベント発火時処理</param>
-        public static void BindGlobalSignalEventHandler<TEvent>(Action<TEvent> onInvoke)
+        public static IDisposable BindGlobalSignalEventHandler<TEvent>(Action<TEvent> onInvoke)
             where TEvent : SignalSequenceEvent {
-            BindGlobalSignalEventHandler<TEvent, ObserveSignalSequenceEventHandler<TEvent>>(handler => { handler.SetInvokeAction(onInvoke); });
+            return BindGlobalSignalEventHandler<TEvent, ObserveSignalSequenceEventHandler<TEvent>>(handler => { handler.SetInvokeAction(onInvoke); });
         }
 
         /// <summary>
@@ -163,13 +190,24 @@ namespace ActionSequencer {
         /// </summary>
         /// <param name="onInit">ハンドラ生成時の処理(1回)</param>
         /// <param name="onReady">ハンドラ準備時の処理(再生毎)</param>
-        public static void BindGlobalRangeEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
+        public static IDisposable BindGlobalRangeEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
             where TEvent : RangeSequenceEvent
             where THandler : RangeSequenceEventHandler<TEvent> {
-            GlobalRangeEventHandlerInfos[typeof(TEvent)] = new EventHandlerInfo {
+            var type = typeof(TEvent);
+            if (!GlobalRangeEventHandlerInfos.TryGetValue(type, out var infos)) {
+                infos = new List<EventHandlerInfo>();
+                GlobalRangeEventHandlerInfos.Add(type, infos);
+            }
+
+            var info = new EventHandlerInfo {
                 Type = typeof(THandler),
                 InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null
             };
+            infos.Add(info);
+
+            return new DisposableAction(() => {
+                infos.Remove(info);
+            });
         }
 
         /// <summary>
@@ -179,10 +217,10 @@ namespace ActionSequencer {
         /// <param name="onExit">区間終了時処理</param>
         /// <param name="onUpdate">区間中更新処理</param>
         /// <param name="onCancel">区間キャンセル時処理</param>
-        public static void BindGlobalRangeEventHandler<TEvent>(Action<TEvent> onEnter, Action<TEvent> onExit,
+        public static IDisposable BindGlobalRangeEventHandler<TEvent>(Action<TEvent> onEnter, Action<TEvent> onExit,
             Action<TEvent, float> onUpdate = null, Action<TEvent> onCancel = null)
             where TEvent : RangeSequenceEvent {
-            BindGlobalRangeEventHandler<TEvent, ObserveRangeSequenceEventHandler<TEvent>>(handler => {
+            return BindGlobalRangeEventHandler<TEvent, ObserveRangeSequenceEventHandler<TEvent>>(handler => {
                 handler.SetEnterAction(onEnter);
                 handler.SetExitAction(onExit);
                 handler.SetUpdateAction(onUpdate);
@@ -218,23 +256,34 @@ namespace ActionSequencer {
         /// </summary>
         /// <param name="onInit">ハンドラ生成時の処理(1回)</param>
         /// <param name="onReady">ハンドラ準備時の処理(再生毎)</param>
-        public void BindSignalEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
+        public IDisposable BindSignalEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
             where TEvent : SignalSequenceEvent
             where THandler : SignalSequenceEventHandler<TEvent> {
-            _signalEventHandlerInfos[typeof(TEvent)] = new EventHandlerInfo {
+            var type = typeof(TEvent);
+            if (!_signalEventHandlerInfos.TryGetValue(type, out var infos)) {
+                infos = new List<EventHandlerInfo>();
+                _signalEventHandlerInfos.Add(type, infos);
+            }
+
+            var info = new EventHandlerInfo {
                 Type = typeof(THandler),
                 InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null,
                 ReadyAction = onReady != null ? obj => { onReady.Invoke(obj as THandler); } : null
             };
+            infos.Add(info);
+
+            return new DisposableAction(() => {
+                infos.Remove(info);
+            });
         }
 
         /// <summary>
         /// 単体イベント用のハンドラを設定
         /// </summary>
         /// <param name="onInvoke">イベント発火時処理</param>
-        public void BindSignalEventHandler<TEvent>(Action<TEvent> onInvoke)
+        public IDisposable BindSignalEventHandler<TEvent>(Action<TEvent> onInvoke)
             where TEvent : SignalSequenceEvent {
-            BindSignalEventHandler<TEvent, ObserveSignalSequenceEventHandler<TEvent>>(handler => { handler.SetInvokeAction(onInvoke); });
+            return BindSignalEventHandler<TEvent, ObserveSignalSequenceEventHandler<TEvent>>(handler => { handler.SetInvokeAction(onInvoke); });
         }
 
         /// <summary>
@@ -257,13 +306,24 @@ namespace ActionSequencer {
         /// </summary>
         /// <param name="onInit">ハンドラ生成時の処理(1回)</param>
         /// <param name="onReady">ハンドラ準備時の処理(再生毎)</param>
-        public void BindRangeEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
+        public IDisposable BindRangeEventHandler<TEvent, THandler>(Action<THandler> onInit = null, Action<THandler> onReady = null)
             where TEvent : RangeSequenceEvent
             where THandler : RangeSequenceEventHandler<TEvent> {
-            _rangeEventHandlerInfos[typeof(TEvent)] = new EventHandlerInfo {
+            var type = typeof(TEvent);
+            if (!_rangeEventHandlerInfos.TryGetValue(type, out var infos)) {
+                infos = new List<EventHandlerInfo>();
+                _rangeEventHandlerInfos.Add(type, infos);
+            }
+
+            var info = new EventHandlerInfo {
                 Type = typeof(THandler),
                 InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null
             };
+            infos.Add(info);
+
+            return new DisposableAction(() => {
+                infos.Remove(info);
+            });
         }
 
         /// <summary>
@@ -273,10 +333,10 @@ namespace ActionSequencer {
         /// <param name="onExit">区間終了時処理</param>
         /// <param name="onUpdate">区間中更新処理</param>
         /// <param name="onCancel">区間キャンセル時処理</param>
-        public void BindRangeEventHandler<TEvent>(Action<TEvent> onEnter, Action<TEvent> onExit,
+        public IDisposable BindRangeEventHandler<TEvent>(Action<TEvent> onEnter, Action<TEvent> onExit,
             Action<TEvent, float> onUpdate = null, Action<TEvent> onCancel = null)
             where TEvent : RangeSequenceEvent {
-            BindRangeEventHandler<TEvent, ObserveRangeSequenceEventHandler<TEvent>>(handler => {
+            return BindRangeEventHandler<TEvent, ObserveRangeSequenceEventHandler<TEvent>>(handler => {
                 handler.SetEnterAction(onEnter);
                 handler.SetExitAction(onExit);
                 handler.SetUpdateAction(onUpdate);
@@ -338,19 +398,23 @@ namespace ActionSequencer {
                 // 実行中の物を全部キャンセル
                 for (var i = playingInfo.ActiveSignalEvents.Count - 1; i >= 0; i--) {
                     var signalEvent = playingInfo.ActiveSignalEvents[i];
-                    if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handler)) {
-                        ReleaseSignalEventHandler(handler);
+                    if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handlers)) {
+                        foreach (var handler in handlers) {
+                            ReleaseSignalEventHandler(handler);
+                        }
                     }
                 }
 
                 for (var i = playingInfo.ActiveRangeEvents.Count - 1; i >= 0; i--) {
                     var rangeEvent = playingInfo.ActiveRangeEvents[i];
-                    if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handler)) {
-                        if (handler.IsEntered) {
-                            handler.Cancel(rangeEvent);
-                        }
+                    if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handlers)) {
+                        foreach (var handler in handlers) {
+                            if (handler.IsEntered) {
+                                handler.Cancel(rangeEvent);
+                            }
 
-                        ReleaseRangeEventHandler(handler);
+                            ReleaseRangeEventHandler(handler);
+                        }
                     }
                 }
 
@@ -394,11 +458,13 @@ namespace ActionSequencer {
                         continue;
                     }
 
-                    if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handler)) {
-                        // 発火通知
-                        handler.Invoke(signalEvent);
-                        // 解放
-                        ReleaseSignalEventHandler(handler);
+                    if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handlers)) {
+                        foreach (var handler in handlers) {
+                            // 発火通知
+                            handler.Invoke(signalEvent);
+                            // 解放
+                            ReleaseSignalEventHandler(handler);
+                        }
                     }
 
                     // リストから除外
@@ -412,27 +478,30 @@ namespace ActionSequencer {
                         continue;
                     }
 
-                    if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handler)) {
+                    if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handlers)) {
                         var elapsedTime = Mathf.Min(playingInfo.Time - rangeEvent.enterTime, rangeEvent.Duration);
-                        var enterFrame = false;
 
-                        // EnterしてなければEnter実行
-                        if (!handler.IsEntered) {
-                            enterFrame = true;
-                            handler.Enter(rangeEvent);
-                        }
+                        foreach (var handler in handlers) {
+                            var enterFrame = false;
 
-                        handler.Update(rangeEvent, elapsedTime);
+                            // EnterしてなければEnter実行
+                            if (!handler.IsEntered) {
+                                enterFrame = true;
+                                handler.Enter(rangeEvent);
+                            }
 
-                        // 終了していたらExit実行してリストから除外
-                        if (rangeEvent.exitTime <= playingInfo.Time) {
-                            // Enter/Exitが同時に呼ばれるのを回避する対応
-                            if (!enterFrame || !rangeEvent.MustOneFrame) {
-                                handler.Exit(rangeEvent);
-                                // 解放
-                                ReleaseRangeEventHandler(handler);
-                                // リストから除外
-                                playingInfo.ActiveRangeEvents.RemoveAt(j);
+                            handler.Update(rangeEvent, elapsedTime);
+
+                            // 終了していたらExit実行してリストから除外
+                            if (rangeEvent.exitTime <= playingInfo.Time) {
+                                // Enter/Exitが同時に呼ばれるのを回避する対応
+                                if (!enterFrame || !rangeEvent.MustOneFrame) {
+                                    handler.Exit(rangeEvent);
+                                    // 解放
+                                    ReleaseRangeEventHandler(handler);
+                                    // リストから除外
+                                    playingInfo.ActiveRangeEvents.RemoveAt(j);
+                                }
                             }
                         }
                     }
@@ -473,19 +542,23 @@ namespace ActionSequencer {
             // 実行中の物を全部キャンセル
             for (var i = playingInfo.ActiveSignalEvents.Count - 1; i >= 0; i--) {
                 var signalEvent = playingInfo.ActiveSignalEvents[i];
-                if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handler)) {
-                    ReleaseSignalEventHandler(handler);
+                if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handlers)) {
+                    foreach (var handler in handlers) {
+                        ReleaseSignalEventHandler(handler);
+                    }
                 }
             }
 
             for (var i = playingInfo.ActiveRangeEvents.Count - 1; i >= 0; i--) {
                 var rangeEvent = playingInfo.ActiveRangeEvents[i];
-                if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handler)) {
-                    if (handler.IsEntered) {
-                        handler.Cancel(rangeEvent);
-                    }
+                if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handlers)) {
+                    foreach (var handler in handlers) {
+                        if (handler.IsEntered) {
+                            handler.Cancel(rangeEvent);
+                        }
 
-                    ReleaseRangeEventHandler(handler);
+                        ReleaseRangeEventHandler(handler);
+                    }
                 }
             }
 
@@ -501,13 +574,13 @@ namespace ActionSequencer {
             playingInfo.Clip = clip;
             playingInfo.Time = startOffset;
 
-            bool TryGetHandlerInfo(Dictionary<Type, EventHandlerInfo> localInfos,
-                Dictionary<Type, EventHandlerInfo> globalInfos, Type type, out EventHandlerInfo handlerInfo) {
-                if (localInfos.TryGetValue(type, out handlerInfo)) {
+            bool TryGetHandlerInfo(Dictionary<Type, List<EventHandlerInfo>> localInfos,
+                Dictionary<Type, List<EventHandlerInfo>> globalInfos, Type type, out List<EventHandlerInfo> handlerInfos) {
+                if (localInfos.TryGetValue(type, out handlerInfos)) {
                     return true;
                 }
 
-                if (globalInfos.TryGetValue(type, out handlerInfo)) {
+                if (globalInfos.TryGetValue(type, out handlerInfos)) {
                     return true;
                 }
 
@@ -524,11 +597,18 @@ namespace ActionSequencer {
                     if (ev is RangeSequenceEvent rangeEvent) {
                         // Handlerの生成
                         if (TryGetHandlerInfo(_rangeEventHandlerInfos, GlobalRangeEventHandlerInfos, ev.GetType(),
-                                out var handlerInfo)) {
-                            var handler = GetRangeEventHandler(handlerInfo);
-                            if (handler != null) {
-                                playingInfo.RangeEventHandlers[rangeEvent] = handler;
-                                handlerInfo.ReadyAction?.Invoke(handler);
+                                out var handlerInfos)) {
+                            if (!playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handlers)) {
+                                handlers = new List<IRangeSequenceEventHandler>();
+                                playingInfo.RangeEventHandlers.Add(rangeEvent, handlers);
+                            }
+
+                            foreach (var handlerInfo in handlerInfos) {
+                                var handler = GetRangeEventHandler(handlerInfo);
+                                if (handler != null) {
+                                    handlers.Add(handler);
+                                    handlerInfo.ReadyAction?.Invoke(handler);
+                                }
                             }
                         }
 
@@ -538,11 +618,18 @@ namespace ActionSequencer {
                     else if (ev is SignalSequenceEvent signalEvent) {
                         // Handlerの生成
                         if (TryGetHandlerInfo(_signalEventHandlerInfos, GlobalSignalEventHandlerInfos, ev.GetType(),
-                                out var handlerInfo)) {
-                            var handler = GetSignalEventHandler(handlerInfo);
-                            if (handler != null) {
-                                playingInfo.SignalEventHandlers[signalEvent] = handler;
-                                handlerInfo.ReadyAction?.Invoke(handler);
+                                out var handlerInfos)) {
+                            if (!playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handlers)) {
+                                handlers = new List<ISignalSequenceEventHandler>();
+                                playingInfo.SignalEventHandlers.Add(signalEvent, handlers);
+                            }
+
+                            foreach (var handlerInfo in handlerInfos) {
+                                var handler = GetSignalEventHandler(handlerInfo);
+                                if (handler != null) {
+                                    handlers.Add(handler);
+                                    handlerInfo.ReadyAction?.Invoke(handler);
+                                }
                             }
                         }
 
@@ -567,8 +654,14 @@ namespace ActionSequencer {
             playingInfo.Time = 0.0f;
             playingInfo.ActiveSignalEvents.Clear();
             playingInfo.ActiveRangeEvents.Clear();
-            playingInfo.SignalEventHandlers.Clear();
-            playingInfo.RangeEventHandlers.Clear();
+            foreach (var pair in playingInfo.SignalEventHandlers) {
+                pair.Value.Clear();
+            }
+
+            foreach (var pair in playingInfo.RangeEventHandlers) {
+                pair.Value.Clear();
+            }
+
             _playingInfoPool.Release(playingInfo);
         }
 
