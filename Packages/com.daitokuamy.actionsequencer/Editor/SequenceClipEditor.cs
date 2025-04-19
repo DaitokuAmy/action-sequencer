@@ -13,12 +13,15 @@ namespace ActionSequencer.Editor {
         /// </summary>
         public override void OnInspectorGUI() {
             using (new EditorGUI.DisabledScope(true)) {
-                base.OnInspectorGUI();
+                var scriptProp = serializedObject.FindProperty("m_Script");
+                EditorGUILayout.PropertyField(scriptProp);
             }
 
             serializedObject.Update();
-            var filterData = serializedObject.FindProperty("filterData");
-            EditorGUILayout.PropertyField(filterData);
+            var includeClipsProp = serializedObject.FindProperty("includeClips");
+            EditorGUILayout.PropertyField(includeClipsProp, true);
+            var filterDataProp = serializedObject.FindProperty("filterData");
+            EditorGUILayout.PropertyField(filterDataProp);
             serializedObject.ApplyModifiedProperties();
 
             if (targets.Length == 1) {

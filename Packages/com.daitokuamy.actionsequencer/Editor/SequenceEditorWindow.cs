@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using ActionSequencer.Editor.VisualElements;
 using UnityEditor.Callbacks;
+using UnityEngine.Serialization;
 using ObjectField = UnityEditor.UIElements.ObjectField;
 using ToolbarMenu = UnityEditor.UIElements.ToolbarMenu;
 using ToolbarToggle = UnityEditor.UIElements.ToolbarToggle;
@@ -27,6 +28,10 @@ namespace ActionSequencer.Editor {
         // リセット対策用SequenceClipキャッシュ
         [SerializeField]
         private SequenceClip _escapedClip;
+        [FormerlySerializedAs("_escapedClipIncludeIndex")]
+        [FormerlySerializedAs("_escapedClipIndex")]
+        [SerializeField]
+        private int _escapedIncludeClipIndex;
 
         // Editor用のModel
         private SequenceEditorModel _editorModel;
@@ -49,16 +54,16 @@ namespace ActionSequencer.Editor {
         /// <summary>
         /// Windowを開く処理
         /// </summary>
-        public static void Open(SequenceClip clip) {
+        public static void Open(SequenceClip clip, int index = -1) {
             var window =
                 GetWindow<SequenceEditorWindow>(ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow)));
-            window.Setup(clip);
+            window.Setup(clip, index);
         }
 
         [MenuItem("Window/Sequence Tools/Sequence Editor Window")]
         private static void Open() {
             var window = GetWindow<SequenceEditorWindow>(ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow)));
-            window.Setup(null);
+            window.Setup(null, -1);
         }
 
         [OnOpenAsset(0)]
@@ -90,21 +95,28 @@ namespace ActionSequencer.Editor {
         /// <summary>
         /// 初期化処理
         /// </summary>
-        private void Setup(SequenceClip clip, bool force = false) {
+        private void Setup(SequenceClip clip, int includeClipIndex, bool force = false) {
             _escapedClip = clip;
+            _escapedIncludeClipIndex = clip != null ? Mathf.Clamp(includeClipIndex, -1, clip.includeClips.Length - 1) : -1;
 
-            if (!force && _editorModel.ClipModel?.Target == clip) {
+            var currentClip = includeClipIndex >= 0 && includeClipIndex < _escapedClip.includeClips.Length ? _escapedClip.includeClips[_escapedIncludeClipIndex] : _escapedClip;
+
+            if (!force && _editorModel.ClipModel?.Target == currentClip) {
                 return;
             }
 
             // SequenceClipのクリーンアップ
-            CleanSequenceClipAsset(_escapedClip);
+            CleanSequenceClipAsset(currentClip);
 
             // Clipの設定
-            _editorModel.SetSequenceClip(clip);
+            _editorModel.SetSequenceClip(currentClip);
 
             // Previewの読み込み
-            (var animClip, var offsetTime) = LoadUserPreviewClip(_escapedClip);
+            (var animClip, var offsetTime) = LoadUserPreviewClip(currentClip);
+            if (currentClip != _escapedClip && animClip == null) {
+                (animClip, offsetTime) = LoadUserPreviewClip(_escapedClip);
+            }
+
             _previewView.ChangeTarget(animClip);
             _previewView.ChangeOffsetTime(offsetTime);
 
@@ -121,7 +133,22 @@ namespace ActionSequencer.Editor {
 
             // ObjectField初期化
             var objectField = root.Q<ObjectField>("TargetObjectField");
-            objectField.value = clip;
+            objectField.value = _escapedClip;
+
+            // IncludeClipField初期化
+            var includeClipField = root.Q<DropdownField>("IncludeClipField");
+            if (_escapedClip != null && _escapedClip.includeClips.Length > 0) {
+                var baseName = _escapedClip.name;
+                includeClipField.style.display = DisplayStyle.Flex;
+                includeClipField.choices = new List<string>(_escapedClip.includeClips.Select(x => x.name.Replace(baseName, "[base]")));
+                includeClipField.choices.Insert(0, "[base]");
+                includeClipField.index = _escapedIncludeClipIndex + 1;
+            }
+            else {
+                includeClipField.style.display = DisplayStyle.None;
+                includeClipField.choices.Clear();
+                includeClipField.index = -1;
+            }
 
             // Presenterの削除
             if (_sequenceClipPresenter != null) {
@@ -196,9 +223,7 @@ namespace ActionSequencer.Editor {
             // Timeline用Rulerの初期化
             var rulerArea = root.Q<VisualElement>("TrackRulerArea");
             _rulerView = root.Q<RulerView>("RulerView");
-            trackList.RegisterCallback<GeometryChangedEvent>(evt => {
-                _rulerView.style.width = trackList.layout.width;
-            });
+            trackList.RegisterCallback<GeometryChangedEvent>(evt => { _rulerView.style.width = trackList.layout.width; });
             trackScrollView.horizontalScroller.valueChanged += x => {
                 var pos = _rulerView.transform.position;
                 pos.x = -x;
@@ -270,14 +295,20 @@ namespace ActionSequencer.Editor {
 
             // ObjectField
             var objectField = root.Q<ObjectField>("TargetObjectField");
-            objectField.RegisterValueChangedCallback(evt => { Setup(evt.newValue as SequenceClip); });
+            objectField.RegisterValueChangedCallback(evt => { Setup(evt.newValue as SequenceClip, -1, true); });
+
+            // IncludeClipField
+            var includeClipField = root.Q<DropdownField>("IncludeClipField");
+            includeClipField.style.display = DisplayStyle.None;
+            includeClipField.RegisterValueChangedCallback(evt => {
+                var includeClipIndex = includeClipField.index - 1;
+                Setup(_escapedClip, includeClipIndex);
+            });
 
             // RulerMode
             var rulerMode = root.Q<DropdownField>("RulerMode");
             rulerMode.choices = new List<string>(Enum.GetNames(typeof(SequenceEditorModel.TimeMode)));
-            rulerMode.RegisterValueChangedCallback(evt => {
-                _editorModel.CurrentTimeMode.Value = (SequenceEditorModel.TimeMode)rulerMode.index;
-            });
+            rulerMode.RegisterValueChangedCallback(evt => { _editorModel.CurrentTimeMode.Value = (SequenceEditorModel.TimeMode)rulerMode.index; });
             _disposables.Add(_editorModel.CurrentTimeMode
                 .Subscribe(timeMode => { rulerMode.value = timeMode.ToString(); }));
 
@@ -289,7 +320,7 @@ namespace ActionSequencer.Editor {
 
             // Refresh
             var refreshButton = root.Q<Button>("RefreshButton");
-            refreshButton.clicked += () => { Setup(_escapedClip, true); };
+            refreshButton.clicked += () => { Setup(_escapedClip, _escapedIncludeClipIndex, true); };
 
             // InspectorView
             var inspector = root.Q<InspectorView>("Inspector");
@@ -351,7 +382,7 @@ namespace ActionSequencer.Editor {
             Undo.undoRedoPerformed += OnUndoRedoPerformed;
 
             // 初期化
-            Setup(_escapedClip, true);
+            Setup(_escapedClip, _escapedIncludeClipIndex, true);
         }
 
         /// <summary>

@@ -100,6 +100,7 @@ MonoBehaviour:
   - {fileID: 497499553068626419}
   frameRate: -1
   filterData: {fileID: 0}
+  includeClips: []
 --- !u!114 &274821728735001683
 MonoBehaviour:
   m_ObjectHideFlags: 1

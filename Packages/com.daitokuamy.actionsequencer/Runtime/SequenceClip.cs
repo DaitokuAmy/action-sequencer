@@ -13,5 +13,7 @@ namespace ActionSequencer {
         public int frameRate = 60;
         [Tooltip("イベントフィルター"), HideInInspector]
         public SequenceEventFilterData filterData;
+        [Tooltip("同時再生するSequenceClipリスト")]
+        public SequenceClip[] includeClips = Array.Empty<SequenceClip>();
     }
 }

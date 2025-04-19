@@ -34,6 +34,8 @@ MonoBehaviour:
   - {fileID: 497499553068626419}
   frameRate: -1
   filterData: {fileID: 0}
+  includeClips:
+  - {fileID: 11400000, guid: 950aedd48fde8b74a8452b84d8a454d1, type: 2}
 --- !u!114 &497499553068626419
 MonoBehaviour:
   m_ObjectHideFlags: 1
