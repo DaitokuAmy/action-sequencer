@@ -199,7 +199,8 @@ namespace ActionSequencer {
 
             var info = new EventHandlerInfo {
                 Type = typeof(THandler),
-                InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null
+                InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null,
+                ReadyAction = onReady != null ? obj => { onReady.Invoke(obj as THandler); } : null
             };
             infos.Add(info);
 
@@ -311,7 +312,8 @@ namespace ActionSequencer {
 
             var info = new EventHandlerInfo {
                 Type = typeof(THandler),
-                InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null
+                InitAction = onInit != null ? obj => { onInit.Invoke(obj as THandler); } : null,
+                ReadyAction = onReady != null ? obj => { onReady.Invoke(obj as THandler); } : null
             };
             infos.Add(info);
 
