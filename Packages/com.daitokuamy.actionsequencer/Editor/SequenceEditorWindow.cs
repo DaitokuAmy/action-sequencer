@@ -105,8 +105,6 @@ namespace ActionSequencer.Editor {
                 return;
             }
 
-            Debug.LogWarning($"Seq:{currentClip.name}");
-
             // ObjectField初期化
             var root = rootVisualElement;
             var objectField = root.Q<ObjectField>("TargetObjectField");
