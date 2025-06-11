@@ -105,6 +105,13 @@ namespace ActionSequencer.Editor {
                 return;
             }
 
+            Debug.LogWarning($"Seq:{currentClip.name}");
+
+            // ObjectField初期化
+            var root = rootVisualElement;
+            var objectField = root.Q<ObjectField>("TargetObjectField");
+            objectField.value = _escapedClip;
+
             // SequenceClipのクリーンアップ
             CleanSequenceClipAsset(currentClip);
 
@@ -125,15 +132,10 @@ namespace ActionSequencer.Editor {
                 new GUIContent(clip != null ? clip.name : ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow)));
 
             // Viewの整理
-            var root = rootVisualElement;
             var trackLabelList = root.Q<VisualElement>("TrackLabelList");
             var trackList = root.Q<SequenceTrackListView>("TrackList");
             trackLabelList.Clear();
             trackList.Clear();
-
-            // ObjectField初期化
-            var objectField = root.Q<ObjectField>("TargetObjectField");
-            objectField.value = _escapedClip;
 
             // IncludeClipField初期化
             var includeClipField = root.Q<DropdownField>("IncludeClipField");
