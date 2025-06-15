@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine.Windows;
+using Color = UnityEngine.Color;
 
 namespace ActionSequencer.Editor {
     /// <summary>
@@ -119,6 +120,8 @@ namespace ActionSequencer.Editor {
                 _sequenceEventTypeInfosProp.arraySize++;
                 var elementProp = _sequenceEventTypeInfosProp.GetArrayElementAtIndex(_sequenceEventTypeInfosProp.arraySize - 1);
                 elementProp.FindPropertyRelative("fullName").stringValue = type.FullName;
+                elementProp.FindPropertyRelative("label").stringValue = "";
+                elementProp.FindPropertyRelative("color").colorValue = Color.clear;
             }
 
             // 存在しないクラス名の設定を削除
