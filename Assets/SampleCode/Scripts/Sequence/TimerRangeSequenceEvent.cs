@@ -6,7 +6,7 @@ using Debug = UnityEngine.Debug;
 namespace Test {
     public class TimerRangeSequenceEvent : RangeSequenceEvent {
         [Tooltip("出力用のフォーマット")]
-        public string format = "Time:{0.000}";
+        public string format = "Time:{0:0.000}";
     }
 
     public class TimerRangeSequenceEventHandler : RangeSequenceEventHandler<TimerRangeSequenceEvent> {

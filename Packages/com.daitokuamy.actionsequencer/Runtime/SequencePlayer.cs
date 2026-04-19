@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -51,6 +50,8 @@ namespace ActionSequencer {
             public List<SignalSequenceEvent> ActiveSignalEvents { get; } = new();
             /// <summary>有効なRangeイベント</summary>
             public List<RangeSequenceEvent> ActiveRangeEvents { get; } = new();
+            /// <summary>Enter済みのRangeイベント</summary>
+            public HashSet<RangeSequenceEvent> EnteredRangeEvents { get; } = new();
 
             /// <summary>再生しているClip</summary>
             public SequenceClip Clip { get; set; }
@@ -113,6 +114,12 @@ namespace ActionSequencer {
         private readonly List<PlayingInfo> _playingInfos = new();
         private readonly Dictionary<int, PlayingInfo> _playingInfoMap = new();
         private readonly ObjectPool<PlayingInfo> _playingInfoPool;
+        private readonly ObjectPool<HashSet<SignalSequenceEvent>> _activeSignalEventSetPool;
+        private readonly ObjectPool<HashSet<RangeSequenceEvent>> _activeRangeEventSetPool;
+        private readonly ObjectPool<SignalEventHandlerEntry> _signalEventHandlerEntryPool;
+        private readonly ObjectPool<RangeEventHandlerEntry> _rangeEventHandlerEntryPool;
+        private readonly ObjectPool<List<SignalEventHandlerEntry>> _signalEventHandlerEntryListPool;
+        private readonly ObjectPool<List<RangeEventHandlerEntry>> _rangeEventHandlerEntryListPool;
         private bool _isUpdating;
         private int _nextPlayingId = 1;
 
@@ -124,6 +131,16 @@ namespace ActionSequencer {
         /// </summary>
         public SequencePlayer() {
             _playingInfoPool = new ObjectPool<PlayingInfo>(() => new PlayingInfo());
+            _activeSignalEventSetPool = new ObjectPool<HashSet<SignalSequenceEvent>>(() => new HashSet<SignalSequenceEvent>(),
+                null, set => { set.Clear(); });
+            _activeRangeEventSetPool = new ObjectPool<HashSet<RangeSequenceEvent>>(() => new HashSet<RangeSequenceEvent>(),
+                null, set => { set.Clear(); });
+            _signalEventHandlerEntryPool = new ObjectPool<SignalEventHandlerEntry>(() => new SignalEventHandlerEntry());
+            _rangeEventHandlerEntryPool = new ObjectPool<RangeEventHandlerEntry>(() => new RangeEventHandlerEntry());
+            _signalEventHandlerEntryListPool = new ObjectPool<List<SignalEventHandlerEntry>>(() => new List<SignalEventHandlerEntry>(),
+                null, list => { list.Clear(); });
+            _rangeEventHandlerEntryListPool = new ObjectPool<List<RangeEventHandlerEntry>>(() => new List<RangeEventHandlerEntry>(),
+                null, list => { list.Clear(); });
         }
 
         /// <summary>
@@ -436,6 +453,9 @@ namespace ActionSequencer {
                             }
                         }
 
+                        playingInfo.SignalEventHandlers.Remove(signalEvent);
+                        ReleaseSignalEventHandlerEntries(handlers);
+
                         // リストから除外
                         playingInfo.ActiveSignalEvents.RemoveAt(j);
                     }
@@ -451,16 +471,14 @@ namespace ActionSequencer {
                             continue;
                         }
 
+                        var enteredThisFrame = playingInfo.EnteredRangeEvents.Add(rangeEvent);
                         if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handlers)) {
                             var elapsedTime = Mathf.Min(playingInfo.Time - rangeEvent.enterTime, rangeEvent.Duration);
                             var shouldRemove = false;
 
                             foreach (var handler in handlers) {
-                                var enteredThisFrame = false;
-
                                 // EnterしてなければEnter実行
                                 if (!handler.Handler.IsEntered) {
-                                    enteredThisFrame = true;
                                     handler.Handler.Enter(rangeEvent);
                                     if (playingInfo.Status != PlayingStatus.Playing) {
                                         continueCurrentPlaying = false;
@@ -496,11 +514,15 @@ namespace ActionSequencer {
                             }
 
                             if (shouldRemove) {
+                                playingInfo.RangeEventHandlers.Remove(rangeEvent);
+                                playingInfo.EnteredRangeEvents.Remove(rangeEvent);
+                                ReleaseRangeEventHandlerEntries(handlers, rangeEvent, false);
                                 // リストから除外
                                 playingInfo.ActiveRangeEvents.RemoveAt(j);
                             }
                         }
-                        else {
+                        else if (rangeEvent.exitTime <= playingInfo.Time && (!enteredThisFrame || !rangeEvent.MustOneFrame)) {
+                            playingInfo.EnteredRangeEvents.Remove(rangeEvent);
                             // リストから除外
                             playingInfo.ActiveRangeEvents.RemoveAt(j);
                         }
@@ -531,12 +553,14 @@ namespace ActionSequencer {
                 return -1.0f;
             }
 
-            var foundInfo = _playingInfos.FirstOrDefault(x => x.Clip == clip && x.Status != PlayingStatus.PendingStop);
-            if (foundInfo == null) {
-                return -1.0f;
+            for (var i = 0; i < _playingInfos.Count; i++) {
+                var playingInfo = _playingInfos[i];
+                if (playingInfo.Clip == clip && playingInfo.Status != PlayingStatus.PendingStop) {
+                    return playingInfo.Time;
+                }
             }
 
-            return foundInfo.Time;
+            return -1.0f;
         }
 
         /// <summary>
@@ -585,98 +609,114 @@ namespace ActionSequencer {
             playingInfo.Id = GetNextPlayingId();
             playingInfo.Time = startOffset;
             playingInfo.Status = PlayingStatus.PendingPlay;
+            var activeSignalEvents = _activeSignalEventSetPool.Get();
+            var activeRangeEvents = _activeRangeEventSetPool.Get();
 
-            bool TryGetHandlerInfo(Dictionary<Type, List<EventHandlerInfo>> localInfos,
-                Dictionary<Type, List<EventHandlerInfo>> globalInfos, Type type, out List<EventHandlerInfo> handlerInfos) {
-                if (localInfos.TryGetValue(type, out handlerInfos)) {
-                    return true;
-                }
-
-                if (globalInfos.TryGetValue(type, out handlerInfos)) {
-                    return true;
-                }
-
-                return false;
-            }
-
-            void AddEvents(SequenceClip seqClip) {
-                if (seqClip == null || seqClip.tracks == null) {
-                    return;
-                }
-
-                foreach (var track in seqClip.tracks) {
-                    if (track == null || track.sequenceEvents == null) {
-                        continue;
+            try {
+                bool TryGetHandlerInfo(Dictionary<Type, List<EventHandlerInfo>> localInfos,
+                    Dictionary<Type, List<EventHandlerInfo>> globalInfos, Type type, out List<EventHandlerInfo> handlerInfos) {
+                    if (localInfos.TryGetValue(type, out handlerInfos)) {
+                        return true;
                     }
 
-                    foreach (var ev in track.sequenceEvents) {
-                        if (ev == null) {
+                    if (globalInfos.TryGetValue(type, out handlerInfos)) {
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                void AddEvents(SequenceClip seqClip) {
+                    if (seqClip == null || seqClip.tracks == null) {
+                        return;
+                    }
+
+                    foreach (var track in seqClip.tracks) {
+                        if (track == null || track.sequenceEvents == null) {
                             continue;
                         }
 
-                        // 無効状態のEventは処理しない
-                        if (!ev.active) {
-                            continue;
-                        }
-
-                        if (ev is RangeSequenceEvent rangeEvent) {
-                            // Handlerの生成
-                            if (TryGetHandlerInfo(_rangeEventHandlerInfos, GlobalRangeEventHandlerInfos, ev.GetType(),
-                                    out var handlerInfos)) {
-                                if (!playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handlers)) {
-                                    handlers = new List<RangeEventHandlerEntry>();
-                                    playingInfo.RangeEventHandlers.Add(rangeEvent, handlers);
-                                }
-
-                                foreach (var handlerInfo in handlerInfos) {
-                                    var handler = GetRangeEventHandler(handlerInfo);
-                                    if (handler != null) {
-                                        handlers.Add(new RangeEventHandlerEntry { Info = handlerInfo, Handler = handler });
-                                        handlerInfo.ReadyAction?.Invoke(handler);
-                                    }
-                                }
+                        foreach (var ev in track.sequenceEvents) {
+                            if (ev == null) {
+                                continue;
                             }
 
-                            // 待機リストへ登録
-                            playingInfo.ActiveRangeEvents.Add(rangeEvent);
-                        }
-                        else if (ev is SignalSequenceEvent signalEvent) {
-                            // Handlerの生成
-                            if (TryGetHandlerInfo(_signalEventHandlerInfos, GlobalSignalEventHandlerInfos, ev.GetType(),
-                                    out var handlerInfos)) {
-                                if (!playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handlers)) {
-                                    handlers = new List<SignalEventHandlerEntry>();
-                                    playingInfo.SignalEventHandlers.Add(signalEvent, handlers);
-                                }
-
-                                foreach (var handlerInfo in handlerInfos) {
-                                    var handler = GetSignalEventHandler(handlerInfo);
-                                    if (handler != null) {
-                                        handlers.Add(new SignalEventHandlerEntry { Info = handlerInfo, Handler = handler });
-                                        handlerInfo.ReadyAction?.Invoke(handler);
-                                    }
-                                }
+                            // 無効状態のEventは処理しない
+                            if (!ev.active) {
+                                continue;
                             }
 
-                            // 待機リストへ登録
-                            playingInfo.ActiveSignalEvents.Add(signalEvent);
+                            if (ev is RangeSequenceEvent rangeEvent) {
+                                if (!activeRangeEvents.Add(rangeEvent)) {
+                                    continue;
+                                }
+
+                                // Handlerの生成
+                                if (TryGetHandlerInfo(_rangeEventHandlerInfos, GlobalRangeEventHandlerInfos, ev.GetType(),
+                                        out var handlerInfos)) {
+                                    foreach (var handlerInfo in handlerInfos) {
+                                        var handler = GetRangeEventHandler(handlerInfo);
+                                        if (handler != null) {
+                                            if (!playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handlers)) {
+                                                handlers = GetRangeEventHandlerEntryList();
+                                                playingInfo.RangeEventHandlers.Add(rangeEvent, handlers);
+                                            }
+
+                                            handlers.Add(GetRangeEventHandlerEntry(handlerInfo, handler));
+                                            handlerInfo.ReadyAction?.Invoke(handler);
+                                        }
+                                    }
+                                }
+
+                                // 待機リストへ登録
+                                playingInfo.ActiveRangeEvents.Add(rangeEvent);
+                            }
+                            else if (ev is SignalSequenceEvent signalEvent) {
+                                if (!activeSignalEvents.Add(signalEvent)) {
+                                    continue;
+                                }
+
+                                // Handlerの生成
+                                if (TryGetHandlerInfo(_signalEventHandlerInfos, GlobalSignalEventHandlerInfos, ev.GetType(),
+                                        out var handlerInfos)) {
+                                    foreach (var handlerInfo in handlerInfos) {
+                                        var handler = GetSignalEventHandler(handlerInfo);
+                                        if (handler != null) {
+                                            if (!playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handlers)) {
+                                                handlers = GetSignalEventHandlerEntryList();
+                                                playingInfo.SignalEventHandlers.Add(signalEvent, handlers);
+                                            }
+
+                                            handlers.Add(GetSignalEventHandlerEntry(handlerInfo, handler));
+                                            handlerInfo.ReadyAction?.Invoke(handler);
+                                        }
+                                    }
+                                }
+
+                                // 待機リストへ登録
+                                playingInfo.ActiveSignalEvents.Add(signalEvent);
+                            }
                         }
                     }
                 }
-            }
 
-            AddEvents(clip);
-            if (clip.includeClips != null) {
-                foreach (var includeClip in clip.includeClips) {
-                    AddEvents(includeClip);
+                AddEvents(clip);
+                if (clip.includeClips != null) {
+                    foreach (var includeClip in clip.includeClips) {
+                        AddEvents(includeClip);
+                    }
                 }
+
+                // リストのソート(終了時間の降順)
+                playingInfo.ActiveRangeEvents.Sort((a, b) => b.exitTime.CompareTo(a.exitTime));
+                playingInfo.ActiveSignalEvents.Sort((a, b) => b.time.CompareTo(a.time));
+
+                return playingInfo;
             }
-
-            // リストのソート(終了時間の降順)
-            playingInfo.ActiveRangeEvents.Sort((a, b) => b.exitTime.CompareTo(a.exitTime));
-            playingInfo.ActiveSignalEvents.Sort((a, b) => b.time.CompareTo(a.time));
-
-            return playingInfo;
+            finally {
+                _activeSignalEventSetPool.Release(activeSignalEvents);
+                _activeRangeEventSetPool.Release(activeRangeEvents);
+            }
         }
 
         /// <summary>
@@ -689,14 +729,7 @@ namespace ActionSequencer {
             playingInfo.Status = PlayingStatus.PendingPlay;
             playingInfo.ActiveSignalEvents.Clear();
             playingInfo.ActiveRangeEvents.Clear();
-            foreach (var pair in playingInfo.SignalEventHandlers) {
-                pair.Value.Clear();
-            }
-
-            foreach (var pair in playingInfo.RangeEventHandlers) {
-                pair.Value.Clear();
-            }
-
+            playingInfo.EnteredRangeEvents.Clear();
             playingInfo.SignalEventHandlers.Clear();
             playingInfo.RangeEventHandlers.Clear();
             _playingInfoPool.Release(playingInfo);
@@ -761,24 +794,52 @@ namespace ActionSequencer {
             for (var i = playingInfo.ActiveSignalEvents.Count - 1; i >= 0; i--) {
                 var signalEvent = playingInfo.ActiveSignalEvents[i];
                 if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var signalHandlers)) {
-                    foreach (var signalHandler in signalHandlers) {
-                        ReleaseSignalEventHandler(signalHandler);
-                    }
+                    playingInfo.SignalEventHandlers.Remove(signalEvent);
+                    ReleaseSignalEventHandlerEntries(signalHandlers);
                 }
             }
 
             for (var i = playingInfo.ActiveRangeEvents.Count - 1; i >= 0; i--) {
                 var rangeEvent = playingInfo.ActiveRangeEvents[i];
                 if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var rangeHandlers)) {
-                    foreach (var rangeHandler in rangeHandlers) {
-                        if (rangeHandler.Handler.IsEntered) {
-                            rangeHandler.Handler.Cancel(rangeEvent);
-                        }
-
-                        ReleaseRangeEventHandler(rangeHandler);
-                    }
+                    playingInfo.RangeEventHandlers.Remove(rangeEvent);
+                    ReleaseRangeEventHandlerEntries(rangeHandlers, rangeEvent, true);
                 }
             }
+        }
+
+        /// <summary>
+        /// SignalEventのハンドラエントリを取得
+        /// </summary>
+        private SignalEventHandlerEntry GetSignalEventHandlerEntry(EventHandlerInfo info, ISignalSequenceEventHandler handler) {
+            var entry = _signalEventHandlerEntryPool.Get();
+            entry.Info = info;
+            entry.Handler = handler;
+            return entry;
+        }
+
+        /// <summary>
+        /// RangeEventのハンドラエントリを取得
+        /// </summary>
+        private RangeEventHandlerEntry GetRangeEventHandlerEntry(EventHandlerInfo info, IRangeSequenceEventHandler handler) {
+            var entry = _rangeEventHandlerEntryPool.Get();
+            entry.Info = info;
+            entry.Handler = handler;
+            return entry;
+        }
+
+        /// <summary>
+        /// SignalEventのハンドラリストを取得
+        /// </summary>
+        private List<SignalEventHandlerEntry> GetSignalEventHandlerEntryList() {
+            return _signalEventHandlerEntryListPool.Get();
+        }
+
+        /// <summary>
+        /// RangeEventのハンドラリストを取得
+        /// </summary>
+        private List<RangeEventHandlerEntry> GetRangeEventHandlerEntryList() {
+            return _rangeEventHandlerEntryListPool.Get();
         }
 
         /// <summary>
@@ -829,7 +890,25 @@ namespace ActionSequencer {
         private void ReleaseSignalEventHandler(SignalEventHandlerEntry handlerEntry) {
             if (handlerEntry?.Info?.SignalHandlerPool != null && handlerEntry.Handler != null) {
                 handlerEntry.Info.SignalHandlerPool.Release(handlerEntry.Handler);
+                handlerEntry.Handler = null;
             }
+        }
+
+        /// <summary>
+        /// SignalEventのハンドラエントリリストを解放
+        /// </summary>
+        private void ReleaseSignalEventHandlerEntries(List<SignalEventHandlerEntry> handlers) {
+            if (handlers == null) {
+                return;
+            }
+
+            foreach (var handlerEntry in handlers) {
+                ReleaseSignalEventHandler(handlerEntry);
+                handlerEntry.Info = null;
+                _signalEventHandlerEntryPool.Release(handlerEntry);
+            }
+
+            _signalEventHandlerEntryListPool.Release(handlers);
         }
 
         /// <summary>
@@ -838,7 +917,30 @@ namespace ActionSequencer {
         private void ReleaseRangeEventHandler(RangeEventHandlerEntry handlerEntry) {
             if (handlerEntry?.Info?.RangeHandlerPool != null && handlerEntry.Handler != null) {
                 handlerEntry.Info.RangeHandlerPool.Release(handlerEntry.Handler);
+                handlerEntry.Handler = null;
             }
+        }
+
+        /// <summary>
+        /// RangeEventのハンドラエントリリストを解放
+        /// </summary>
+        private void ReleaseRangeEventHandlerEntries(List<RangeEventHandlerEntry> handlers, RangeSequenceEvent rangeEvent,
+            bool cancelEnteredHandlers) {
+            if (handlers == null) {
+                return;
+            }
+
+            foreach (var handlerEntry in handlers) {
+                if (cancelEnteredHandlers && handlerEntry.Handler != null && handlerEntry.Handler.IsEntered) {
+                    handlerEntry.Handler.Cancel(rangeEvent);
+                }
+
+                ReleaseRangeEventHandler(handlerEntry);
+                handlerEntry.Info = null;
+                _rangeEventHandlerEntryPool.Release(handlerEntry);
+            }
+
+            _rangeEventHandlerEntryListPool.Release(handlers);
         }
     }
 }
