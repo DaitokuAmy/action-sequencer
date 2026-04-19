@@ -7,12 +7,12 @@ namespace ActionSequencer {
     /// <summary>
     /// ActionSequencer用の設定ファイル
     /// </summary>
-    public class ActionSequencerSettings : ScriptableObject {
+    public sealed class ActionSequencerSettings : ScriptableObject {
         /// <summary>
         /// SequenceEvent型用の情報
         /// </summary>
         [Serializable]
-        public class SequenceEventTypeInfo {
+        public sealed class SequenceEventTypeInfo {
             public string fullName = "";
             public string label = "";
             public Color color = Color.clear;
@@ -23,7 +23,7 @@ namespace ActionSequencer {
 
         // SequenceEvent名 > SequenceEventSetting変換
         private Dictionary<string, SequenceEventTypeInfo> _sequenceEventTypeSettingDict;
-        
+
         /// <summary>
         /// SequenceEvent型に関する情報を取得
         /// </summary>

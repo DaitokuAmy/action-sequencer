@@ -8,13 +8,11 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// Track用のView
     /// </summary>
-    public class SequenceTrackView : VisualElement {
-        public new class UxmlFactory : UxmlFactory<SequenceTrackView, UxmlTraits> {
-        }
-
+    [UxmlElement]
+    public sealed partial class SequenceTrackView : VisualElement {
         private VisualElement _trackEventContainer;
         private List<SequenceEventView> _eventViews = new List<SequenceEventView>();
-        
+
         public SequenceEventSpacerView SpacerView { get; private set; }
         public Subject ClickedSpacerSubject { get; } = new Subject();
         public override VisualElement contentContainer => _trackEventContainer;

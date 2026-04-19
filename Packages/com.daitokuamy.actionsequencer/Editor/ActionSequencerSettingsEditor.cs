@@ -10,7 +10,7 @@ namespace ActionSequencer.Editor {
     /// ActionSequencerSettings用のエディタ拡張
     /// </summary>
     [CustomEditor(typeof(ActionSequencerSettings))]
-    public class ActionSequencerSettingsEditor : UnityEditor.Editor {
+    public sealed class ActionSequencerSettingsEditor : UnityEditor.Editor {
         private SerializedProperty _sequenceEventTypeInfosProp;
         private ReorderableList _sequenceEventTypeInfoList;
 

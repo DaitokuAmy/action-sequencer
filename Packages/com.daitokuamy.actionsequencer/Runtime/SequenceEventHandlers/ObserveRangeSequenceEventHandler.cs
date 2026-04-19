@@ -6,7 +6,7 @@ namespace ActionSequencer {
     /// 監視するだけのSequenceEventHandler
     /// </summary>
     [Preserve]
-    public class ObserveRangeSequenceEventHandler<TEvent> : RangeSequenceEventHandler<TEvent>
+    public sealed class ObserveRangeSequenceEventHandler<TEvent> : RangeSequenceEventHandler<TEvent>
         where TEvent : RangeSequenceEvent {
         private Action<TEvent> _enterAction;
         private Action<TEvent, float> _updateAction;

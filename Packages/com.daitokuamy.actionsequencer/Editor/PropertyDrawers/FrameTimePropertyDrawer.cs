@@ -6,7 +6,7 @@ namespace ActionSequencer.Editor.PropertyDrawers {
     /// FrameTimeAttribute用のPropertyDrawer
     /// </summary>
     [CustomPropertyDrawer(typeof(FrameTimeAttribute))]
-    public class FrameTimePropertyDrawer : PropertyDrawer {
+    public sealed class FrameTimePropertyDrawer : PropertyDrawer {
         /// <summary>
         /// GUI描画処理
         /// </summary>

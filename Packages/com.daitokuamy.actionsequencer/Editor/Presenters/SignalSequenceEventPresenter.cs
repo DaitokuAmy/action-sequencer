@@ -6,7 +6,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SignalSequenceEvent用のPresenter
     /// </summary>
-    internal class SignalSequenceEventPresenter : SequenceEventPresenter {
+    internal sealed class SignalSequenceEventPresenter : SequenceEventPresenter {
         private SignalSequenceEventModel _model;
         private SignalSequenceEventView _view;
 
@@ -45,7 +45,7 @@ namespace ActionSequencer.Editor {
         }
 
         protected override void OnDragging(SequenceEventManipulator.DragInfo info, bool otherEvent) {
-            var deltaTime = SizeToTime(info.current - info.start);
+            var deltaTime = SizeToTime(info.Current - info.Start);
             _model.Time = EditorModel.GetAbsorptionTime(_dragStartTime + deltaTime);
         }
 

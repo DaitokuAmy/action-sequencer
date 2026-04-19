@@ -4,8 +4,7 @@ namespace ActionSequencer.Editor.VisualElements {
     /// <summary>
     /// ObjectField
     /// </summary>
-    public class ObjectField : UnityEditor.UIElements.ObjectField {
-        public new class UxmlFactory : UxmlFactory<ObjectField, UxmlTraits> {
-        }
+    [UxmlElement]
+    public sealed partial class ObjectField : UnityEditor.UIElements.ObjectField {
     }
 }

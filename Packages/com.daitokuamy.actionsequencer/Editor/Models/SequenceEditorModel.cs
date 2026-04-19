@@ -10,7 +10,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceEditor用のModel
     /// </summary>
-    internal class SequenceEditorModel : Model {
+    internal sealed class SequenceEditorModel : Model {
         // 時間モード
         public enum TimeMode {
             Seconds,
@@ -19,7 +19,7 @@ namespace ActionSequencer.Editor {
         }
 
         // 保存用ユーザーデータ
-        private class UserData {
+        private sealed class UserData {
             public float timeToSize;
             public TimeMode timeMode;
             public bool timeFit;
@@ -36,11 +36,11 @@ namespace ActionSequencer.Editor {
         public ReactiveProperty<float> TimeToSize { get; private set; } = new(200.0f, x => Mathf.Max(40.0f, x));
         public ReactiveProperty<TimeMode> CurrentTimeMode { get; private set; } = new(TimeMode.Seconds);
         public ReactiveProperty<bool> TimeFit { get; private set; } = new(true);
-        
+
         public IReadOnlyList<Object> SelectedTargets => _selectedTargets;
         public VisualElement RootElement { get; private set; }
         public SequenceClipModel ClipModel { get; private set; }
-        
+
         // リフレッシュ中
         public bool Refreshing { get; private set; }
 
@@ -85,7 +85,7 @@ namespace ActionSequencer.Editor {
             Refreshing = true;
             ClipModel.RefreshTracks();
             Refreshing = false;
-            
+
             // 選択状態を反映
             ChangedSelectedTargetsSubject.Invoke(SelectedTargets);
         }
@@ -121,7 +121,7 @@ namespace ActionSequencer.Editor {
             if (Refreshing) {
                 return;
             }
-            
+
             _selectedTargets.Clear();
             _lastSelectedTarget = null;
             AddSelectedTarget(target);
@@ -134,7 +134,7 @@ namespace ActionSequencer.Editor {
             if (Refreshing) {
                 return;
             }
-            
+
             if (_selectedTargets.Contains(target)) {
                 return;
             }
@@ -143,11 +143,11 @@ namespace ActionSequencer.Editor {
                 // 追加
                 _selectedTargets.Add(target);
                 _lastSelectedTarget = target;
-            
+
                 // 並び順にソート
                 _selectedTargets = _selectedTargets.OrderBy(GetTargetOrder).ToList();
             }
-            
+
             ChangedSelectedTargetsSubject.Invoke(SelectedTargets);
         }
 
@@ -158,7 +158,7 @@ namespace ActionSequencer.Editor {
             if (Refreshing) {
                 return;
             }
-            
+
             if (_selectedTargets.Contains(target)) {
                 return;
             }
@@ -171,7 +171,7 @@ namespace ActionSequencer.Editor {
                 SetSelectedTarget(target);
                 return;
             }
-            
+
             // 範囲を計算
             var startIndex = GetTargetOrder(_lastSelectedTarget);
             var endIndex = GetTargetOrder(target);
@@ -183,16 +183,16 @@ namespace ActionSequencer.Editor {
             if (startIndex > endIndex) {
                 (startIndex, endIndex) = (endIndex, startIndex);
             }
-            
+
             // 選択中のTargetから渡されたTargetまでの間を列挙する
             _selectedTargets.Clear();
             for (var i = startIndex; i <= endIndex; i++) {
                 _selectedTargets.Add(GetTargetByOrder(i));
             }
-            
+
             // 並び順にソート
             _selectedTargets = _selectedTargets.OrderBy(GetTargetOrder).ToList();
-            
+
             ChangedSelectedTargetsSubject.Invoke(SelectedTargets);
         }
 
@@ -203,7 +203,7 @@ namespace ActionSequencer.Editor {
             if (Refreshing) {
                 return;
             }
-            
+
             if (!_selectedTargets.Remove(target)) {
                 return;
             }
@@ -211,7 +211,7 @@ namespace ActionSequencer.Editor {
             if (target == _lastSelectedTarget) {
                 _lastSelectedTarget = null;
             }
-            
+
             ChangedSelectedTargetsSubject.Invoke(SelectedTargets);
         }
 
@@ -222,7 +222,7 @@ namespace ActionSequencer.Editor {
             if (Refreshing) {
                 return;
             }
-            
+
             _selectedTargets.Clear();
             _lastSelectedTarget = null;
             ChangedSelectedTargetsSubject.Invoke(SelectedTargets);
@@ -239,7 +239,7 @@ namespace ActionSequencer.Editor {
                 }
 
                 index++;
-                
+
                 foreach (var eventModel in trackModel.EventModels) {
                     if (target == eventModel.Target) {
                         return index;
@@ -259,7 +259,7 @@ namespace ActionSequencer.Editor {
             if (order < 0) {
                 return null;
             }
-            
+
             var index = 0;
             foreach (var trackModel in ClipModel.TrackModels) {
                 if (index == order) {
@@ -267,7 +267,7 @@ namespace ActionSequencer.Editor {
                 }
 
                 index++;
-                
+
                 foreach (var eventModel in trackModel.EventModels) {
                     if (index == order) {
                         return eventModel.Target;

@@ -6,7 +6,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// RangeSequenceEvent用のPresenter
     /// </summary>
-    internal class RangeSequenceEventPresenter : SequenceEventPresenter {
+    internal sealed class RangeSequenceEventPresenter : SequenceEventPresenter {
         private RangeSequenceEventModel _model;
         private RangeSequenceEventView _view;
 
@@ -53,9 +53,9 @@ namespace ActionSequencer.Editor {
         /// Drag中処理
         /// </summary>
         protected override void OnDragging(SequenceEventManipulator.DragInfo info, bool otherEvent) {
-            var delta = info.current - info.start;
+            var delta = info.Current - info.Start;
             var deltaTime = SizeToTime(delta);
-            switch (info.type) {
+            switch (info.Type) {
                 // スライド
                 case SequenceEventManipulator.DragType.Middle:
                     _model.MoveEnterTime(EditorModel.GetAbsorptionTime(_dragStartEnterTime + deltaTime),

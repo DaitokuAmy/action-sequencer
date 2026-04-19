@@ -6,14 +6,12 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// Track格納用のView
     /// </summary>
-    public class SequenceTrackListView : VisualElement {
-        public new class UxmlFactory : UxmlFactory<SequenceTrackListView, UxmlTraits> {
-        }
-
+    [UxmlElement]
+    public sealed partial class SequenceTrackListView : VisualElement {
         private VisualElement _trackContainer;
         private RulerView _rulerView;
         private VisualElement _gray;
-        
+
         public override VisualElement contentContainer => _trackContainer;
         public RulerView RulerView => _rulerView;
 
@@ -28,14 +26,14 @@ namespace ActionSequencer.Editor {
             _rulerView.LineHeightRate = 1.0f;
             _rulerView.ThickLineHeightRate = 1.0f;
             hierarchy.Add(_rulerView);
-            
+
             // Gray追加
             _gray = new VisualElement();
             _gray.name = "track-list-gray";
             _gray.pickingMode = PickingMode.Ignore;
             _gray.AddToClassList("track_list__gray");
             hierarchy.Add(_gray);
-            
+
             // 子要素の追加用コンテナ
             _trackContainer = new VisualElement();
             _trackContainer.name = "track-list-container";

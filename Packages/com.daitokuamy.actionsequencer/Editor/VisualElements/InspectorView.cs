@@ -9,10 +9,8 @@ namespace ActionSequencer.Editor.VisualElements {
     /// <summary>
     /// InspectorView
     /// </summary>
-    public class InspectorView : VisualElement {
-        public new class UxmlFactory : UxmlFactory<InspectorView, UxmlTraits> {
-        }
-
+    [UxmlElement]
+    public sealed partial class InspectorView : VisualElement {
         private IMGUIContainer _container;
         private UnityEditor.Editor _inspectorEditor;
 

@@ -10,7 +10,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceTrack用のPresenter
     /// </summary>
-    internal class SequenceTrackPresenter : Presenter<SequenceTrackModel, SequenceTrackLabelView> {
+    internal sealed class SequenceTrackPresenter : Presenter<SequenceTrackModel, SequenceTrackLabelView> {
         private SequenceEditorModel _editorModel;
         private List<SequenceEventPresenter> _eventPresenters = new List<SequenceEventPresenter>();
 
@@ -224,13 +224,13 @@ namespace ActionSequencer.Editor {
             menu.AddItem(new GUIContent("Down"), false, () => { _editorModel.ClipModel.MoveNextTrack(Model); });
 
             menu.AddSeparator("");
-            
+
             // Select
             menu.AddItem(new GUIContent("Select All"), false, () => {
                 _editorModel.RemoveSelectedTargets();
                 foreach (var eventModel in Model.EventModels) {
                     _editorModel.AddSelectedTarget(eventModel.Target);
-                } 
+                }
             });
 
             // Create
@@ -245,11 +245,11 @@ namespace ActionSequencer.Editor {
                 if (!_editorModel.ClipModel.FilterNamespace(t)) {
                     continue;
                 }
-                
+
                 if (!_editorModel.ClipModel.FilterPath(displayName)) {
                     continue;
                 }
-                
+
                 menu.AddItem(new GUIContent($"Create Event/Signal/{displayName}"), false, () => {
                     var target = _editorModel.ClipModel?.Target;
                     if (target == null) {
@@ -268,11 +268,11 @@ namespace ActionSequencer.Editor {
                 if (!_editorModel.ClipModel.FilterNamespace(t)) {
                     continue;
                 }
-                
+
                 if (!_editorModel.ClipModel.FilterPath(displayName)) {
                     continue;
                 }
-                
+
                 menu.AddItem(new GUIContent($"Create Event/Range/{displayName}"), false, () => {
                     var target = _editorModel.ClipModel?.Target;
                     if (target == null) {

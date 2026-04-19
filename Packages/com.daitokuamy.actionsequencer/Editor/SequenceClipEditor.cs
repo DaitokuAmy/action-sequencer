@@ -7,7 +7,7 @@ namespace ActionSequencer.Editor {
     /// SequenceClipのEditor拡張
     /// </summary>
     [CustomEditor(typeof(SequenceClip)), CanEditMultipleObjects]
-    public class SequenceClipEditor : UnityEditor.Editor {
+    public sealed class SequenceClipEditor : UnityEditor.Editor {
         /// <summary>
         /// インスペクタ描画
         /// </summary>

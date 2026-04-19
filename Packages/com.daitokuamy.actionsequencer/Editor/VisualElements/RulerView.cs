@@ -8,10 +8,8 @@ namespace ActionSequencer.Editor.VisualElements {
     /// <summary>
     /// RulerView
     /// </summary>
-    public class RulerView : ImmediateModeElement {
-        public new class UxmlFactory : UxmlFactory<RulerView, UxmlTraits> {
-        }
-
+    [UxmlElement]
+    public sealed partial class RulerView : ImmediateModeElement {
         private static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
         private static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
         private static readonly int Cull = Shader.PropertyToID("_Cull");
@@ -111,7 +109,7 @@ namespace ActionSequencer.Editor.VisualElements {
             clipRect.xMax = Mathf.Min(clipRect.xMax, totalRect.xMax);
             clipRect.yMin = Mathf.Max(clipRect.yMin, totalRect.yMin);
             clipRect.yMax = Mathf.Max(clipRect.yMax, totalRect.yMax);
-                
+
             // MemoryCycleを適切に変更
             var minLineOffset = LineWidth * 5;
             var memoryCycle = 1;
@@ -137,13 +135,13 @@ namespace ActionSequencer.Editor.VisualElements {
                 return -1;
             }
 
-            for (var i = 0;; i++) {
+            for (var i = 0; ; i++) {
                 // 間引き
                 var memoryLevel = GetMemoryLevel(i);
                 if (memoryLevel < 0) {
                     continue;
                 }
-                
+
                 var thick = memoryLevel == 0;
                 var rect = totalRect;
                 rect.width = thick ? ThickLineWidth : LineWidth;

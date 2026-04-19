@@ -6,7 +6,7 @@ namespace ActionSequencer {
     /// 監視するだけのSequenceEventHandler
     /// </summary>
     [Preserve]
-    public class ObserveSignalSequenceEventHandler<TEvent> : SignalSequenceEventHandler<TEvent>
+    public sealed class ObserveSignalSequenceEventHandler<TEvent> : SignalSequenceEventHandler<TEvent>
         where TEvent : SignalSequenceEvent {
         private Action<TEvent> _invokeAction;
 

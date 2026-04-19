@@ -8,7 +8,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceClip用のPresenter
     /// </summary>
-    internal class SequenceClipPresenter : Presenter<SequenceClipModel, VisualElement> {
+    internal sealed class SequenceClipPresenter : Presenter<SequenceClipModel, VisualElement> {
         // Editor用Model
         private SequenceEditorModel _editorModel;
 
@@ -38,9 +38,9 @@ namespace ActionSequencer.Editor {
                 .Subscribe(RemovedEventModelSubject));
             AddDisposable(Model.MovedEventModelSubject
                 .Subscribe(MovedEventModelSubject));
-            
+
             _trackListView.RulerView.MaskElement = _trackListView.parent.parent;
-            
+
             AddDisposable(_editorModel.TimeToSize
                 .Subscribe(_ => {
                     _trackListView.RulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
@@ -51,7 +51,7 @@ namespace ActionSequencer.Editor {
                     _trackListView.RulerView.TickCycle = SequenceEditorUtility.GetTickCycle(timeMode);
                     _trackListView.RulerView.MemorySize = SequenceEditorUtility.CalcMemorySize(_editorModel);
                 }));
-            
+
             // TrackListのPaddingを表示領域まで拡張（Gray/Rulerを端まで表示するため）
             void ApplyListPadding() {
                 var viewport = _trackListView.parent.parent;
@@ -61,7 +61,7 @@ namespace ActionSequencer.Editor {
                 _trackListView.style.paddingRight = padding;
             }
             AddChangedCallback<GeometryChangedEvent>(_trackListView.parent.parent, _ => ApplyListPadding());
-            AddChangedCallback<GeometryChangedEvent>(_trackListView.contentContainer,_ => ApplyListPadding());
+            AddChangedCallback<GeometryChangedEvent>(_trackListView.contentContainer, _ => ApplyListPadding());
 
             // 既に登録済のModelを解釈
             for (var i = 0; i < Model.TrackModels.Count; i++) {

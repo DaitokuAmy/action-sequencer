@@ -9,10 +9,9 @@ namespace ActionSequencer {
         public float enterTime = 0.0f;
         [Tooltip("終了時間"), FrameTime("exitFrame")]
         public float exitTime = 0.5f;
-
-        // 1フレーム保証する(同フレームでenter/exitしても、exitが次フレームになる)
+        /// <summary>同フレーム終了でも1フレーム維持するか</summary>
         public virtual bool MustOneFrame => false;
-        // トータル時間
+        /// <summary>継続時間</summary>
         public float Duration => exitTime - enterTime;
     }
 }

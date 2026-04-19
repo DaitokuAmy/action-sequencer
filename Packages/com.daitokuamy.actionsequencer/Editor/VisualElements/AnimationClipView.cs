@@ -9,14 +9,12 @@ namespace ActionSequencer.Editor.VisualElements {
     /// <summary>
     /// AnimationClipのプレビュー用のView
     /// </summary>
-    public class AnimationClipView : VisualElement {
-        public new class UxmlFactory : UxmlFactory<AnimationClipView, UxmlTraits> {
-        }
-
+    [UxmlElement]
+    public sealed partial class AnimationClipView : VisualElement {
         /// <summary>
         /// AnimationClipのEditor操作用
         /// </summary>
-        private class AnimationClipEditor : IDisposable {
+        private sealed class AnimationClipEditor : IDisposable {
             private UnityEditor.Editor _editor;
             private object _timeControl;
             private FieldInfo _currentTimeFieldInfo;
@@ -88,10 +86,10 @@ namespace ActionSequencer.Editor.VisualElements {
         // オフセット時間
         public float OffsetTime => _previewOffsetTime;
         // 現在設定されているClip
-        public AnimationClip CurrentClip => _animationClipEditor?.Target as AnimationClip; 
+        public AnimationClip CurrentClip => _animationClipEditor?.Target as AnimationClip;
         // 変更通知
-        public event Action<AnimationClip> OnChangedClipEvent; 
-        public event Action<float> OnChangedOffsetTimeEvent; 
+        public event Action<AnimationClip> OnChangedClipEvent;
+        public event Action<float> OnChangedOffsetTimeEvent;
 
         /// <summary>
         /// コンストラクタ
@@ -142,7 +140,7 @@ namespace ActionSequencer.Editor.VisualElements {
                         }
                     }
                 }
-                
+
                 if (_animationClipEditor?.Editor == null) {
                     return;
                 }
@@ -153,7 +151,7 @@ namespace ActionSequencer.Editor.VisualElements {
                         normal = {
                             background = Texture2D.grayTexture
                         },
-                        
+
                     };
                 }
 
@@ -164,28 +162,28 @@ namespace ActionSequencer.Editor.VisualElements {
                         _animationClipEditor.Editor.OnInspectorGUI();
                     }
                 }
-                
+
                 if (!_initializedField) {
                     _animationClipEditor.SetupFields();
                     _initializedField = true;
                 }
-                
+
                 // 描画を上書きする
                 var rect = contentContainer.layout;
-                
+
                 // Preview描画
                 if (_animationClipEditor.Editor.HasPreviewGUI()) {
                     rect.yMin += EditorGUIUtility.singleLineHeight;
-                    
+
                     using (new GUILayout.HorizontalScope()) {
                         EditorGUILayout.Space(rect.width - 160);
                         _animationClipEditor.Editor.OnPreviewSettings();
                     }
-                    
+
                     rect.yMin += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
                     _animationClipEditor.Editor.OnInteractivePreviewGUI(rect, _previewStyle);
                 }
-            
+
                 // 再生中はRepaint
                 if (_animationClipEditor.IsPlaying) {
                     MarkDirtyRepaint();
@@ -201,7 +199,7 @@ namespace ActionSequencer.Editor.VisualElements {
             if (_animationClipEditor != null && _animationClipEditor.Target == target) {
                 return;
             }
-            
+
             CreateEditor(target, invokeEvent);
         }
 

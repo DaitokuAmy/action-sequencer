@@ -10,7 +10,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceTrack用Model
     /// </summary>
-    internal class SequenceTrackModel : SerializedObjectModel {
+    internal sealed class SequenceTrackModel : SerializedObjectModel {
         private SerializedProperty _label;
         private SerializedProperty _sequenceEvents;
         private List<SequenceEventModel> _eventModels = new List<SequenceEventModel>();
@@ -210,7 +210,7 @@ namespace ActionSequencer.Editor {
             if (model == null) {
                 return false;
             }
-            
+
             // 要素の追加
             var evt = DuplicateEventAsset(sequenceEvent);
 
@@ -243,7 +243,7 @@ namespace ActionSequencer.Editor {
                 if (sequenceEvent == null) {
                     continue;
                 }
-            
+
                 // 要素の追加
                 var evt = PasteEventAsset(sequenceEvent);
 
@@ -370,7 +370,7 @@ namespace ActionSequencer.Editor {
             if (index < 0) {
                 return null;
             }
-            
+
             // 同時に複数削除した際にReferenceが復帰しない不具合があったため、Undoを個別に登録
             var groupId = Undo.GetCurrentGroup();
             Undo.IncrementCurrentGroup();
@@ -398,7 +398,7 @@ namespace ActionSequencer.Editor {
         private SequenceEvent PasteEventAsset(SequenceEvent sourceEvent) {
             // 末尾に挿入
             var index = _sequenceEvents.arraySize;
-            
+
             // 同時に複数削除した際にReferenceが復帰しない不具合があったため、Undoを個別に登録
             var groupId = Undo.GetCurrentGroup();
             Undo.IncrementCurrentGroup();
@@ -438,7 +438,7 @@ namespace ActionSequencer.Editor {
 
                 _sequenceEvents.DeleteArrayElementAtIndex(i);
             }
-            
+
             // Eventを削除
             Undo.DestroyObjectImmediate(sequenceEvent);
 

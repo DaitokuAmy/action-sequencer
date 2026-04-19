@@ -6,17 +6,29 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceEventView用のManipulator
     /// </summary>
-    public class SequenceEventManipulator : MouseManipulator {
+    public sealed class SequenceEventManipulator : MouseManipulator {
         public enum DragType {
             LeftSide,
             Middle,
             RightSide
         }
 
-        public struct DragInfo {
-            public DragType type;
-            public float start;
-            public float current;
+        public readonly struct DragInfo {
+            /// <summary>
+            /// コンストラクタ
+            /// </summary>
+            public DragInfo(DragType type, float start, float current) {
+                Type = type;
+                Start = start;
+                Current = current;
+            }
+
+            /// <summary>ドラッグ種別</summary>
+            public DragType Type { get; }
+            /// <summary>ドラッグ開始位置</summary>
+            public float Start { get; }
+            /// <summary>現在位置</summary>
+            public float Current { get; }
         }
 
         private readonly bool _resizable;
@@ -42,10 +54,8 @@ namespace ActionSequencer.Editor {
 
             // 左クリックで有効化する
             activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
-            activators.Add(new ManipulatorActivationFilter
-                { button = MouseButton.LeftMouse, modifiers = EventModifiers.Command });
-            activators.Add(new ManipulatorActivationFilter
-                { button = MouseButton.LeftMouse, modifiers = EventModifiers.Control });
+            activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse, modifiers = EventModifiers.Command });
+            activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse, modifiers = EventModifiers.Control });
         }
 
         /// <summary>
@@ -135,11 +145,7 @@ namespace ActionSequencer.Editor {
         private void OnMouseMove(MouseMoveEvent evt) {
             if (_dragging) {
                 // 移動量を反映
-                OnDragging?.Invoke(new DragInfo {
-                    type = _dragType,
-                    start = _startMousePosition.x,
-                    current = evt.mousePosition.x,
-                });
+                OnDragging?.Invoke(new DragInfo(_dragType, _startMousePosition.x, evt.mousePosition.x));
             }
         }
     }

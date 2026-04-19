@@ -5,7 +5,7 @@ namespace ActionSequencer.Editor {
     /// コピーに使用するためのデータ構造
     /// </summary>
     [Serializable]
-    internal class CopyData {
+    internal sealed class CopyData {
         public SequenceEvent[] sequenceEvents;
     }
 }

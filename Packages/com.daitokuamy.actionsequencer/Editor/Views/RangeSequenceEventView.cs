@@ -4,10 +4,8 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// RangeEvent用のView
     /// </summary>
-    public class RangeSequenceEventView : SequenceEventView {
-        public new class UxmlFactory : UxmlFactory<RangeSequenceEventView, UxmlTraits> {
-        }
-
+    [UxmlElement]
+    public sealed partial class RangeSequenceEventView : SequenceEventView {
         /// <summary>左端位置</summary>
         public float LeftPosition {
             get => style.marginLeft.value.value;

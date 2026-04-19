@@ -8,10 +8,8 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SignalTrack用のView
     /// </summary>
-    public class SequenceTrackLabelView : VisualElement {
-        public new class UxmlFactory : UxmlFactory<SequenceTrackLabelView, UxmlTraits> {
-        }
-
+    [UxmlElement]
+    public sealed partial class SequenceTrackLabelView : VisualElement {
         private Foldout _foldout;
         private TextField _textFieldView;
         private Button _optionButton;

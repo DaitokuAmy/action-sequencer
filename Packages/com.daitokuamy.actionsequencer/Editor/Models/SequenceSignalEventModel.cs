@@ -7,7 +7,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SignalEvent用Model
     /// </summary>
-    internal class SignalSequenceEventModel : SequenceEventModel {
+    internal sealed class SignalSequenceEventModel : SequenceEventModel {
         private SignalSequenceEvent _targetEvent;
         private SerializedProperty _time;
         private SerializedProperty _viewDuration;

@@ -4,7 +4,7 @@ namespace ActionSequencer.Editor.Utils {
     /// <summary>
     /// 通知機能付きプロパティ
     /// </summary>
-    internal class ReactiveProperty<T> : IReadOnlyReactiveProperty<T> {
+    internal sealed class ReactiveProperty<T> : IReadOnlyReactiveProperty<T> {
         private T _value;
         private bool _initialized;
         private Func<T, T> _preprocess;
@@ -14,7 +14,7 @@ namespace ActionSequencer.Editor.Utils {
         /// <summary>
         /// 廃棄時の処理記述用
         /// </summary>
-        private class DisposableAction : IDisposable {
+        private sealed class DisposableAction : IDisposable {
             private Action _action;
 
             public DisposableAction(Action action) {

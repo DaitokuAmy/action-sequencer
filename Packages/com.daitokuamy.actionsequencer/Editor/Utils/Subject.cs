@@ -16,7 +16,7 @@ namespace ActionSequencer.Editor.Utils {
     /// <summary>
     /// 通知用クラス
     /// </summary>
-    public class Subject : SubjectBase, IReadonlySubject {
+    public sealed class Subject : SubjectBase, IReadonlySubject {
         // 通知用アクション
         private event Action OnSendAction;
 
@@ -36,7 +36,7 @@ namespace ActionSequencer.Editor.Utils {
         }
     }
 
-    public class Subject<T> : SubjectBase, IReadonlySubject<T> {
+    public sealed class Subject<T> : SubjectBase, IReadonlySubject<T> {
         // 通知用アクション
         private event Action<T> OnSendAction;
 
@@ -56,7 +56,7 @@ namespace ActionSequencer.Editor.Utils {
         }
     }
 
-    public class Subject<T1, T2> : SubjectBase, IReadonlySubject<T1, T2> {
+    public sealed class Subject<T1, T2> : SubjectBase, IReadonlySubject<T1, T2> {
         // 通知用アクション
         private event Action<T1, T2> OnSendAction;
 

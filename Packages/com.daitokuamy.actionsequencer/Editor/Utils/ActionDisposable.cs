@@ -4,7 +4,7 @@ namespace ActionSequencer.Editor.Utils {
     /// <summary>
     /// 廃棄時処理記述用
     /// </summary>
-    public class ActionDisposable : IDisposable {
+    public sealed class ActionDisposable : IDisposable {
         private Action _action;
 
         public ActionDisposable(Action action) {

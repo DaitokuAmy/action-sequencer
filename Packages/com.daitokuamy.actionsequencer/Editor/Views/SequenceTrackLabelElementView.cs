@@ -7,10 +7,8 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceTrackLabelのEvent毎の要素View
     /// </summary>
-    public class SequenceTrackLabelElementView : VisualElement {
-        public new class UxmlFactory : UxmlFactory<SequenceTrackLabelElementView, UxmlTraits> {
-        }
-
+    [UxmlElement]
+    public sealed partial class SequenceTrackLabelElementView : VisualElement {
         private VisualElement _rootView;
         private VisualElement _colorView;
         private TextField _textFieldView;

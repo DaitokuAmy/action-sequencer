@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ActionSequencer.Editor.Utils;
-using UnityEditor;
-using UnityEngine;
-using UnityEngine.UIElements;
 using ActionSequencer.Editor.VisualElements;
+using UnityEditor;
 using UnityEditor.Callbacks;
+using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UIElements;
 using ObjectField = UnityEditor.UIElements.ObjectField;
 using ToolbarMenu = UnityEditor.UIElements.ToolbarMenu;
 using ToolbarToggle = UnityEditor.UIElements.ToolbarToggle;
@@ -16,10 +16,10 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// Sequence編集用Window
     /// </summary>
-    public class SequenceEditorWindow : EditorWindow {
+    public sealed class SequenceEditorWindow : EditorWindow {
         // .metaのUserDataに保存される情報
         [Serializable]
-        private class UserData {
+        private sealed class UserData {
             public string Guid = "";
             public long LocalId = 0L;
             public float OffsetTime = 0.0f;
@@ -99,7 +99,9 @@ namespace ActionSequencer.Editor {
             _escapedClip = clip;
             _escapedIncludeClipIndex = clip != null ? Mathf.Clamp(includeClipIndex, -1, clip.includeClips.Length - 1) : -1;
 
-            var currentClip = includeClipIndex >= 0 && includeClipIndex < _escapedClip.includeClips.Length ? _escapedClip.includeClips[_escapedIncludeClipIndex] : _escapedClip;
+            var currentClip = _escapedClip != null && includeClipIndex >= 0 && includeClipIndex < _escapedClip.includeClips.Length
+                ? _escapedClip.includeClips[_escapedIncludeClipIndex]
+                : _escapedClip;
 
             if (!force && _editorModel.ClipModel?.Target == currentClip) {
                 return;
@@ -225,9 +227,7 @@ namespace ActionSequencer.Editor {
             _rulerView = root.Q<RulerView>("RulerView");
             trackList.RegisterCallback<GeometryChangedEvent>(evt => { _rulerView.style.width = trackList.layout.width; });
             trackScrollView.horizontalScroller.valueChanged += x => {
-                var pos = _rulerView.transform.position;
-                pos.x = -x;
-                _rulerView.transform.position = pos;
+                _rulerView.style.translate = new Translate(-x, 0.0f);
                 _trackScrollOffsetX = x;
             };
             rulerArea.RegisterCallback<WheelEvent>(evt => {

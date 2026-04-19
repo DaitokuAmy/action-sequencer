@@ -7,7 +7,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// RangeEvent用Model
     /// </summary>
-    internal class RangeSequenceEventModel : SequenceEventModel {
+    internal sealed class RangeSequenceEventModel : SequenceEventModel {
         private SerializedProperty _enterTime;
         private SerializedProperty _exitTime;
 

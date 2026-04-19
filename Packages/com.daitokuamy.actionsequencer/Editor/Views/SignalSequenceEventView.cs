@@ -4,10 +4,8 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SignalEvent用のView
     /// </summary>
-    public class SignalSequenceEventView : SequenceEventView {
-        public new class UxmlFactory : UxmlFactory<SignalSequenceEventView, UxmlTraits> {
-        }
-
+    [UxmlElement]
+    public sealed partial class SignalSequenceEventView : SequenceEventView {
         /// <summary>位置</summary>
         public float Position {
             get => style.marginLeft.value.value;

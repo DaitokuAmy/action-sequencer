@@ -4,7 +4,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceEvent用の空白View
     /// </summary>
-    public class SequenceEventSpacerView : VisualElement {
+    public sealed class SequenceEventSpacerView : VisualElement {
         /// <summary>
         /// コンストラクタ
         /// </summary>

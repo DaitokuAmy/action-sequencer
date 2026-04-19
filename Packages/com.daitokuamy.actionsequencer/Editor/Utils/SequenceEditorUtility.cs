@@ -12,7 +12,7 @@ namespace ActionSequencer.Editor.Utils {
     /// </summary>
     internal static class SequenceEditorUtility {
         private static ActionSequencerSettings s_settings;
-        
+
         /// <summary>Assets配下に存在する設定ファイルへの参照</summary>
         private static ActionSequencerSettings Settings {
             get {
