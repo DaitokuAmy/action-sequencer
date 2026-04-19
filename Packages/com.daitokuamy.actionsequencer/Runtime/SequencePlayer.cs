@@ -394,6 +394,10 @@ namespace ActionSequencer {
         /// <param name="clip">再生対象のClip</param>
         /// <param name="startOffset">開始時間オフセット</param>
         public SequenceHandle Play(SequenceClip clip, float startOffset = 0.0f) {
+            if (clip == null) {
+                return default;
+            }
+
             // 再生用の情報を追加
             var playingInfo = CreatePlayingInfo(clip, startOffset);
             _playingInfos.Add(playingInfo);
@@ -435,6 +439,7 @@ namespace ActionSequencer {
 
             _playingInfos.Clear();
             _playingInfoMap.Clear();
+            _removePlayingIndices.Clear();
         }
 
         /// <summary>
@@ -475,6 +480,10 @@ namespace ActionSequencer {
                         foreach (var handler in handlers) {
                             // 発火通知
                             handler.Handler.Invoke(signalEvent);
+                            if (ShouldAbortUpdate(playingInfo)) {
+                                return;
+                            }
+
                             // 解放
                             ReleaseSignalEventHandler(handler);
                         }
@@ -493,29 +502,44 @@ namespace ActionSequencer {
 
                     if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handlers)) {
                         var elapsedTime = Mathf.Min(playingInfo.Time - rangeEvent.enterTime, rangeEvent.Duration);
+                        var shouldRemove = false;
 
                         foreach (var handler in handlers) {
-                            var enterFrame = false;
+                            var enteredThisFrame = false;
 
                             // EnterしてなければEnter実行
                             if (!handler.Handler.IsEntered) {
-                                enterFrame = true;
+                                enteredThisFrame = true;
                                 handler.Handler.Enter(rangeEvent);
+                                if (ShouldAbortUpdate(playingInfo)) {
+                                    return;
+                                }
                             }
 
                             handler.Handler.Update(rangeEvent, elapsedTime);
+                            if (ShouldAbortUpdate(playingInfo)) {
+                                return;
+                            }
 
-                            // 終了していたらExit実行してリストから除外
+                            // 終了していたらExit実行
                             if (rangeEvent.exitTime <= playingInfo.Time) {
                                 // Enter/Exitが同時に呼ばれるのを回避する対応
-                                if (!enterFrame || !rangeEvent.MustOneFrame) {
+                                if (!enteredThisFrame || !rangeEvent.MustOneFrame) {
                                     handler.Handler.Exit(rangeEvent);
+                                    if (ShouldAbortUpdate(playingInfo)) {
+                                        return;
+                                    }
+
                                     // 解放
                                     ReleaseRangeEventHandler(handler);
-                                    // リストから除外
-                                    playingInfo.ActiveRangeEvents.RemoveAt(j);
+                                    shouldRemove = true;
                                 }
                             }
+                        }
+
+                        if (shouldRemove) {
+                            // リストから除外
+                            playingInfo.ActiveRangeEvents.RemoveAt(j);
                         }
                     }
                     else {
@@ -630,8 +654,20 @@ namespace ActionSequencer {
             }
 
             void AddEvents(SequenceClip seqClip) {
+                if (seqClip == null || seqClip.tracks == null) {
+                    return;
+                }
+
                 foreach (var track in seqClip.tracks) {
+                    if (track == null || track.sequenceEvents == null) {
+                        continue;
+                    }
+
                     foreach (var ev in track.sequenceEvents) {
+                        if (ev == null) {
+                            continue;
+                        }
+
                         // 無効状態のEventは処理しない
                         if (!ev.active) {
                             continue;
@@ -690,8 +726,10 @@ namespace ActionSequencer {
             }
 
             AddEvents(clip);
-            foreach (var includeClip in clip.includeClips) {
-                AddEvents(includeClip);
+            if (clip.includeClips != null) {
+                foreach (var includeClip in clip.includeClips) {
+                    AddEvents(includeClip);
+                }
             }
 
             // リストのソート(終了時間の降順)
@@ -734,6 +772,19 @@ namespace ActionSequencer {
 
             _nextPlayingId = playingId + 1;
             return playingId;
+        }
+
+        /// <summary>
+        /// 更新処理を中断すべきか
+        /// </summary>
+        private bool ShouldAbortUpdate(PlayingInfo playingInfo) {
+            if (playingInfo != null && _playingInfoMap.TryGetValue(playingInfo.Id, out var currentPlayingInfo) &&
+                currentPlayingInfo == playingInfo) {
+                return false;
+            }
+
+            _removePlayingIndices.Clear();
+            return true;
         }
 
         /// <summary>
