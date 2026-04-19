@@ -349,15 +349,15 @@ namespace ActionSequencer.Editor {
         /// 現在のクリップモデルを再構築して選択状態を復元
         /// </summary>
         private void ReloadClipModel() {
-            if (_model.CurrentClip == null) {
+            if (_model.RootClip == null) {
                 _model.SetClipModel(null);
                 _selectionService.ClearSelection();
                 return;
             }
 
             var selectedTargets = _selectionService.SelectedTargets.ToArray();
-            _repository.CleanBrokenReferences(_model.CurrentClip);
-            _model.SetClipModel(_repository.Load(_model.CurrentClip));
+            _repository.CleanBrokenReferences(_model.RootClip);
+            _model.SetClipModel(_repository.LoadComposite(_model.RootClip));
             _selectionService.RestoreSelection(selectedTargets);
         }
     }

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
   active: 1
-  time: 0.325
+  time: 0.4
   prefab: {fileID: 8846004282753536196, guid: 8e7585cfe058d3044a74307dc2b1780b, type: 3}
   offsetPosition: {x: 0, y: 0, z: 0}
   offsetAngles: {x: 0, y: 0, z: 0}

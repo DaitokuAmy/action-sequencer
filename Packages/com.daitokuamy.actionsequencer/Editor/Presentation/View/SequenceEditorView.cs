@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using ActionSequencer.Editor.VisualElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -117,15 +116,6 @@ namespace ActionSequencer.Editor {
         /// <param name="rootClip">ルートの SequenceClip</param>
         /// <param name="includeClipIndex">選択中の includeClip index</param>
         public void UpdateIncludeClipField(SequenceClip rootClip, int includeClipIndex) {
-            if (rootClip != null && rootClip.includeClips.Length > 0) {
-                var baseName = rootClip.name;
-                IncludeClipField.style.display = DisplayStyle.Flex;
-                IncludeClipField.choices = new List<string>(rootClip.includeClips.Select(x => x.name.Replace(baseName, "[base]")));
-                IncludeClipField.choices.Insert(0, "[base]");
-                IncludeClipField.index = includeClipIndex + 1;
-                return;
-            }
-
             IncludeClipField.style.display = DisplayStyle.None;
             IncludeClipField.choices.Clear();
             IncludeClipField.index = -1;

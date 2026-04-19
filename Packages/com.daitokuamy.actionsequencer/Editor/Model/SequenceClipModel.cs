@@ -8,7 +8,7 @@ namespace ActionSequencer.Editor {
     /// <summary>
     /// SequenceClip の編集用キャッシュ
     /// </summary>
-    internal sealed class SequenceClipModel {
+    internal class SequenceClipModel {
         private readonly List<SequenceTrackModel> _trackModels;
 
         /// <summary>

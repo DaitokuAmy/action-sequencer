@@ -11,11 +11,20 @@ namespace ActionSequencer.Editor {
         /// <summary>
         /// コンストラクタ
         /// </summary>
+        /// <param name="ownerClip">所属する SequenceClip</param>
         /// <param name="target">対応する Track</param>
+        /// <param name="ownerTrackIndex">所属 clip 内での index</param>
         /// <param name="label">表示ラベル</param>
         /// <param name="eventModels">保持する EventModel 一覧</param>
-        public SequenceTrackModel(SequenceTrack target, string label, IEnumerable<SequenceEventModel> eventModels) {
+        public SequenceTrackModel(
+            SequenceClip ownerClip,
+            SequenceTrack target,
+            int ownerTrackIndex,
+            string label,
+            IEnumerable<SequenceEventModel> eventModels) {
+            OwnerClip = ownerClip;
             Target = target;
+            OwnerTrackIndex = ownerTrackIndex;
             Label = label;
             _eventModels = eventModels.ToList();
 
@@ -24,8 +33,12 @@ namespace ActionSequencer.Editor {
             }
         }
 
+        /// <summary>所属する SequenceClip</summary>
+        public SequenceClip OwnerClip { get; }
         /// <summary>対応する Track</summary>
         public SequenceTrack Target { get; }
+        /// <summary>所属 clip 内での index</summary>
+        public int OwnerTrackIndex { get; }
         /// <summary>表示ラベル</summary>
         public string Label { get; private set; }
         /// <summary>Foldout 状態</summary>

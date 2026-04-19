@@ -145,11 +145,11 @@ namespace ActionSequencer.Editor {
             var menu = new GenericMenu();
 
             menu.AddItem(new GUIContent("Up"), false, () => {
-                var currentIndex = _editorModel.ClipModel.GetTrackIndex(Model);
+                var currentIndex = Model.OwnerTrackIndex;
                 _trackEditingService.MoveTrack(Model, currentIndex - 1);
             });
             menu.AddItem(new GUIContent("Down"), false, () => {
-                var currentIndex = _editorModel.ClipModel.GetTrackIndex(Model);
+                var currentIndex = Model.OwnerTrackIndex;
                 _trackEditingService.MoveTrack(Model, currentIndex + 1);
             });
 

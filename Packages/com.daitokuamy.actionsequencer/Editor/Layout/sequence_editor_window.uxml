@@ -46,8 +46,8 @@
                 <ui:VisualElement name="TrackSeekbar" class="track_seekbar" style="position: absolute; height: 100%; width: 2px;" />
             </ui:VisualElement>
         </asve:SplitView>
-        <asve:SplitView orientation="Vertical" style="min-width: 280px;">
-            <ui:VisualElement name="InspectorArea" style="min-width: 100px;">
+        <asve:SplitView orientation="Vertical" name="InspectorPreviewSplit" style="min-width: 240px;">
+            <ui:VisualElement name="InspectorArea" style="min-width: 100px; min-height: 48px;">
                 <ui:VisualElement name="InspectorHeader" style="height: 20px; background-color: rgb(64, 64, 64);">
                     <ui:Label text="Inspector" display-tooltip-when-elided="true" style="-unity-font-style: bold; font-size: 12px; -unity-text-align: visible; height: 100%; margin-left: 0; padding-left: 6px;" />
                 </ui:VisualElement>

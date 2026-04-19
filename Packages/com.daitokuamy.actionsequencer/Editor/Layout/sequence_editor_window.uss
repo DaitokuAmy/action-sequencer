@@ -17,6 +17,10 @@
     white-space: nowrap;
 }
 
+#InspectorPreviewSplit .unity-two-pane-split-view__dragline-anchor {
+    background-image: none;
+}
+
 .track__box {
     border-left-width: 0;
     border-right-width: 0;
@@ -212,6 +216,50 @@
     background-color: rgb(48, 48, 48);
     min-height: 20px;
     -unity-slice-top: -15;
+}
+
+.clip_section_label__box {
+    min-height: 22px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(56, 56, 56);
+}
+
+.clip_section_label__text {
+    color: rgb(196, 196, 196);
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+    white-space: nowrap;
+}
+
+.clip_section_track__box {
+    min-height: 22px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.clip_section_track__line {
+    flex-grow: 1;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.clip_section_track__text {
+    margin-left: 8px;
+    margin-right: 8px;
+    color: rgb(196, 196, 196);
+    -unity-font-style: bold;
+    white-space: nowrap;
 }
 
 .track_label__textfield {

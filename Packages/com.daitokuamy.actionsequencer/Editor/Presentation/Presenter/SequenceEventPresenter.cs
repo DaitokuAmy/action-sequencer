@@ -256,8 +256,8 @@ namespace ActionSequencer.Editor {
             menu.AddItem(new GUIContent(Model.Active ? "Deactivate" : "Activate"), false,
                 () => _eventEditingService.SetActive(Model, !Model.Active));
 
-            foreach (var trackModel in _editorModel.ClipModel.TrackModels) {
-                var content = new GUIContent($"Move Event/{_editorModel.ClipModel.GetTrackIndex(trackModel)}:{trackModel.Label}");
+            foreach (var trackModel in _editorModel.ClipModel.TrackModels.Where(x => x.OwnerClip == Model.TrackModel.OwnerClip)) {
+                var content = new GUIContent($"Move Event/{trackModel.OwnerTrackIndex}:{trackModel.Label}");
                 if (trackModel == Model.TrackModel) {
                     menu.AddDisabledItem(content);
                     continue;

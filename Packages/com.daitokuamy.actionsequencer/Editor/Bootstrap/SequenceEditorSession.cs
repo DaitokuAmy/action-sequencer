@@ -101,15 +101,15 @@ namespace ActionSequencer.Editor {
         /// <param name="includeClipIndex">選択する includeClip index</param>
         /// <param name="force">同一対象でも再初期化する場合は true</param>
         public void Open(SequenceClip clip, int includeClipIndex, bool force = false) {
-            var resolvedIncludeClipIndex = clip != null ? Mathf.Clamp(includeClipIndex, -1, clip.includeClips.Length - 1) : -1;
-            var currentClip = ResolveCurrentClip(clip, resolvedIncludeClipIndex);
+            var resolvedIncludeClipIndex = -1;
+            var currentClip = clip;
             if (!force && _model.CurrentClip == currentClip) {
                 return;
             }
 
             _model.SetClipTargets(clip, resolvedIncludeClipIndex, currentClip);
             _repository.CleanBrokenReferences(_model.CurrentClip);
-            _model.SetClipModel(_repository.Load(_model.CurrentClip));
+            _model.SetClipModel(_repository.LoadComposite(_model.RootClip));
             _timelineViewService.OnClipOpened();
             _selectionService.ClearSelection();
 
@@ -129,7 +129,7 @@ namespace ActionSequencer.Editor {
 
             var selectedTargets = _selectionService.SelectedTargets.ToArray();
             _repository.CleanBrokenReferences(_model.CurrentClip);
-            _model.SetClipModel(_repository.Load(_model.CurrentClip));
+            _model.SetClipModel(_repository.LoadComposite(_model.RootClip));
             _timelineViewService.OnClipReloaded();
             _selectionService.RestoreSelection(selectedTargets);
 
@@ -211,7 +211,7 @@ namespace ActionSequencer.Editor {
             }
 
             var selectedTargets = _selectionService.SelectedTargets.ToArray();
-            _model.SetClipModel(_repository.Load(_model.CurrentClip));
+            _model.SetClipModel(_repository.LoadComposite(_model.RootClip));
             _selectionService.RestoreSelection(selectedTargets);
             _presenter?.RefreshWithoutInspector();
             StateChanged?.Invoke();
@@ -234,25 +234,9 @@ namespace ActionSequencer.Editor {
 
             SequenceEditorUtility.ClearSettingsCache();
             var selectedTargets = _selectionService.SelectedTargets.ToArray();
-            _model.SetClipModel(_repository.Load(_model.CurrentClip));
+            _model.SetClipModel(_repository.LoadComposite(_model.RootClip));
             _selectionService.RestoreSelection(selectedTargets);
             RefreshPresentation();
-        }
-
-        /// <summary>
-        /// includeClip 設定から現在編集中のクリップを解決
-        /// </summary>
-        /// <param name="clip">ルートの SequenceClip</param>
-        /// <param name="includeClipIndex">選択する includeClip index</param>
-        /// <returns>編集対象の SequenceClip</returns>
-        private SequenceClip ResolveCurrentClip(SequenceClip clip, int includeClipIndex) {
-            if (clip == null) {
-                return null;
-            }
-
-            return includeClipIndex >= 0 && includeClipIndex < clip.includeClips.Length
-                ? clip.includeClips[includeClipIndex]
-                : clip;
         }
     }
 }

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using ActionSequencer.Editor.Utils;
 
 namespace ActionSequencer.Editor {
     /// <summary>
@@ -8,6 +10,7 @@ namespace ActionSequencer.Editor {
         private readonly SequenceTrackPresentationFactory _factory;
         private readonly SequenceEditorView _editorView;
         private readonly List<TrackPresentationContext> _trackPresentations = new();
+        private readonly List<IDisposable> _sectionPresentations = new();
 
         private SequenceClipPresenter _clipPresenter;
 
@@ -36,14 +39,14 @@ namespace ActionSequencer.Editor {
 
             _clipPresenter = _factory.CreateClipPresenter(editorModel, _editorView);
 
-            foreach (var trackModel in trackModels) {
-                var labelView = new SequenceTrackLabelView();
-                _editorView.TrackLabelListView.Add(labelView);
-
-                var trackView = new SequenceTrackView();
-                _editorView.TrackListView.Add(trackView);
-
-                _trackPresentations.Add(_factory.CreateTrackPresentation(editorModel, trackModel, labelView, trackView));
+            if (editorModel.ClipModel is CompositeSequenceClipModel compositeClipModel) {
+                foreach (var sectionModel in compositeClipModel.Sections) {
+                    AddSectionPresentation(sectionModel);
+                    AddTrackPresentations(editorModel, sectionModel.TrackModels);
+                }
+            }
+            else {
+                AddTrackPresentations(editorModel, trackModels);
             }
 
             RefreshTabIndices();
@@ -56,6 +59,12 @@ namespace ActionSequencer.Editor {
             }
 
             _trackPresentations.Clear();
+
+            foreach (var sectionPresentation in _sectionPresentations) {
+                sectionPresentation.Dispose();
+            }
+
+            _sectionPresentations.Clear();
             _clipPresenter?.Dispose();
             _clipPresenter = null;
             _editorView.TrackLabelListView.Clear();
@@ -75,6 +84,42 @@ namespace ActionSequencer.Editor {
             foreach (var trackPresentation in _trackPresentations) {
                 offset = trackPresentation.SetTabIndices(offset);
             }
+        }
+
+        /// <summary>
+        /// TrackPresentation 群を追加する
+        /// </summary>
+        /// <param name="editorModel">編集中のモデル</param>
+        /// <param name="trackModels">追加対象の TrackModel 一覧</param>
+        private void AddTrackPresentations(SequenceEditorModel editorModel, IReadOnlyList<SequenceTrackModel> trackModels) {
+            foreach (var trackModel in trackModels) {
+                var labelView = new SequenceTrackLabelView();
+                _editorView.TrackLabelListView.Add(labelView);
+
+                var trackView = new SequenceTrackView();
+                _editorView.TrackListView.Add(trackView);
+
+                _trackPresentations.Add(_factory.CreateTrackPresentation(editorModel, trackModel, labelView, trackView));
+            }
+        }
+
+        /// <summary>
+        /// Clip セクション見出しを追加する
+        /// </summary>
+        /// <param name="sectionModel">追加対象のセクション</param>
+        private void AddSectionPresentation(SequenceClipSectionModel sectionModel) {
+            var labelView = new SequenceClipSectionLabelView();
+            labelView.SetDisplayName(sectionModel.DisplayName);
+            _editorView.TrackLabelListView.Add(labelView);
+
+            var trackView = new SequenceClipSectionTrackView();
+            trackView.SetDisplayName(sectionModel.DisplayName);
+            _editorView.TrackListView.Add(trackView);
+
+            _sectionPresentations.Add(new ActionDisposable(() => {
+                labelView.RemoveFromHierarchy();
+                trackView.RemoveFromHierarchy();
+            }));
         }
     }
 }

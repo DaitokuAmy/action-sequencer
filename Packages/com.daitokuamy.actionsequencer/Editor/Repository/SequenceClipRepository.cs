@@ -33,10 +33,27 @@ namespace ActionSequencer.Editor {
 
             var trackModels = clip.tracks
                 .Where(track => track != null)
-                .Select(track => CreateTrackModel(track))
+                .Select((track, index) => CreateTrackModel(clip, track, index))
                 .ToArray();
 
             return new SequenceClipModel(clip, clip.frameRate, clip.filterData, trackModels);
+        }
+
+        /// <summary>
+        /// root clip と include clips を統合した ClipModel を構築
+        /// </summary>
+        /// <param name="rootClip">読み込み対象の root SequenceClip</param>
+        /// <returns>構築した ClipModel</returns>
+        public SequenceClipModel LoadComposite(SequenceClip rootClip) {
+            if (rootClip == null) {
+                return null;
+            }
+
+            var sections = new List<SequenceClipSectionModel>();
+            var visitedClips = new HashSet<SequenceClip>();
+            CollectSectionsRecursive(rootClip, sections, visitedClips);
+
+            return new CompositeSequenceClipModel(rootClip, rootClip.frameRate, rootClip.filterData, sections);
         }
 
         /// <summary>
@@ -574,16 +591,52 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
+        /// Clip からセクション用モデルを生成
+        /// </summary>
+        /// <param name="clip">変換元の Clip</param>
+        /// <returns>生成した SectionModel</returns>
+        private SequenceClipSectionModel CreateSectionModel(SequenceClip clip) {
+            var trackModels = clip.tracks
+                .Where(track => track != null)
+                .Select((track, index) => CreateTrackModel(clip, track, index))
+                .ToArray();
+            return new SequenceClipSectionModel(clip, clip.name, trackModels);
+        }
+
+        /// <summary>
+        /// Clip と include clips を再帰的に section 一覧へ追加する
+        /// </summary>
+        /// <param name="clip">追加対象の Clip</param>
+        /// <param name="sections">追加先の section 一覧</param>
+        /// <param name="visitedClips">追加済み Clip 集合</param>
+        private void CollectSectionsRecursive(
+            SequenceClip clip,
+            List<SequenceClipSectionModel> sections,
+            HashSet<SequenceClip> visitedClips) {
+            if (clip == null || !visitedClips.Add(clip)) {
+                return;
+            }
+
+            sections.Add(CreateSectionModel(clip));
+
+            foreach (var includeClip in clip.includeClips.Where(x => x != null)) {
+                CollectSectionsRecursive(includeClip, sections, visitedClips);
+            }
+        }
+
+        /// <summary>
         /// Track から編集用モデルを生成
         /// </summary>
+        /// <param name="ownerClip">所属する SequenceClip</param>
         /// <param name="track">変換元の Track</param>
+        /// <param name="ownerTrackIndex">所属 clip 内での index</param>
         /// <returns>生成した TrackModel</returns>
-        private SequenceTrackModel CreateTrackModel(SequenceTrack track) {
+        private SequenceTrackModel CreateTrackModel(SequenceClip ownerClip, SequenceTrack track, int ownerTrackIndex) {
             var eventModels = track.sequenceEvents
                 .Where(sequenceEvent => sequenceEvent != null)
                 .Select(sequenceEvent => CreateEventModel(sequenceEvent))
                 .ToArray();
-            return new SequenceTrackModel(track, track.label, eventModels);
+            return new SequenceTrackModel(ownerClip, track, ownerTrackIndex, track.label, eventModels);
         }
 
         /// <summary>
