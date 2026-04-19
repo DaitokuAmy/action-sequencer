@@ -1,62 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Pool;
 
 namespace ActionSequencer {
-    /// <summary>
-    /// Sequence再生管理用ハンドル
-    /// </summary>
-    public readonly struct SequenceHandle : IEnumerator, IDisposable {
-        private readonly SequencePlayer _player;
-        private readonly int _playingId;
-
-        /// <summary>再生完了しているか</summary>
-        public bool IsDone => _player == null || !_player.IsPlaying(_playingId);
-
-        /// <summary>IEnumerator用</summary>
-        object IEnumerator.Current => null;
-
-        /// <summary>
-        /// コンストラクタ
-        /// </summary>
-        internal SequenceHandle(SequencePlayer player, int playingId) {
-            _player = player;
-            _playingId = playingId;
-        }
-
-        /// <summary>
-        /// 廃棄時処理
-        /// </summary>
-        public void Dispose() {
-            Stop();
-        }
-
-        /// <summary>
-        /// IEnumerator用
-        /// </summary>
-        bool IEnumerator.MoveNext() => !IsDone;
-
-        /// <summary>
-        /// IEnumerator用
-        /// </summary>
-        void IEnumerator.Reset() {
-        }
-
-        /// <summary>
-        /// 停止
-        /// </summary>
-        public void Stop() {
-            if (_player == null) {
-                return;
-            }
-
-            _player.Stop(_playingId);
-        }
-    }
-
     /// <summary>
     /// Sequence再生用プレイヤー
     /// </summary>
@@ -65,7 +13,9 @@ namespace ActionSequencer {
         /// SignalEventのハンドラ実体情報
         /// </summary>
         private sealed class SignalEventHandlerEntry {
+            /// <summary>紐づくハンドラ情報</summary>
             public EventHandlerInfo Info { get; set; }
+            /// <summary>ハンドラ実体</summary>
             public ISignalSequenceEventHandler Handler { get; set; }
         }
 
@@ -73,8 +23,19 @@ namespace ActionSequencer {
         /// RangeEventのハンドラ実体情報
         /// </summary>
         private sealed class RangeEventHandlerEntry {
+            /// <summary>紐づくハンドラ情報</summary>
             public EventHandlerInfo Info { get; set; }
+            /// <summary>ハンドラ実体</summary>
             public IRangeSequenceEventHandler Handler { get; set; }
+        }
+
+        /// <summary>
+        /// 再生状態
+        /// </summary>
+        private enum PlayingStatus {
+            PendingPlay,
+            Playing,
+            PendingStop
         }
 
         /// <summary>
@@ -97,6 +58,8 @@ namespace ActionSequencer {
             public int Id { get; set; }
             /// <summary>現在の再生時間</summary>
             public float Time { get; set; }
+            /// <summary>再生状態</summary>
+            public PlayingStatus Status { get; set; }
 
             /// <summary>再生完了しているか</summary>
             public bool IsDone => ActiveSignalEvents.Count <= 0 && ActiveRangeEvents.Count <= 0;
@@ -106,10 +69,15 @@ namespace ActionSequencer {
         /// EventHandler情報
         /// </summary>
         private sealed class EventHandlerInfo {
+            /// <summary>ハンドラ型</summary>
             public Type Type { get; set; }
+            /// <summary>ハンドラ生成時の初期化処理</summary>
             public Action<object> InitAction { get; set; }
+            /// <summary>再生準備時の処理</summary>
             public Action<object> ReadyAction { get; set; }
+            /// <summary>SignalEvent用ハンドラプール</summary>
             public ObjectPool<ISignalSequenceEventHandler> SignalHandlerPool { get; set; }
+            /// <summary>RangeEvent用ハンドラプール</summary>
             public ObjectPool<IRangeSequenceEventHandler> RangeHandlerPool { get; set; }
         }
 
@@ -119,10 +87,15 @@ namespace ActionSequencer {
         private sealed class DisposableAction : IDisposable {
             private Action _onDisposed;
 
+            /// <summary>
+            /// コンストラクタ
+            /// </summary>
+            /// <param name="onDisposed">廃棄時処理</param>
             public DisposableAction(Action onDisposed) {
                 _onDisposed = onDisposed;
             }
 
+            /// <inheritdoc />
             void IDisposable.Dispose() {
                 _onDisposed?.Invoke();
                 _onDisposed = null;
@@ -140,12 +113,11 @@ namespace ActionSequencer {
         private readonly List<PlayingInfo> _playingInfos = new();
         private readonly Dictionary<int, PlayingInfo> _playingInfoMap = new();
         private readonly ObjectPool<PlayingInfo> _playingInfoPool;
+        private bool _isUpdating;
         private int _nextPlayingId = 1;
-        // 削除対象のPlayingInfoIndexリスト（高速化用にメンバー化）
-        private readonly List<int> _removePlayingIndices = new();
 
         /// <summary>再生中のSequenceClipが存在するか</summary>
-        public bool HasPlayingClip => _playingInfos.Count > 0;
+        public bool HasPlayingClip => _playingInfoMap.Count > 0;
 
         /// <summary>
         /// コンストラクタ
@@ -400,6 +372,7 @@ namespace ActionSequencer {
 
             // 再生用の情報を追加
             var playingInfo = CreatePlayingInfo(clip, startOffset);
+            playingInfo.Status = _isUpdating ? PlayingStatus.PendingPlay : PlayingStatus.Playing;
             _playingInfos.Add(playingInfo);
             _playingInfoMap.Add(playingInfo.Id, playingInfo);
 
@@ -411,35 +384,143 @@ namespace ActionSequencer {
         /// </summary>
         public void StopAll() {
             foreach (var playingInfo in _playingInfos) {
-                // 実行中の物を全部キャンセル
-                for (var i = playingInfo.ActiveSignalEvents.Count - 1; i >= 0; i--) {
-                    var signalEvent = playingInfo.ActiveSignalEvents[i];
-                    if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handlers)) {
-                        foreach (var handler in handlers) {
-                            ReleaseSignalEventHandler(handler);
-                        }
-                    }
-                }
-
-                for (var i = playingInfo.ActiveRangeEvents.Count - 1; i >= 0; i--) {
-                    var rangeEvent = playingInfo.ActiveRangeEvents[i];
-                    if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handlers)) {
-                        foreach (var handler in handlers) {
-                            if (handler.Handler.IsEntered) {
-                                handler.Handler.Cancel(rangeEvent);
-                            }
-
-                            ReleaseRangeEventHandler(handler);
-                        }
-                    }
-                }
-
-                ReleasePlayingInfo(playingInfo);
+                QueueStop(playingInfo);
             }
 
-            _playingInfos.Clear();
-            _playingInfoMap.Clear();
-            _removePlayingIndices.Clear();
+            if (!_isUpdating) {
+                CleanupStoppedPlayingInfos();
+            }
+        }
+
+        /// <summary>
+        /// 更新処理
+        /// </summary>
+        /// <param name="deltaTime">経過時間</param>
+        public void Update(float deltaTime) {
+            PromotePendingPlays();
+            _isUpdating = true;
+            try {
+                for (var i = 0; i < _playingInfos.Count; i++) {
+                    var playingInfo = _playingInfos[i];
+                    if (playingInfo.Status != PlayingStatus.Playing) {
+                        continue;
+                    }
+
+                    // 時間の更新
+                    playingInfo.Time += deltaTime;
+
+                    var continueCurrentPlaying = true;
+
+                    // 単発イベントの更新
+                    for (var j = playingInfo.ActiveSignalEvents.Count - 1; j >= 0; j--) {
+                        var signalEvent = playingInfo.ActiveSignalEvents[j];
+                        if (signalEvent.time > playingInfo.Time) {
+                            continue;
+                        }
+
+                        if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handlers)) {
+                            foreach (var handler in handlers) {
+                                // 発火通知
+                                handler.Handler.Invoke(signalEvent);
+                                if (playingInfo.Status != PlayingStatus.Playing) {
+                                    continueCurrentPlaying = false;
+                                    break;
+                                }
+
+                                // 解放
+                                ReleaseSignalEventHandler(handler);
+                            }
+
+                            if (!continueCurrentPlaying) {
+                                break;
+                            }
+                        }
+
+                        // リストから除外
+                        playingInfo.ActiveSignalEvents.RemoveAt(j);
+                    }
+
+                    if (!continueCurrentPlaying || playingInfo.Status != PlayingStatus.Playing) {
+                        continue;
+                    }
+
+                    // 範囲イベントの更新
+                    for (var j = playingInfo.ActiveRangeEvents.Count - 1; j >= 0; j--) {
+                        var rangeEvent = playingInfo.ActiveRangeEvents[j];
+                        if (rangeEvent.enterTime > playingInfo.Time) {
+                            continue;
+                        }
+
+                        if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handlers)) {
+                            var elapsedTime = Mathf.Min(playingInfo.Time - rangeEvent.enterTime, rangeEvent.Duration);
+                            var shouldRemove = false;
+
+                            foreach (var handler in handlers) {
+                                var enteredThisFrame = false;
+
+                                // EnterしてなければEnter実行
+                                if (!handler.Handler.IsEntered) {
+                                    enteredThisFrame = true;
+                                    handler.Handler.Enter(rangeEvent);
+                                    if (playingInfo.Status != PlayingStatus.Playing) {
+                                        continueCurrentPlaying = false;
+                                        break;
+                                    }
+                                }
+
+                                handler.Handler.Update(rangeEvent, elapsedTime);
+                                if (playingInfo.Status != PlayingStatus.Playing) {
+                                    continueCurrentPlaying = false;
+                                    break;
+                                }
+
+                                // 終了していたらExit実行
+                                if (rangeEvent.exitTime <= playingInfo.Time) {
+                                    // Enter/Exitが同時に呼ばれるのを回避する対応
+                                    if (!enteredThisFrame || !rangeEvent.MustOneFrame) {
+                                        handler.Handler.Exit(rangeEvent);
+                                        if (playingInfo.Status != PlayingStatus.Playing) {
+                                            continueCurrentPlaying = false;
+                                            break;
+                                        }
+
+                                        // 解放
+                                        ReleaseRangeEventHandler(handler);
+                                        shouldRemove = true;
+                                    }
+                                }
+                            }
+
+                            if (!continueCurrentPlaying) {
+                                break;
+                            }
+
+                            if (shouldRemove) {
+                                // リストから除外
+                                playingInfo.ActiveRangeEvents.RemoveAt(j);
+                            }
+                        }
+                        else {
+                            // リストから除外
+                            playingInfo.ActiveRangeEvents.RemoveAt(j);
+                        }
+                    }
+
+                    if (!continueCurrentPlaying || playingInfo.Status != PlayingStatus.Playing) {
+                        continue;
+                    }
+
+                    // 完了していたら除外
+                    if (playingInfo.IsDone) {
+                        QueueStop(playingInfo);
+                    }
+                }
+            }
+            finally {
+                _isUpdating = false;
+            }
+
+            CleanupStoppedPlayingInfos();
         }
 
         /// <summary>
@@ -450,120 +531,12 @@ namespace ActionSequencer {
                 return -1.0f;
             }
 
-            var foundInfo = _playingInfos.FirstOrDefault(x => x.Clip == clip);
+            var foundInfo = _playingInfos.FirstOrDefault(x => x.Clip == clip && x.Status != PlayingStatus.PendingStop);
             if (foundInfo == null) {
                 return -1.0f;
             }
 
             return foundInfo.Time;
-        }
-
-        /// <summary>
-        /// 更新処理
-        /// </summary>
-        /// <param name="deltaTime">経過時間</param>
-        public void Update(float deltaTime) {
-            for (var i = 0; i < _playingInfos.Count; i++) {
-                var playingInfo = _playingInfos[i];
-
-                // 時間の更新
-                playingInfo.Time += deltaTime;
-
-                // 単発イベントの更新
-                for (var j = playingInfo.ActiveSignalEvents.Count - 1; j >= 0; j--) {
-                    var signalEvent = playingInfo.ActiveSignalEvents[j];
-                    if (signalEvent.time > playingInfo.Time) {
-                        continue;
-                    }
-
-                    if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handlers)) {
-                        foreach (var handler in handlers) {
-                            // 発火通知
-                            handler.Handler.Invoke(signalEvent);
-                            if (ShouldAbortUpdate(playingInfo)) {
-                                return;
-                            }
-
-                            // 解放
-                            ReleaseSignalEventHandler(handler);
-                        }
-                    }
-
-                    // リストから除外
-                    playingInfo.ActiveSignalEvents.RemoveAt(j);
-                }
-
-                // 範囲イベントの更新
-                for (var j = playingInfo.ActiveRangeEvents.Count - 1; j >= 0; j--) {
-                    var rangeEvent = playingInfo.ActiveRangeEvents[j];
-                    if (rangeEvent.enterTime > playingInfo.Time) {
-                        continue;
-                    }
-
-                    if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handlers)) {
-                        var elapsedTime = Mathf.Min(playingInfo.Time - rangeEvent.enterTime, rangeEvent.Duration);
-                        var shouldRemove = false;
-
-                        foreach (var handler in handlers) {
-                            var enteredThisFrame = false;
-
-                            // EnterしてなければEnter実行
-                            if (!handler.Handler.IsEntered) {
-                                enteredThisFrame = true;
-                                handler.Handler.Enter(rangeEvent);
-                                if (ShouldAbortUpdate(playingInfo)) {
-                                    return;
-                                }
-                            }
-
-                            handler.Handler.Update(rangeEvent, elapsedTime);
-                            if (ShouldAbortUpdate(playingInfo)) {
-                                return;
-                            }
-
-                            // 終了していたらExit実行
-                            if (rangeEvent.exitTime <= playingInfo.Time) {
-                                // Enter/Exitが同時に呼ばれるのを回避する対応
-                                if (!enteredThisFrame || !rangeEvent.MustOneFrame) {
-                                    handler.Handler.Exit(rangeEvent);
-                                    if (ShouldAbortUpdate(playingInfo)) {
-                                        return;
-                                    }
-
-                                    // 解放
-                                    ReleaseRangeEventHandler(handler);
-                                    shouldRemove = true;
-                                }
-                            }
-                        }
-
-                        if (shouldRemove) {
-                            // リストから除外
-                            playingInfo.ActiveRangeEvents.RemoveAt(j);
-                        }
-                    }
-                    else {
-                        // リストから除外
-                        playingInfo.ActiveRangeEvents.RemoveAt(j);
-                    }
-                }
-
-                // 完了していたら除外
-                if (playingInfo.IsDone) {
-                    _removePlayingIndices.Add(i);
-                }
-            }
-
-            // 再生終了した物を除外
-            for (var i = _removePlayingIndices.Count - 1; i >= 0; i--) {
-                var index = _removePlayingIndices[i];
-                var playingInfo = _playingInfos[index];
-                _playingInfoMap.Remove(playingInfo.Id);
-                _playingInfos.RemoveAt(index);
-                ReleasePlayingInfo(playingInfo);
-            }
-
-            _removePlayingIndices.Clear();
         }
 
         /// <summary>
@@ -597,38 +570,10 @@ namespace ActionSequencer {
                 return;
             }
 
-            // リストから除外
-            if (!_playingInfos.Remove(playingInfo)) {
-                return;
+            QueueStop(playingInfo);
+            if (!_isUpdating) {
+                CleanupStoppedPlayingInfos();
             }
-
-            _playingInfoMap.Remove(playingInfo.Id);
-
-            // 実行中の物を全部キャンセル
-            for (var i = playingInfo.ActiveSignalEvents.Count - 1; i >= 0; i--) {
-                var signalEvent = playingInfo.ActiveSignalEvents[i];
-                if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var handlers)) {
-                    foreach (var handler in handlers) {
-                        ReleaseSignalEventHandler(handler);
-                    }
-                }
-            }
-
-            for (var i = playingInfo.ActiveRangeEvents.Count - 1; i >= 0; i--) {
-                var rangeEvent = playingInfo.ActiveRangeEvents[i];
-                if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var handlers)) {
-                    foreach (var handler in handlers) {
-                        if (handler.Handler.IsEntered) {
-                            handler.Handler.Cancel(rangeEvent);
-                        }
-
-                        ReleaseRangeEventHandler(handler);
-                    }
-                }
-            }
-
-            // プールから解放
-            ReleasePlayingInfo(playingInfo);
         }
 
         /// <summary>
@@ -639,6 +584,7 @@ namespace ActionSequencer {
             playingInfo.Clip = clip;
             playingInfo.Id = GetNextPlayingId();
             playingInfo.Time = startOffset;
+            playingInfo.Status = PlayingStatus.PendingPlay;
 
             bool TryGetHandlerInfo(Dictionary<Type, List<EventHandlerInfo>> localInfos,
                 Dictionary<Type, List<EventHandlerInfo>> globalInfos, Type type, out List<EventHandlerInfo> handlerInfos) {
@@ -685,10 +631,7 @@ namespace ActionSequencer {
                                 foreach (var handlerInfo in handlerInfos) {
                                     var handler = GetRangeEventHandler(handlerInfo);
                                     if (handler != null) {
-                                        handlers.Add(new RangeEventHandlerEntry {
-                                            Info = handlerInfo,
-                                            Handler = handler
-                                        });
+                                        handlers.Add(new RangeEventHandlerEntry { Info = handlerInfo, Handler = handler });
                                         handlerInfo.ReadyAction?.Invoke(handler);
                                     }
                                 }
@@ -709,10 +652,7 @@ namespace ActionSequencer {
                                 foreach (var handlerInfo in handlerInfos) {
                                     var handler = GetSignalEventHandler(handlerInfo);
                                     if (handler != null) {
-                                        handlers.Add(new SignalEventHandlerEntry {
-                                            Info = handlerInfo,
-                                            Handler = handler
-                                        });
+                                        handlers.Add(new SignalEventHandlerEntry { Info = handlerInfo, Handler = handler });
                                         handlerInfo.ReadyAction?.Invoke(handler);
                                     }
                                 }
@@ -746,6 +686,7 @@ namespace ActionSequencer {
             playingInfo.Clip = null;
             playingInfo.Id = 0;
             playingInfo.Time = 0.0f;
+            playingInfo.Status = PlayingStatus.PendingPlay;
             playingInfo.ActiveSignalEvents.Clear();
             playingInfo.ActiveRangeEvents.Clear();
             foreach (var pair in playingInfo.SignalEventHandlers) {
@@ -775,16 +716,69 @@ namespace ActionSequencer {
         }
 
         /// <summary>
-        /// 更新処理を中断すべきか
+        /// 再生開始待ちを有効化
         /// </summary>
-        private bool ShouldAbortUpdate(PlayingInfo playingInfo) {
-            if (playingInfo != null && _playingInfoMap.TryGetValue(playingInfo.Id, out var currentPlayingInfo) &&
-                currentPlayingInfo == playingInfo) {
-                return false;
+        private void PromotePendingPlays() {
+            foreach (var playingInfo in _playingInfos) {
+                if (playingInfo.Status == PlayingStatus.PendingPlay) {
+                    playingInfo.Status = PlayingStatus.Playing;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 停止待ちに設定
+        /// </summary>
+        private void QueueStop(PlayingInfo playingInfo) {
+            if (playingInfo == null || playingInfo.Status == PlayingStatus.PendingStop) {
+                return;
             }
 
-            _removePlayingIndices.Clear();
-            return true;
+            _playingInfoMap.Remove(playingInfo.Id);
+            playingInfo.Status = PlayingStatus.PendingStop;
+        }
+
+        /// <summary>
+        /// 停止待ちの再生を解放
+        /// </summary>
+        private void CleanupStoppedPlayingInfos() {
+            for (var i = _playingInfos.Count - 1; i >= 0; i--) {
+                var playingInfo = _playingInfos[i];
+                if (playingInfo.Status != PlayingStatus.PendingStop) {
+                    continue;
+                }
+
+                ReleasePlayingHandlers(playingInfo);
+                _playingInfos.RemoveAt(i);
+                ReleasePlayingInfo(playingInfo);
+            }
+        }
+
+        /// <summary>
+        /// 再生中ハンドラの解放
+        /// </summary>
+        private void ReleasePlayingHandlers(PlayingInfo playingInfo) {
+            for (var i = playingInfo.ActiveSignalEvents.Count - 1; i >= 0; i--) {
+                var signalEvent = playingInfo.ActiveSignalEvents[i];
+                if (playingInfo.SignalEventHandlers.TryGetValue(signalEvent, out var signalHandlers)) {
+                    foreach (var signalHandler in signalHandlers) {
+                        ReleaseSignalEventHandler(signalHandler);
+                    }
+                }
+            }
+
+            for (var i = playingInfo.ActiveRangeEvents.Count - 1; i >= 0; i--) {
+                var rangeEvent = playingInfo.ActiveRangeEvents[i];
+                if (playingInfo.RangeEventHandlers.TryGetValue(rangeEvent, out var rangeHandlers)) {
+                    foreach (var rangeHandler in rangeHandlers) {
+                        if (rangeHandler.Handler.IsEntered) {
+                            rangeHandler.Handler.Cancel(rangeEvent);
+                        }
+
+                        ReleaseRangeEventHandler(rangeHandler);
+                    }
+                }
+            }
         }
 
         /// <summary>
