@@ -12,8 +12,21 @@ namespace ActionSequencer.Editor {
     /// SequenceEvent 用 Presenter 基底
     /// </summary>
     internal abstract class SequenceEventPresenter : IDisposable {
+        private enum DragMode {
+            Timeline,
+            Pending,
+            Reorder
+        }
+
+        private const float MiddleDragDecisionThreshold = 6.0f;
+        private const float VerticalReorderThreshold = 12.0f;
+
         private bool _suppressSingleSelectionOnClick;
+        private DragMode _dragMode = DragMode.Timeline;
+        private SequenceEventManipulator.DragType _currentDragType;
+        private SequenceEventManipulator.DragInfo _lastDragInfo;
         private readonly SequenceEditorModel _editorModel;
+        private readonly SequenceTrackView _trackView;
         private readonly SelectionService _selectionService;
         private readonly TimelineViewService _timelineService;
         private readonly EventEditingService _eventEditingService;
@@ -33,6 +46,7 @@ namespace ActionSequencer.Editor {
         protected SequenceEventPresenter(
             SequenceEventModel model,
             SequenceEventView view,
+            SequenceTrackView trackView,
             SequenceTrackLabelElementView labelElementView,
             SequenceEditorModel editorModel,
             SelectionService selectionService,
@@ -40,6 +54,7 @@ namespace ActionSequencer.Editor {
             EventEditingService eventEditingService) {
             Model = model;
             View = view;
+            _trackView = trackView;
             _editorModel = editorModel;
             _selectionService = selectionService;
             _timelineService = timelineService;
@@ -52,12 +67,14 @@ namespace ActionSequencer.Editor {
             View.ContextMenuOpening += OnContextMenuOpening;
             View.Manipulator.OnDragStart += OnDragStartInternal;
             View.Manipulator.OnDragging += OnDraggingInternal;
+            View.Manipulator.OnDragExit += OnDragExitInternal;
 
             AddDisposable(new ActionDisposable(() => _labelElementView.LabelChanged -= OnChangedViewLabel));
             AddDisposable(new ActionDisposable(() => _labelElementView.OptionClicked -= OnOptionClicked));
             AddDisposable(new ActionDisposable(() => View.ContextMenuOpening -= OnContextMenuOpening));
             AddDisposable(new ActionDisposable(() => View.Manipulator.OnDragStart -= OnDragStartInternal));
             AddDisposable(new ActionDisposable(() => View.Manipulator.OnDragging -= OnDraggingInternal));
+            AddDisposable(new ActionDisposable(() => View.Manipulator.OnDragExit -= OnDragExitInternal));
 
             AddChangedCallback<MouseDownEvent>(View, OnMouseDownEvent);
             AddChangedCallback<ClickEvent>(View, OnClickEvent);
@@ -83,6 +100,8 @@ namespace ActionSequencer.Editor {
         protected SequenceEventView View { get; }
         /// <summary>編集中のモデル</summary>
         protected SequenceEditorModel EditorModel => _editorModel;
+        /// <summary>対応する TrackView</summary>
+        protected SequenceTrackView TrackView => _trackView;
         /// <summary>選択状態を扱うサービス</summary>
         protected SelectionService SelectionService => _selectionService;
         /// <summary>タイムライン設定を扱うサービス</summary>
@@ -291,8 +310,14 @@ namespace ActionSequencer.Editor {
         /// </summary>
         /// <param name="dragType">ドラッグ種別</param>
         private void OnDragStartInternal(SequenceEventManipulator.DragType dragType) {
+            _currentDragType = dragType;
+            _dragMode = ShouldDeferMiddleDrag(dragType) ? DragMode.Pending : DragMode.Timeline;
+            TrackView.HideReorderIndicator();
             OnDragStart(dragType, false);
-            _eventEditingService.NotifyDragStarted(Model, dragType);
+
+            if (_dragMode == DragMode.Timeline) {
+                _eventEditingService.NotifyDragStarted(Model, dragType);
+            }
         }
 
         /// <summary>
@@ -301,8 +326,47 @@ namespace ActionSequencer.Editor {
         /// <param name="dragInfo">ドラッグ情報</param>
         private void OnDraggingInternal(SequenceEventManipulator.DragInfo dragInfo) {
             _suppressSingleSelectionOnClick = true;
+
+            _lastDragInfo = dragInfo;
+
+            if (_dragMode == DragMode.Pending) {
+                if (ShouldStartVerticalReorder(dragInfo)) {
+                    _dragMode = DragMode.Reorder;
+                }
+                else if (ShouldStartTimelineDrag(dragInfo)) {
+                    _dragMode = DragMode.Timeline;
+                    _eventEditingService.NotifyDragStarted(Model, _currentDragType);
+                }
+                else {
+                    return;
+                }
+            }
+
+            if (_dragMode == DragMode.Reorder) {
+                UpdateReorderIndicator(dragInfo);
+                return;
+            }
+
+            TrackView.HideReorderIndicator();
             OnDragging(dragInfo, false);
             _eventEditingService.NotifyDragging(Model, dragInfo);
+        }
+
+        /// <summary>
+        /// ローカルドラッグ終了時に必要なら並び替えを確定
+        /// </summary>
+        /// <param name="dragType">ドラッグ種別</param>
+        private void OnDragExitInternal(SequenceEventManipulator.DragType dragType) {
+            if (_dragMode == DragMode.Reorder) {
+                ReorderByVerticalDrag(_lastDragInfo);
+                FocusEventTarget(Model.Target);
+            }
+
+            TrackView.HideReorderIndicator();
+
+            _dragMode = DragMode.Timeline;
+            _currentDragType = dragType;
+            _lastDragInfo = default;
         }
 
         /// <summary>
@@ -423,6 +487,116 @@ namespace ActionSequencer.Editor {
                     .FirstOrDefault(x => Equals(x.userData, target));
                 eventView?.Focus();
             });
+        }
+
+        /// <summary>
+        /// 中央ドラッグを保留判定にするか返す
+        /// </summary>
+        /// <param name="dragType">ドラッグ種別</param>
+        /// <returns>保留判定にする場合は true</returns>
+        private bool ShouldDeferMiddleDrag(SequenceEventManipulator.DragType dragType) {
+            return dragType == SequenceEventManipulator.DragType.Middle &&
+                   _selectionService.SelectedTargets.Count <= 1;
+        }
+
+        /// <summary>
+        /// 縦ドラッグによる並び替えへ切り替えるか判定
+        /// </summary>
+        /// <param name="dragInfo">ドラッグ情報</param>
+        /// <returns>並び替えを開始する場合は true</returns>
+        private bool ShouldStartVerticalReorder(SequenceEventManipulator.DragInfo dragInfo) {
+            var delta = dragInfo.CurrentPosition - dragInfo.StartPosition;
+            var absX = Mathf.Abs(delta.x);
+            var absY = Mathf.Abs(delta.y);
+            return absY >= VerticalReorderThreshold && absY > absX * 1.25f;
+        }
+
+        /// <summary>
+        /// 時間移動ドラッグへ切り替えるか判定
+        /// </summary>
+        /// <param name="dragInfo">ドラッグ情報</param>
+        /// <returns>時間移動を開始する場合は true</returns>
+        private bool ShouldStartTimelineDrag(SequenceEventManipulator.DragInfo dragInfo) {
+            var delta = dragInfo.CurrentPosition - dragInfo.StartPosition;
+            var absX = Mathf.Abs(delta.x);
+            var absY = Mathf.Abs(delta.y);
+            return absX >= MiddleDragDecisionThreshold && absX >= absY;
+        }
+
+        /// <summary>
+        /// 縦ドラッグ結果を使って同一 Track 内の並び順を更新
+        /// </summary>
+        /// <param name="dragInfo">ドラッグ情報</param>
+        private void ReorderByVerticalDrag(SequenceEventManipulator.DragInfo dragInfo) {
+            var currentIndex = Model.TrackModel.GetEventIndex(Model);
+            if (currentIndex < 0) {
+                return;
+            }
+
+            var targetIndex = CalculateReorderTargetIndex(dragInfo);
+
+            if (targetIndex == currentIndex) {
+                return;
+            }
+
+            _eventEditingService.MoveEvent(Model, targetIndex);
+            _selectionService.SetSelectedTarget(Model.Target);
+        }
+
+        /// <summary>
+        /// 現在のポインタ位置からインジケータ表示用 index を計算
+        /// </summary>
+        /// <param name="dragInfo">ドラッグ情報</param>
+        /// <returns>インジケータ表示用 index</returns>
+        private int CalculateReorderIndicatorIndex(SequenceEventManipulator.DragInfo dragInfo) {
+            var targetIndex = CalculateReorderTargetIndex(dragInfo);
+            var currentIndex = Model.TrackModel.GetEventIndex(Model);
+            if (currentIndex >= 0 && targetIndex > currentIndex) {
+                return targetIndex + 1;
+            }
+
+            return targetIndex;
+        }
+
+        /// <summary>
+        /// 現在のドラッグ位置に応じて並び替えインジケータを更新
+        /// </summary>
+        /// <param name="dragInfo">ドラッグ情報</param>
+        private void UpdateReorderIndicator(SequenceEventManipulator.DragInfo dragInfo) {
+            var currentIndex = Model.TrackModel.GetEventIndex(Model);
+            var targetIndex = CalculateReorderTargetIndex(dragInfo);
+            if (currentIndex == targetIndex) {
+                TrackView.HideReorderIndicator();
+                return;
+            }
+
+            TrackView.ShowReorderIndicator(CalculateReorderIndicatorIndex(dragInfo));
+        }
+
+        /// <summary>
+        /// 現在のポインタ位置から差し込み予定 index を計算
+        /// </summary>
+        /// <param name="dragInfo">ドラッグ情報</param>
+        /// <returns>差し込み予定 index</returns>
+        private int CalculateReorderTargetIndex(SequenceEventManipulator.DragInfo dragInfo) {
+            var parent = View.parent;
+            if (parent == null) {
+                return Model.TrackModel.GetEventIndex(Model);
+            }
+
+            var pointerY = dragInfo.CurrentPosition.y;
+            var targetIndex = 0;
+            for (var childIndex = 0; childIndex < parent.childCount; childIndex++) {
+                if (parent[childIndex] is not SequenceEventView eventView || eventView == View) {
+                    continue;
+                }
+
+                if (pointerY > eventView.worldBound.center.y) {
+                    targetIndex++;
+                }
+            }
+
+            return targetIndex;
         }
     }
 }

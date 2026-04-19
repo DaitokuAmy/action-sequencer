@@ -4,12 +4,12 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace Test {
-    public class TimerRangeSequenceEvent : RangeSequenceEvent {
+    public sealed class TimerRangeSequenceEvent : RangeSequenceEvent {
         [Tooltip("出力用のフォーマット")]
         public string format = "Time:{0:0.000}";
     }
 
-    public class TimerRangeSequenceEventHandler : RangeSequenceEventHandler<TimerRangeSequenceEvent> {
+    public sealed class TimerRangeSequenceEventHandler : RangeSequenceEventHandler<TimerRangeSequenceEvent> {
         private Stopwatch _stopwatch = new Stopwatch();
 
         /// <summary>

@@ -23,18 +23,22 @@ namespace ActionSequencer.Editor {
             /// <summary>
             /// コンストラクタ
             /// </summary>
-            public DragInfo(DragType type, float start, float current) {
+            public DragInfo(DragType type, Vector2 startPosition, Vector2 currentPosition) {
                 Type = type;
-                Start = start;
-                Current = current;
+                StartPosition = startPosition;
+                CurrentPosition = currentPosition;
             }
 
             /// <summary>ドラッグ種別</summary>
             public DragType Type { get; }
             /// <summary>ドラッグ開始位置</summary>
-            public float Start { get; }
+            public Vector2 StartPosition { get; }
             /// <summary>現在位置</summary>
-            public float Current { get; }
+            public Vector2 CurrentPosition { get; }
+            /// <summary>ドラッグ開始 X 座標</summary>
+            public float Start => StartPosition.x;
+            /// <summary>現在 X 座標</summary>
+            public float Current => CurrentPosition.x;
         }
 
         private readonly bool _resizable;
@@ -149,7 +153,7 @@ namespace ActionSequencer.Editor {
         private void OnMouseMove(MouseMoveEvent evt) {
             if (_dragging) {
                 // 移動量を反映
-                OnDragging?.Invoke(new DragInfo(_dragType, _startMousePosition.x, evt.mousePosition.x));
+                OnDragging?.Invoke(new DragInfo(_dragType, _startMousePosition, evt.mousePosition));
             }
         }
     }

@@ -421,6 +421,29 @@ namespace ActionSequencer.Editor {
                 return;
             }
 
+            if (sourceTrack == targetTrack) {
+                var currentIndex = Array.IndexOf(sourceTrack.sequenceEvents, sequenceEvent);
+                if (currentIndex < 0) {
+                    return;
+                }
+
+                var clampedTargetIndex = Mathf.Clamp(targetIndex, 0, sourceTrack.sequenceEvents.Length - 1);
+                if (currentIndex == clampedTargetIndex) {
+                    return;
+                }
+
+                Undo.RecordObject(sourceTrack, "Move Event");
+                var serializedObject = new SerializedObject(sourceTrack);
+                serializedObject.Update();
+
+                var eventsProperty = serializedObject.FindProperty("sequenceEvents");
+                eventsProperty.MoveArrayElement(currentIndex, clampedTargetIndex);
+
+                serializedObject.ApplyModifiedProperties();
+                EditorUtility.SetDirty(sourceTrack);
+                return;
+            }
+
             var sourceEvents = new List<SequenceEvent>(sourceTrack.sequenceEvents);
             if (!sourceEvents.Remove(sequenceEvent)) {
                 return;

@@ -216,21 +216,15 @@ namespace ActionSequencer.Editor {
                 }
 
                 if (evt.keyCode == KeyCode.UpArrow) {
-                    foreach (var selectedTarget in GetOrderedSelectedEventTargets(ascending: true)) {
-                        var selectedEvent = _model.ClipModel?.FindEventModel(selectedTarget);
-                        if (selectedEvent != null) {
-                            _eventEditingService.MoveEvent(selectedEvent, selectedEvent.TrackModel.GetEventIndex(selectedEvent) - 1);
-                        }
-                    }
+                    MoveSelectedEventsByKeyboard(ascending: true, offset: -1);
+                    evt.StopPropagation();
+                    evt.StopImmediatePropagation();
                 }
 
                 if (evt.keyCode == KeyCode.DownArrow) {
-                    foreach (var selectedTarget in GetOrderedSelectedEventTargets(ascending: false)) {
-                        var selectedEvent = _model.ClipModel?.FindEventModel(selectedTarget);
-                        if (selectedEvent != null) {
-                            _eventEditingService.MoveEvent(selectedEvent, selectedEvent.TrackModel.GetEventIndex(selectedEvent) + 1);
-                        }
-                    }
+                    MoveSelectedEventsByKeyboard(ascending: false, offset: 1);
+                    evt.StopPropagation();
+                    evt.StopImmediatePropagation();
                 }
             });
 
@@ -483,6 +477,28 @@ namespace ActionSequencer.Editor {
             return ascending
                 ? selectedTargets.OrderBy(x => x.Model.TrackModel.GetEventIndex(x.Model)).Select(x => x.Target).ToArray()
                 : selectedTargets.OrderByDescending(x => x.Model.TrackModel.GetEventIndex(x.Model)).Select(x => x.Target).ToArray();
+        }
+
+        /// <summary>
+        /// キーボード入力で選択中 Event を並び替える
+        /// </summary>
+        /// <param name="ascending">昇順で処理する場合は true</param>
+        /// <param name="offset">移動量</param>
+        private void MoveSelectedEventsByKeyboard(bool ascending, int offset) {
+            var selectedTargets = GetOrderedSelectedEventTargets(ascending);
+            if (selectedTargets.Length == 0) {
+                return;
+            }
+
+            foreach (var selectedTarget in selectedTargets) {
+                var selectedEvent = _model.ClipModel?.FindEventModel(selectedTarget);
+                if (selectedEvent != null) {
+                    _eventEditingService.MoveEvent(selectedEvent, selectedEvent.TrackModel.GetEventIndex(selectedEvent) + offset);
+                }
+            }
+
+            _selectionService.RestoreSelection(selectedTargets);
+            FocusTarget(selectedTargets[^1]);
         }
 
         /// <summary>

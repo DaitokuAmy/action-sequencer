@@ -10,6 +10,9 @@ namespace ActionSequencer {
         [Tooltip("有効なイベントか")]
         public bool active = true;
 
+        /// <summary>
+        /// スクリプト更新時処理
+        /// </summary>
         private void OnValidate() {
             hideFlags |= HideFlags.HideInHierarchy;
         }

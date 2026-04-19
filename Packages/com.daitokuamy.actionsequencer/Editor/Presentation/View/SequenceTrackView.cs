@@ -11,6 +11,7 @@ namespace ActionSequencer.Editor {
     [UxmlElement]
     public sealed partial class SequenceTrackView : VisualElement {
         private VisualElement _trackEventContainer;
+        private VisualElement _reorderIndicatorView;
         private readonly List<SequenceEventView> _eventViews = new();
 
         /// <summary>Track 全体のスペーサー要素</summary>
@@ -35,6 +36,12 @@ namespace ActionSequencer.Editor {
             _trackEventContainer.name = "track-event-container";
             _trackEventContainer.AddToClassList("track__container");
             hierarchy.Add(_trackEventContainer);
+
+            _reorderIndicatorView = new VisualElement();
+            _reorderIndicatorView.AddToClassList("track__reorder_indicator");
+            _reorderIndicatorView.style.display = DisplayStyle.None;
+            _reorderIndicatorView.pickingMode = PickingMode.Ignore;
+            _trackEventContainer.Add(_reorderIndicatorView);
 
             // Spacerのクリックを監視
             SpacerView.RegisterCallback<MouseDownEvent>(evt => {
@@ -73,6 +80,54 @@ namespace ActionSequencer.Editor {
         /// </summary>
         public void SetFoldout(bool foldout) {
             _trackEventContainer.style.display = foldout ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        /// <summary>
+        /// 並び替え位置インジケータを表示
+        /// </summary>
+        /// <param name="insertIndex">差し込み予定 index</param>
+        public void ShowReorderIndicator(int insertIndex) {
+            if (_eventViews.Count == 0) {
+                HideReorderIndicator();
+                return;
+            }
+
+            insertIndex = Mathf.Clamp(insertIndex, 0, _eventViews.Count);
+
+            var top = GetIndicatorTop(insertIndex);
+            _reorderIndicatorView.style.top = top;
+            _reorderIndicatorView.style.display = DisplayStyle.Flex;
+        }
+
+        /// <summary>
+        /// 並び替え位置インジケータを非表示
+        /// </summary>
+        public void HideReorderIndicator() {
+            _reorderIndicatorView.style.display = DisplayStyle.None;
+        }
+
+        /// <summary>
+        /// 差し込み位置に応じたインジケータの Y 座標を返す
+        /// </summary>
+        /// <param name="insertIndex">差し込み予定 index</param>
+        /// <returns>表示する Y 座標</returns>
+        private float GetIndicatorTop(int insertIndex) {
+            var top = 0.0f;
+            for (var index = 0; index < insertIndex && index < _eventViews.Count; index++) {
+                top += GetEventRowHeight(_eventViews[index]);
+            }
+
+            return top;
+        }
+
+        /// <summary>
+        /// EventView 1 行ぶんの高さを返す
+        /// </summary>
+        /// <param name="eventView">対象の EventView</param>
+        /// <returns>行全体の高さ</returns>
+        private static float GetEventRowHeight(SequenceEventView eventView) {
+            var resolvedStyle = eventView.resolvedStyle;
+            return resolvedStyle.marginTop + resolvedStyle.height + resolvedStyle.marginBottom;
         }
     }
 }

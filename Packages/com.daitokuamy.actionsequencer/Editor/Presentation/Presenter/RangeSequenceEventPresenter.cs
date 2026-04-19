@@ -21,6 +21,7 @@ namespace ActionSequencer.Editor {
         public RangeSequenceEventPresenter(
             RangeSequenceEventModel model,
             RangeSequenceEventView view,
+            SequenceTrackView trackView,
             SequenceTrackLabelElementView labelElementView,
             SequenceEditorModel editorModel,
             SelectionService selectionService,
@@ -29,6 +30,7 @@ namespace ActionSequencer.Editor {
             : base(
                 model,
                 view,
+                trackView,
                 labelElementView,
                 editorModel,
                 selectionService,

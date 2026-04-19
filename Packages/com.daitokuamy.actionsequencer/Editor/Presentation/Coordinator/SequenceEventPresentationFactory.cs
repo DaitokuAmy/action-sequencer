@@ -74,6 +74,7 @@ namespace ActionSequencer.Editor {
             var presenter = new SignalSequenceEventPresenter(
                 eventModel,
                 eventView,
+                trackView,
                 labelElementView,
                 editorModel,
                 _selectionService,
@@ -103,6 +104,7 @@ namespace ActionSequencer.Editor {
             var presenter = new RangeSequenceEventPresenter(
                 eventModel,
                 eventView,
+                trackView,
                 labelElementView,
                 editorModel,
                 _selectionService,

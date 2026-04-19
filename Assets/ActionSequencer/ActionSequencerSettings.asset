@@ -22,3 +22,12 @@ MonoBehaviour:
   - fullName: Test.TimerRangeSequenceEvent
     label: "\u30C6\u30B9\u30C8/\u30BF\u30A4\u30DE\u30FC"
     color: {r: 0.25, g: 0.5, b: 0.4083333, a: 1}
+  - fullName: ActionSequencer.Tests.SequencePlayerTests+OneFrameRangeSequenceEvent
+    label: 
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: ActionSequencer.Tests.SequencePlayerTests+TestRangeSequenceEvent
+    label: 
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - fullName: ActionSequencer.Tests.SequencePlayerTests+TestSignalSequenceEvent
+    label: 
+    color: {r: 0, g: 0, b: 0, a: 0}

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Test.TimerRangeSequenceEvent
   label: "\u30C6\u30B9\u30C8/\u30BF\u30A4\u30DE\u30FC"
   active: 1
-  enterTime: 0.23333333
-  exitTime: 0.8333333
+  enterTime: 0.5
+  exitTime: 1.0999999
   format: Time:{0:0.000}
 --- !u!114 &-5299598802050826571
 MonoBehaviour:
@@ -49,8 +49,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Test.TimerRangeSequenceEvent
   label: "\u30C6\u30B9\u30C8/\u30BF\u30A4\u30DE\u30FC"
   active: 1
-  enterTime: 0.23333333
-  exitTime: 0.8333333
+  enterTime: 0.3
+  exitTime: 0.9
   format: Time:{0:0.000}
 --- !u!114 &-2188313183876038017
 MonoBehaviour:
@@ -118,8 +118,8 @@ MonoBehaviour:
   label: "\u30A8\u30D5\u30A7\u30AF\u30C8"
   sequenceEvents:
   - {fileID: 7063308268429188455}
-  - {fileID: -3420785695009537604}
   - {fileID: 8928368894036753701}
+  - {fileID: -3420785695009537604}
   - {fileID: -8308709933337293776}
 --- !u!114 &7063308268429188455
 MonoBehaviour:
@@ -135,7 +135,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
   active: 1
-  time: 0.53333336
+  time: 0.6333333
   prefab: {fileID: 8846004282753536196, guid: 8e7585cfe058d3044a74307dc2b1780b, type: 3}
   offsetPosition: {x: 0, y: 0, z: -0.5}
   offsetAngles: {x: 0, y: 0, z: 0}
@@ -153,6 +153,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Test.TimerRangeSequenceEvent
   label: "\u30C6\u30B9\u30C8/\u30BF\u30A4\u30DE\u30FC"
   active: 1
-  enterTime: 0.23333333
-  exitTime: 0.8333333
+  enterTime: 0.3
+  exitTime: 0.90000004
   format: Time:{0:0.000}
