@@ -8,8 +8,8 @@
         <asve:ToolbarToggle focusable="false" value="true" text="Fit" name="TimeFitToggle" />
         <ui:Button text="Refresh" display-tooltip-when-elided="true" name="RefreshButton" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; border-left-color: rgb(36, 36, 36); border-right-color: rgb(36, 36, 36); border-top-color: rgb(36, 36, 36); border-bottom-color: rgb(36, 36, 36); border-left-width: 1px; border-right-width: 1px; border-top-width: 0; border-bottom-width: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0;" />
     </asve:Toolbar>
-    <asve:SplitView fixed-pane-index="1" fixed-pane-initial-dimension="360" name="EditorArea">
-        <asve:SplitView fixed-pane-initial-dimension="100" name="ContentArea">
+    <asve:SplitView fixed-pane-index="1" fixed-pane-initial-dimension="360" name="EditorArea" style="flex-grow: 1; min-height: 0;">
+        <asve:SplitView fixed-pane-initial-dimension="100" name="ContentArea" style="min-width: 520px;">
             <ui:VisualElement name="TrackLabelArea" style="background-color: rgb(92, 92, 92); min-width: 100px;">
                 <asve:Toolbar name="TrackToolbar" style="height: 20px;">
                     <asve:ToolbarMenu name="CreateMenu" text="Create" style="-unity-font-style: bold;" />
@@ -46,7 +46,7 @@
                 <ui:VisualElement name="TrackSeekbar" class="track_seekbar" style="position: absolute; height: 100%; width: 2px;" />
             </ui:VisualElement>
         </asve:SplitView>
-        <asve:SplitView orientation="Vertical">
+        <asve:SplitView orientation="Vertical" style="min-width: 280px;">
             <ui:VisualElement name="InspectorArea" style="min-width: 100px;">
                 <ui:VisualElement name="InspectorHeader" style="height: 20px; background-color: rgb(64, 64, 64);">
                     <ui:Label text="Inspector" display-tooltip-when-elided="true" style="-unity-font-style: bold; font-size: 12px; -unity-text-align: visible; height: 100%; margin-left: 0; padding-left: 6px;" />
@@ -63,4 +63,12 @@
             </ui:VisualElement>
         </asve:SplitView>
     </asve:SplitView>
+    <ui:VisualElement name="HelpBar" class="help_bar">
+        <ui:Label name="HelpFitAll" text="A : Fit All" class="help_bar__item" />
+        <ui:Label name="HelpFitSelection" text="F : Fit Selection" class="help_bar__item" />
+        <ui:Label name="HelpMoveEvent" text="Shift + Up / Down : Move Event" class="help_bar__item" />
+        <ui:Label name="HelpDuplicate" text="Ctrl + D : Duplicate" class="help_bar__item" />
+        <ui:Label name="HelpCopyPaste" text="Ctrl + C / Ctrl + V : Copy / Paste" class="help_bar__item" />
+        <ui:Label name="HelpDelete" text="Delete : Delete Event" class="help_bar__item" />
+    </ui:VisualElement>
 </ui:UXML>

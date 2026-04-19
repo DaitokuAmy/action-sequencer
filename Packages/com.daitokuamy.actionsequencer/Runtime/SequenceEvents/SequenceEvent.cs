@@ -10,6 +10,9 @@ namespace ActionSequencer {
         [Tooltip("有効なイベントか")]
         public bool active = true;
 
+        /// <summary>Timeline 上に表示する補助テキスト</summary>
+        public virtual string TimelineText => string.Empty;
+
         /// <summary>
         /// スクリプト更新時処理
         /// </summary>

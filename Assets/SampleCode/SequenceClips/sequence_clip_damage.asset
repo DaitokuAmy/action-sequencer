@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Test.TimerRangeSequenceEvent
   label: "\u30C6\u30B9\u30C8/\u30BF\u30A4\u30DE\u30FC"
   active: 1
-  enterTime: 0.5
-  exitTime: 1.0999999
+  enterTime: 1.3000004
+  exitTime: 1.6333337
   format: Time:{0:0.000}
 --- !u!114 &-5299598802050826571
 MonoBehaviour:
@@ -31,10 +31,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayEffectSignalSequenceEvent
   label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
   active: 1
-  time: 0.46666667
+  time: 0.6666666
   prefab: {fileID: 0}
   offsetPosition: {x: 0, y: 0, z: 0}
   offsetAngles: {x: 0, y: 0, z: 0}
+  testDuration: 0.23
 --- !u!114 &-3420785695009537604
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -47,10 +48,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc24e13f709b247bbba00cef11701e68, type: 3}
   m_Name: TimerRangeSequenceEvent
   m_EditorClassIdentifier: Assembly-CSharp::Test.TimerRangeSequenceEvent
-  label: "\u30C6\u30B9\u30C8/\u30BF\u30A4\u30DE\u30FC"
+  label: "\u30C6\u30B9\u30C8/\u30BF\u30A4\u30DE"
   active: 1
-  enterTime: 0.3
-  exitTime: 0.9
+  enterTime: 0.8666666
+  exitTime: 1.4666667
   format: Time:{0:0.000}
 --- !u!114 &-2188313183876038017
 MonoBehaviour:
@@ -82,8 +83,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Test.TimerRangeSequenceEvent
   label: "\u30C6\u30B9\u30C8/\u30BF\u30A4\u30DE\u30FC"
   active: 1
-  enterTime: 0.6333333
-  exitTime: 0.8666666
+  enterTime: 0
+  exitTime: 0.23333335
   format: Time:{0:0.000}
 --- !u!114 &11400000
 MonoBehaviour:
@@ -103,6 +104,25 @@ MonoBehaviour:
   frameRate: 30
   filterData: {fileID: 11400000, guid: 730d052bb6be34f408db59a018d4126b, type: 2}
   includeClips: []
+--- !u!114 &50389775069702873
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03d5a44d3d23160488ba30478c4f6ec8, type: 3}
+  m_Name: PlayEffectSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+  active: 1
+  time: 0.76666653
+  prefab: {fileID: 8846004282753536196, guid: 8e7585cfe058d3044a74307dc2b1780b, type: 3}
+  offsetPosition: {x: 0, y: 0, z: -0.5}
+  offsetAngles: {x: 0, y: 0, z: 0}
+  testDuration: 0.1
 --- !u!114 &497499553068626419
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -118,6 +138,7 @@ MonoBehaviour:
   label: "\u30A8\u30D5\u30A7\u30AF\u30C8"
   sequenceEvents:
   - {fileID: 7063308268429188455}
+  - {fileID: 50389775069702873}
   - {fileID: 8928368894036753701}
   - {fileID: -3420785695009537604}
   - {fileID: -8308709933337293776}
@@ -135,10 +156,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
   active: 1
-  time: 0.6333333
+  time: 0.9
   prefab: {fileID: 8846004282753536196, guid: 8e7585cfe058d3044a74307dc2b1780b, type: 3}
   offsetPosition: {x: 0, y: 0, z: -0.5}
   offsetAngles: {x: 0, y: 0, z: 0}
+  testDuration: 0.1
 --- !u!114 &8928368894036753701
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -153,6 +175,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Test.TimerRangeSequenceEvent
   label: "\u30C6\u30B9\u30C8/\u30BF\u30A4\u30DE\u30FC"
   active: 1
-  enterTime: 0.3
-  exitTime: 0.90000004
+  enterTime: 0.6
+  exitTime: 1.2
   format: Time:{0:0.000}

@@ -7,6 +7,9 @@ namespace Test {
     public sealed class TimerRangeSequenceEvent : RangeSequenceEvent {
         [Tooltip("出力用のフォーマット")]
         public string format = "Time:{0:0.000}";
+
+        /// <inheritdoc/>
+        public override string TimelineText => format;
     }
 
     public sealed class TimerRangeSequenceEventHandler : RangeSequenceEventHandler<TimerRangeSequenceEvent> {

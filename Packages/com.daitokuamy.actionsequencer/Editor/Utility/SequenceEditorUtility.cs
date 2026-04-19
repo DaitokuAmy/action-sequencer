@@ -13,6 +13,13 @@ namespace ActionSequencer.Editor.Utils {
     internal static class SequenceEditorUtility {
         private static ActionSequencerSettings s_settings;
 
+        /// <summary>
+        /// Settings キャッシュを破棄
+        /// </summary>
+        public static void ClearSettingsCache() {
+            s_settings = null;
+        }
+
         /// <summary>Assets配下に存在する設定ファイルへの参照</summary>
         private static ActionSequencerSettings Settings {
             get {
@@ -25,6 +32,19 @@ namespace ActionSequencer.Editor.Utils {
 
                 return s_settings;
             }
+        }
+
+        /// <summary>
+        /// ActionSequencer で扱う公開対象の SequenceEvent 型か判定
+        /// </summary>
+        /// <param name="eventType">判定対象の型</param>
+        /// <returns>表示対象なら true</returns>
+        public static bool IsSupportedEventType(Type eventType) {
+            if (eventType == null) {
+                return false;
+            }
+
+            return !eventType.IsAbstract && !eventType.IsGenericType && !eventType.IsNestedPrivate;
         }
 
         /// <summary>

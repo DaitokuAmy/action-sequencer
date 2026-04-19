@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -9,6 +10,9 @@ namespace ActionSequencer.Editor {
     /// SequenceEditor 用セッション
     /// </summary>
     internal sealed class SequenceEditorSession : IDisposable {
+        /// <summary>Window の固定タイトル</summary>
+        private const string WindowTitle = "Sequence Clip Editor";
+
         private readonly SequenceClipRepository _repository;
         private readonly SequenceEditorModel _model;
         private readonly SelectionService _selectionService;
@@ -87,6 +91,7 @@ namespace ActionSequencer.Editor {
             _presenter.InspectorReloadRequested += ReloadFromInspector;
 
             Undo.undoRedoPerformed += OnUndoRedoPerformed;
+            ActionSequencerSettings.SettingsChanged += OnSettingsChanged;
         }
 
         /// <summary>
@@ -141,7 +146,7 @@ namespace ActionSequencer.Editor {
         public void GetWindowState(out SequenceClip rootClip, out int includeClipIndex, out string title) {
             rootClip = _model.RootClip;
             includeClipIndex = _model.IncludeClipIndex;
-            title = rootClip != null ? rootClip.name : ObjectNames.NicifyVariableName(nameof(SequenceEditorWindow));
+            title = WindowTitle;
         }
 
         /// <summary>
@@ -164,6 +169,7 @@ namespace ActionSequencer.Editor {
         /// </summary>
         public void Dispose() {
             Undo.undoRedoPerformed -= OnUndoRedoPerformed;
+            ActionSequencerSettings.SettingsChanged -= OnSettingsChanged;
 
             if (_presenter != null) {
                 _presenter.OpenRequested -= Open;
@@ -216,6 +222,21 @@ namespace ActionSequencer.Editor {
         /// </summary>
         private void OnUndoRedoPerformed() {
             Reload();
+        }
+
+        /// <summary>
+        /// Settings 変更後に表示を再同期
+        /// </summary>
+        private void OnSettingsChanged() {
+            if (_model.CurrentClip == null) {
+                return;
+            }
+
+            SequenceEditorUtility.ClearSettingsCache();
+            var selectedTargets = _selectionService.SelectedTargets.ToArray();
+            _model.SetClipModel(_repository.Load(_model.CurrentClip));
+            _selectionService.RestoreSelection(selectedTargets);
+            RefreshPresentation();
         }
 
         /// <summary>

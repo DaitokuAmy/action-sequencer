@@ -281,7 +281,7 @@ namespace ActionSequencer.Editor {
                 return false;
             }
 
-            var duration = eventModels.Max(x => x.GetEndTime());
+            var duration = eventModels.Max(GetEventDisplayEndTime);
             if (duration <= 0.0f) {
                 return false;
             }
@@ -298,6 +298,18 @@ namespace ActionSequencer.Editor {
             }
 
             _selectedTargets.Sort((a, b) => ClipModel.GetTargetOrder(a).CompareTo(ClipModel.GetTargetOrder(b)));
+        }
+
+        /// <summary>
+        /// Event の表示上の終了時間を取得
+        /// </summary>
+        /// <param name="eventModel">対象の EventModel</param>
+        /// <returns>表示上の終了時間</returns>
+        private float GetEventDisplayEndTime(SequenceEventModel eventModel) {
+            return eventModel switch {
+                SignalSequenceEventModel signalEventModel => signalEventModel.Time + signalEventModel.ViewDuration,
+                _ => eventModel.GetEndTime(),
+            };
         }
     }
 }

@@ -274,7 +274,7 @@ namespace ActionSequencer.Editor {
             }
 
             sequenceEvent.name = eventType.Name;
-            sequenceEvent.label = SequenceEditorUtility.GetDisplayName(eventType);
+            sequenceEvent.label = string.Empty;
             AssetDatabase.AddObjectToAsset(sequenceEvent, track);
             Undo.RegisterCreatedObjectUndo(sequenceEvent, "Create Event");
 

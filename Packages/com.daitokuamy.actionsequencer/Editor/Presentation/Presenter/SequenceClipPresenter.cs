@@ -8,6 +8,11 @@ namespace ActionSequencer.Editor {
     /// SequenceClip 用 Presenter
     /// </summary>
     internal sealed class SequenceClipPresenter : System.IDisposable {
+        /// <summary>ホイール 1 段あたりのズーム量</summary>
+        private const float WheelZoomStep = 8.0f;
+        /// <summary>ホイール 1 段あたりの横スクロール量</summary>
+        private const float WheelScrollStep = 24.0f;
+
         private readonly SequenceEditorModel _editorModel;
         private readonly TimelineViewService _timelineService;
         private readonly ScrollView _trackLabelListView;
@@ -73,7 +78,10 @@ namespace ActionSequencer.Editor {
             AddChangedCallback<GeometryChangedEvent>(_trackListView.parent.parent, _ => ApplyListPadding());
             AddChangedCallback<GeometryChangedEvent>(_trackListView.contentContainer, _ => ApplyListPadding());
             AddChangedCallback<GeometryChangedEvent>(_trackListView, _ => SetRulerWidth(_trackListView.layout.width));
-            AddChangedCallback<WheelEvent>(_rulerArea, OnRulerWheel);
+            _rulerArea.RegisterCallback<WheelEvent>(OnTimelineWheel, TrickleDown.TrickleDown);
+            _trackScrollView.RegisterCallback<WheelEvent>(OnTimelineWheel, TrickleDown.TrickleDown);
+            AddDisposable(new ActionDisposable(() => _rulerArea.UnregisterCallback<WheelEvent>(OnTimelineWheel, TrickleDown.TrickleDown)));
+            AddDisposable(new ActionDisposable(() => _trackScrollView.UnregisterCallback<WheelEvent>(OnTimelineWheel, TrickleDown.TrickleDown)));
 
             RefreshRuler();
         }
@@ -142,11 +150,37 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
-        /// ルーラー上のホイール操作で時間表示幅を変更
+        /// タイムライン上のホイール操作で時間表示幅を変更
         /// </summary>
         /// <param name="evt">ホイールイベント</param>
-        private void OnRulerWheel(WheelEvent evt) {
-            _timelineService.SetTimeToSize(_timelineService.TimeToSize - evt.delta.y * 8.0f);
+        private void OnTimelineWheel(WheelEvent evt) {
+            if (_editorModel.ClipModel == null) {
+                return;
+            }
+
+            if (evt.actionKey) {
+                _trackScrollView.horizontalScroller.value = Mathf.Max(
+                    0.0f,
+                    _trackScrollView.horizontalScroller.value + evt.delta.y * WheelScrollStep);
+                evt.StopPropagation();
+                evt.StopImmediatePropagation();
+                return;
+            }
+
+            var targetElement = evt.currentTarget as VisualElement;
+            var cursorX = targetElement?.ChangeCoordinatesTo(_trackScrollView.contentViewport, evt.localMousePosition).x ?? 0.0f;
+            var oldTimeToSize = _timelineService.TimeToSize;
+            var anchorTime = (_trackScrollView.horizontalScroller.value + cursorX) / oldTimeToSize;
+            _timelineService.SetTimeToSize(oldTimeToSize - evt.delta.y * WheelZoomStep);
+
+            var newTimeToSize = _timelineService.TimeToSize;
+            var nextScrollValue = Mathf.Max(0.0f, anchorTime * newTimeToSize - cursorX);
+            _trackScrollView.schedule.Execute(() => {
+                _trackScrollView.horizontalScroller.value = nextScrollValue;
+            });
+
+            evt.StopPropagation();
+            evt.StopImmediatePropagation();
         }
 
         /// <summary>

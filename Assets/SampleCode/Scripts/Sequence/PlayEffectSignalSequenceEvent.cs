@@ -8,6 +8,12 @@ public class PlayEffectSignalSequenceEvent : SignalSequenceEvent {
     public GameObject prefab;
     public Vector3 offsetPosition;
     public Vector3 offsetAngles;
+    public float testDuration = 0.1f;
+
+    /// <inheritdoc/>
+    public override string TimelineText => prefab != null ? prefab.name : "[None]";
+    /// <inheritdoc/>
+    public override float ViewDuration => testDuration;
 }
 
 /// <summary>

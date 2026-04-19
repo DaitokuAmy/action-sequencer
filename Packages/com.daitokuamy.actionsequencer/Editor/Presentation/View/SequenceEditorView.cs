@@ -13,6 +13,13 @@ namespace ActionSequencer.Editor {
     /// SequenceEditor 全体の View
     /// </summary>
     internal sealed class SequenceEditorView {
+        private readonly Label _helpFitAllLabel;
+        private readonly Label _helpFitSelectionLabel;
+        private readonly Label _helpMoveEventLabel;
+        private readonly Label _helpDuplicateLabel;
+        private readonly Label _helpCopyPasteLabel;
+        private readonly Label _helpDeleteLabel;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -37,6 +44,15 @@ namespace ActionSequencer.Editor {
             RefreshButton = Root.Q<Button>("RefreshButton");
             InspectorView = Root.Q<InspectorView>("Inspector");
             PreviewView = Root.Q<AnimationClipView>("Preview");
+
+            _helpFitAllLabel = Root.Q<Label>("HelpFitAll");
+            _helpFitSelectionLabel = Root.Q<Label>("HelpFitSelection");
+            _helpMoveEventLabel = Root.Q<Label>("HelpMoveEvent");
+            _helpDuplicateLabel = Root.Q<Label>("HelpDuplicate");
+            _helpCopyPasteLabel = Root.Q<Label>("HelpCopyPaste");
+            _helpDeleteLabel = Root.Q<Label>("HelpDelete");
+
+            UpdateShortcutHelp();
         }
 
         /// <summary>UI ルート</summary>
@@ -147,6 +163,19 @@ namespace ActionSequencer.Editor {
             }
 
             SeekbarView.style.marginLeft = left;
+        }
+
+        /// <summary>
+        /// 実行環境に応じて HelpBar のショートカット表記を更新
+        /// </summary>
+        public void UpdateShortcutHelp() {
+            var modifierKeyText = Application.platform == RuntimePlatform.OSXEditor ? "Cmd" : "Ctrl";
+            _helpFitAllLabel.text = "A : Fit All";
+            _helpFitSelectionLabel.text = "F : Fit Selection";
+            _helpMoveEventLabel.text = "Shift + Up / Down : Move Event";
+            _helpDuplicateLabel.text = $"{modifierKeyText} + D : Duplicate";
+            _helpCopyPasteLabel.text = $"{modifierKeyText} + C / {modifierKeyText} + V : Copy / Paste";
+            _helpDeleteLabel.text = "Delete : Delete Event";
         }
     }
 }

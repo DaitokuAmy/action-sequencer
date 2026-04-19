@@ -5,6 +5,9 @@ public class LogSignalSequenceEvent : SignalSequenceEvent
 {
     [Tooltip("出力用のログ")]
     public string text = "";
+
+    /// <inheritdoc/>
+    public override string TimelineText => text;
 }
 
 public class LogSignalSequenceEventHandler : SignalSequenceEventHandler<LogSignalSequenceEvent>

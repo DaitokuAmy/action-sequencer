@@ -7,6 +7,13 @@ namespace ActionSequencer {
     public interface IReadOnlySequencePlayer {
         /// <summary>再生中のSequenceClipが存在するか</summary>
         bool HasPlayingClip { get; }
+
+        /// <summary>
+        /// 該当SequenceClipの再生時間を取得
+        /// </summary>
+        /// <param name="clip">対象のSequenceClip</param>
+        /// <returns>再生時間。再生していなければ負の値</returns>
+        float GetSequenceTime(SequenceClip clip);
         
         /// <summary>
         /// 単体イベント用のハンドラを設定

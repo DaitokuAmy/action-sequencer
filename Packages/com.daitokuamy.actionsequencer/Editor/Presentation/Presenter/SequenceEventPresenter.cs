@@ -20,9 +20,11 @@ namespace ActionSequencer.Editor {
 
         private const float MiddleDragDecisionThreshold = 6.0f;
         private const float VerticalReorderThreshold = 12.0f;
+        private const float TimelineTextMargin = 4.0f;
 
         private bool _suppressSingleSelectionOnClick;
         private DragMode _dragMode = DragMode.Timeline;
+        private float? _sharedDragMinStartTime;
         private SequenceEventManipulator.DragType _currentDragType;
         private SequenceEventManipulator.DragInfo _lastDragInfo;
         private readonly SequenceEditorModel _editorModel;
@@ -38,6 +40,7 @@ namespace ActionSequencer.Editor {
         /// </summary>
         /// <param name="model">対応する EventModel</param>
         /// <param name="view">対応する EventView</param>
+        /// <param name="trackView">トラック要素 View</param>
         /// <param name="labelElementView">ラベル要素の View</param>
         /// <param name="editorModel">編集中のモデル</param>
         /// <param name="selectionService">選択状態を扱うサービス</param>
@@ -158,6 +161,24 @@ namespace ActionSequencer.Editor {
         protected abstract void RefreshGeometry();
 
         /// <summary>
+        /// Timeline 補助テキストの表示開始 offset を返す
+        /// </summary>
+        /// <returns>表示開始 offset</returns>
+        protected virtual float GetTimelineTextOffset() {
+            return TimelineTextMargin;
+        }
+
+        /// <summary>
+        /// Timeline 補助テキストの表示色を返す
+        /// </summary>
+        /// <returns>表示色</returns>
+        protected virtual Color GetTimelineTextColor() {
+            var color = Model.ThemeColor;
+            var luminance = color.r * 0.299f + color.g * 0.587f + color.b * 0.114f;
+            return luminance > 0.6f ? Color.black : Color.white;
+        }
+
+        /// <summary>
         /// 表示幅を時間へ変換
         /// </summary>
         /// <param name="position">表示幅</param>
@@ -179,10 +200,13 @@ namespace ActionSequencer.Editor {
         /// View の表示を更新
         /// </summary>
         protected virtual void Refresh() {
-            _labelElementView.Label = Model.Label;
+            _labelElementView.SetLabel(Model.Label, Model.UsesDefaultLabel);
             View.Selected = _selectionService.SelectedTargets.Contains(Model.Target);
             View.style.backgroundColor = Model.Active ? Model.ThemeColor : Color.gray;
             RefreshGeometry();
+            View.TimelineText = Model.TimelineText;
+            View.TimelineTextOffset = GetTimelineTextOffset();
+            View.TimelineTextColor = GetTimelineTextColor();
         }
 
         /// <summary>
@@ -312,6 +336,7 @@ namespace ActionSequencer.Editor {
         private void OnDragStartInternal(SequenceEventManipulator.DragType dragType) {
             _currentDragType = dragType;
             _dragMode = ShouldDeferMiddleDrag(dragType) ? DragMode.Pending : DragMode.Timeline;
+            _sharedDragMinStartTime = GetSharedDragMinStartTime(dragType);
             TrackView.HideReorderIndicator();
             OnDragStart(dragType, false);
 
@@ -327,13 +352,14 @@ namespace ActionSequencer.Editor {
         private void OnDraggingInternal(SequenceEventManipulator.DragInfo dragInfo) {
             _suppressSingleSelectionOnClick = true;
 
-            _lastDragInfo = dragInfo;
+            var adjustedDragInfo = AdjustDragInfoForSelectionBounds(dragInfo);
+            _lastDragInfo = adjustedDragInfo;
 
             if (_dragMode == DragMode.Pending) {
-                if (ShouldStartVerticalReorder(dragInfo)) {
+                if (ShouldStartVerticalReorder(adjustedDragInfo)) {
                     _dragMode = DragMode.Reorder;
                 }
-                else if (ShouldStartTimelineDrag(dragInfo)) {
+                else if (ShouldStartTimelineDrag(adjustedDragInfo)) {
                     _dragMode = DragMode.Timeline;
                     _eventEditingService.NotifyDragStarted(Model, _currentDragType);
                 }
@@ -343,13 +369,13 @@ namespace ActionSequencer.Editor {
             }
 
             if (_dragMode == DragMode.Reorder) {
-                UpdateReorderIndicator(dragInfo);
+                UpdateReorderIndicator(adjustedDragInfo);
                 return;
             }
 
             TrackView.HideReorderIndicator();
-            OnDragging(dragInfo, false);
-            _eventEditingService.NotifyDragging(Model, dragInfo);
+            OnDragging(adjustedDragInfo, false);
+            _eventEditingService.NotifyDragging(Model, adjustedDragInfo);
         }
 
         /// <summary>
@@ -365,6 +391,7 @@ namespace ActionSequencer.Editor {
             TrackView.HideReorderIndicator();
 
             _dragMode = DragMode.Timeline;
+            _sharedDragMinStartTime = null;
             _currentDragType = dragType;
             _lastDragInfo = default;
         }
@@ -379,6 +406,7 @@ namespace ActionSequencer.Editor {
                 return;
             }
 
+            _sharedDragMinStartTime = GetSharedDragMinStartTime(dragType);
             OnDragStart(dragType, true);
         }
 
@@ -392,7 +420,116 @@ namespace ActionSequencer.Editor {
                 return;
             }
 
-            OnDragging(dragInfo, true);
+            OnDragging(AdjustDragInfoForSelectionBounds(dragInfo), true);
+        }
+
+        /// <summary>
+        /// 複数選択時の左端制約を考慮してドラッグ量を補正
+        /// </summary>
+        /// <param name="dragInfo">補正前のドラッグ情報</param>
+        /// <returns>補正後のドラッグ情報</returns>
+        private SequenceEventManipulator.DragInfo AdjustDragInfoForSelectionBounds(SequenceEventManipulator.DragInfo dragInfo) {
+            if (dragInfo.Type != SequenceEventManipulator.DragType.Middle ||
+                _selectionService.SelectedTargets.Count <= 1 ||
+                !_sharedDragMinStartTime.HasValue) {
+                return dragInfo;
+            }
+
+            var minStartTime = _sharedDragMinStartTime.Value;
+            if (minStartTime <= 0.0f) {
+                var clampedCurrentX = Mathf.Max(dragInfo.Current, dragInfo.Start);
+                return Mathf.Approximately(clampedCurrentX, dragInfo.Current)
+                    ? dragInfo
+                    : new SequenceEventManipulator.DragInfo(
+                        dragInfo.Type,
+                        dragInfo.StartPosition,
+                        new Vector2(clampedCurrentX, dragInfo.CurrentPosition.y));
+            }
+
+            var minDeltaX = -TimeToSize(minStartTime);
+            var deltaX = dragInfo.Current - dragInfo.Start;
+            if (deltaX >= minDeltaX) {
+                return dragInfo;
+            }
+
+            return new SequenceEventManipulator.DragInfo(
+                dragInfo.Type,
+                dragInfo.StartPosition,
+                new Vector2(dragInfo.Start + minDeltaX, dragInfo.CurrentPosition.y));
+        }
+
+        /// <summary>
+        /// 複数選択 middle drag 用の共通 deltaTime を取得
+        /// </summary>
+        /// <param name="dragInfo">ドラッグ情報</param>
+        /// <param name="deltaTime">共通 deltaTime</param>
+        /// <returns>共通 deltaTime を使う場合は true</returns>
+        protected bool TryGetSharedMiddleDragDeltaTime(SequenceEventManipulator.DragInfo dragInfo, out float deltaTime) {
+            deltaTime = 0.0f;
+            if (dragInfo.Type != SequenceEventManipulator.DragType.Middle || _selectionService.SelectedTargets.Count <= 1) {
+                return false;
+            }
+
+            var clipModel = _editorModel.ClipModel;
+            if (clipModel == null) {
+                return false;
+            }
+
+            if (!_sharedDragMinStartTime.HasValue) {
+                return false;
+            }
+
+            var minStartTime = _sharedDragMinStartTime.Value;
+            var rawDeltaTime = SizeToTime(dragInfo.Current - dragInfo.Start);
+            var edgeEpsilon = 1.0f / Mathf.Max(_editorModel.TimeToSize, 1.0f);
+            if (rawDeltaTime <= -minStartTime + edgeEpsilon) {
+                deltaTime = -minStartTime;
+                return true;
+            }
+
+            var clampedDeltaTime = Mathf.Max(rawDeltaTime, -minStartTime);
+            deltaTime = TimelineService.GetAbsorptionTime(minStartTime + clampedDeltaTime) - minStartTime;
+            return true;
+        }
+
+        /// <summary>
+        /// ドラッグ制約に使う開始時間を取得
+        /// </summary>
+        /// <param name="eventModel">対象の EventModel</param>
+        /// <returns>開始時間</returns>
+        private float GetDragStartTime(SequenceEventModel eventModel) {
+            return eventModel switch {
+                RangeSequenceEventModel rangeEventModel => rangeEventModel.EnterTime,
+                SignalSequenceEventModel signalEventModel => signalEventModel.Time,
+                _ => eventModel.GetStartTime(),
+            };
+        }
+
+        /// <summary>
+        /// 複数選択 middle drag 用の最小開始時間を取得
+        /// </summary>
+        /// <param name="dragType">ドラッグ種別</param>
+        /// <returns>最小開始時間。不要な場合は null</returns>
+        private float? GetSharedDragMinStartTime(SequenceEventManipulator.DragType dragType) {
+            if (dragType != SequenceEventManipulator.DragType.Middle || _selectionService.SelectedTargets.Count <= 1) {
+                return null;
+            }
+
+            var clipModel = _editorModel.ClipModel;
+            if (clipModel == null) {
+                return null;
+            }
+
+            var selectedEventModels = _selectionService.SelectedTargets
+                .OfType<SequenceEvent>()
+                .Select(clipModel.FindEventModel)
+                .Where(x => x != null)
+                .ToArray();
+            if (selectedEventModels.Length <= 1) {
+                return null;
+            }
+
+            return selectedEventModels.Min(GetDragStartTime);
         }
 
         /// <summary>

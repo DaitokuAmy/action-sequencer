@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace ActionSequencer.Editor {
     /// <summary>
     /// SignalSequenceEvent 用 Presenter
@@ -45,6 +47,11 @@ namespace ActionSequencer.Editor {
 
         /// <inheritdoc/>
         protected override void OnDragging(SequenceEventManipulator.DragInfo dragInfo, bool otherEvent) {
+            if (TryGetSharedMiddleDragDeltaTime(dragInfo, out var sharedDeltaTime)) {
+                EventEditingService.SetSignalTime(SignalModel, _dragStartTime + sharedDeltaTime);
+                return;
+            }
+
             var deltaTime = SizeToTime(dragInfo.Current - dragInfo.Start);
             var snappedTime = TimelineService.GetAbsorptionTime(_dragStartTime + deltaTime);
             EventEditingService.SetSignalTime(SignalModel, snappedTime);
@@ -54,6 +61,18 @@ namespace ActionSequencer.Editor {
         protected override void RefreshGeometry() {
             SignalView.Position = TimeToSize(SignalModel.Time);
             SignalView.Width = TimeToSize(SignalModel.ViewDuration);
+        }
+
+        /// <inheritdoc/>
+        protected override void Refresh() {
+            base.Refresh();
+            SignalView.style.backgroundColor = Color.clear;
+            SignalView.SignalColor = SignalModel.Active ? SignalModel.ThemeColor : Color.gray;
+        }
+
+        /// <inheritdoc/>
+        protected override float GetTimelineTextOffset() {
+            return 15.0f;
         }
     }
 }

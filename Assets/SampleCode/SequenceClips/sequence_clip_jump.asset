@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d5a44d3d23160488ba30478c4f6ec8, type: 3}
   m_Name: PlayEffectSignalSequenceEvent
   m_EditorClassIdentifier: 
-  label: "\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+  label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
   active: 1
   time: 0.325
   prefab: {fileID: 8846004282753536196, guid: 8e7585cfe058d3044a74307dc2b1780b, type: 3}
   offsetPosition: {x: 0, y: 0, z: 0}
   offsetAngles: {x: 0, y: 0, z: 0}
+  testDuration: 0.1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -65,12 +66,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03d5a44d3d23160488ba30478c4f6ec8, type: 3}
   m_Name: PlayEffectSignalSequenceEvent
   m_EditorClassIdentifier: 
-  label: "\u30B8\u30E3\u30F3\u30D7\u7D42\u4E86"
+  label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
   active: 1
   time: 1.175
   prefab: {fileID: 8846004282753536196, guid: 8e7585cfe058d3044a74307dc2b1780b, type: 3}
   offsetPosition: {x: 0, y: 0, z: 0}
   offsetAngles: {x: 0, y: 0, z: 0}
+  testDuration: 0.1
 --- !u!114 &6414136816052409574
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -83,7 +85,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
   m_Name: LogSignalSequenceEvent
   m_EditorClassIdentifier: 
-  label: "\u5171\u901A/\u30ED\u30B0\u51FA\u529B"
+  label: 
   active: 1
   time: 1.175
   text: test

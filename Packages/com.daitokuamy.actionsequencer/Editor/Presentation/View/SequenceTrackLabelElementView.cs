@@ -8,6 +8,8 @@ namespace ActionSequencer.Editor {
     /// </summary>
     [UxmlElement]
     public sealed partial class SequenceTrackLabelElementView : VisualElement {
+        private const string DefaultLabelClassName = "track_label__element_textfield--default";
+
         private VisualElement _rootView;
         private VisualElement _colorView;
         private TextField _textFieldView;
@@ -17,12 +19,6 @@ namespace ActionSequencer.Editor {
         public event Action<string> LabelChanged;
         /// <summary>オプションボタン押下時に発火する</summary>
         public event Action OptionClicked;
-
-        /// <summary>表示ラベル</summary>
-        public string Label {
-            get => _textFieldView.value;
-            set => _textFieldView.value = value;
-        }
 
         /// <summary>ラベルカラー</summary>
         public Color LabelColor {
@@ -62,6 +58,17 @@ namespace ActionSequencer.Editor {
 
             // ボタンの押下監視
             _optionButton.clicked += () => OptionClicked?.Invoke();
+        }
+
+        /// <summary>
+        /// ラベル表示を更新
+        /// </summary>
+        /// <param name="label">表示するラベル</param>
+        /// <param name="usesDefaultLabel">デフォルトラベル表示の場合は true</param>
+        public void SetLabel(string label, bool usesDefaultLabel) {
+            _textFieldView.SetValueWithoutNotify(label);
+            _textFieldView.EnableInClassList(DefaultLabelClassName, usesDefaultLabel);
+            _textFieldView.tooltip = usesDefaultLabel ? "Default Label" : string.Empty;
         }
 
         /// <summary>

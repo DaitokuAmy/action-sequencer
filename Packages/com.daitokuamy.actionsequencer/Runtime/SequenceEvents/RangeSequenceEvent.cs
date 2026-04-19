@@ -12,6 +12,7 @@ namespace ActionSequencer {
 
         /// <summary>同フレーム終了でも1フレーム維持するか</summary>
         public virtual bool MustOneFrame => false;
+        
         /// <summary>継続時間</summary>
         public float Duration => exitTime - enterTime;
     }

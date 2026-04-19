@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using ActionSequencer.Editor.Utils;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine.Windows;
@@ -46,7 +47,9 @@ namespace ActionSequencer.Editor {
         public override void OnInspectorGUI() {
             serializedObject.Update();
             _sequenceEventTypeInfoList.DoLayoutList();
-            serializedObject.ApplyModifiedProperties();
+            if (serializedObject.ApplyModifiedProperties()) {
+                ActionSequencerSettings.NotifySettingsChanged();
+            }
         }
 
         /// <summary>
@@ -101,7 +104,7 @@ namespace ActionSequencer.Editor {
 
             var eventTypes = TypeCache.GetTypesDerivedFrom<SignalSequenceEvent>()
                 .Concat(TypeCache.GetTypesDerivedFrom<RangeSequenceEvent>())
-                .Where(x => !x.IsAbstract && !x.IsGenericType)
+                .Where(SequenceEditorUtility.IsSupportedEventType)
                 .OrderBy(x => x.FullName);
 
             // シリアライズデータの中身を実際に存在するクラス名と同期させる

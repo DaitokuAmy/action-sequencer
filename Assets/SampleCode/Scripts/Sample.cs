@@ -29,7 +29,7 @@ public class Sample : MonoBehaviour, ISequencePlayerProvider {
     private int _actionIndex;
 
     // Preview用
-    SequencePlayer ISequencePlayerProvider.SequencePlayer => _sequencePlayer;
+    IReadOnlySequencePlayer ISequencePlayerProvider.SequencePlayer => _sequencePlayer;
 
     /// <summary>
     /// 開始処理

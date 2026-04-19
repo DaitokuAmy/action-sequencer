@@ -12,6 +12,9 @@ namespace ActionSequencer.Editor {
     /// SequenceEditor 全体の Presenter
     /// </summary>
     internal sealed class SequenceEditorPresenter : IDisposable {
+        /// <summary>fit 時の左余白</summary>
+        private const float FitPadding = 10.0f;
+
         private readonly SequenceEditorView _view;
         private readonly SequenceEditorModel _model;
         private readonly SelectionService _selectionService;
@@ -203,10 +206,26 @@ namespace ActionSequencer.Editor {
         /// </summary>
         private void InitializeCommands() {
             _view.Root.RegisterCallback<KeyDownEvent>(evt => {
-                if (evt.keyCode == KeyCode.F || evt.keyCode == KeyCode.A) {
-                    if (_timelineViewService.SetBestTimeToSize(_view.TrackAreaView.layout.width - 20.0f)) {
-                        _view.TrackScrollView.horizontalScroller.value = 0.0f;
-                    }
+                if (_model.ClipModel == null) {
+                    return;
+                }
+
+                var contentWidth = _view.TrackAreaView.layout.width - 20.0f;
+                if (evt.keyCode == KeyCode.A) {
+                    _timelineViewService.SetBestTimeToSize(contentWidth);
+                    _view.TrackScrollView.horizontalScroller.value = 0.0f;
+                    evt.StopPropagation();
+                    evt.StopImmediatePropagation();
+                }
+
+                if (evt.keyCode == KeyCode.F &&
+                    _timelineViewService.FitSelection(_selectionService.SelectedTargets, contentWidth, FitPadding, out var startTime)) {
+                    var scrollValue = Mathf.Max(0.0f, startTime * _model.TimeToSize - FitPadding);
+                    _view.Root.schedule.Execute(() => {
+                        _view.TrackScrollView.horizontalScroller.value = scrollValue;
+                    });
+                    evt.StopPropagation();
+                    evt.StopImmediatePropagation();
                 }
             });
 

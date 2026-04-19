@@ -13,6 +13,7 @@ namespace ActionSequencer.Editor {
         /// </summary>
         /// <param name="model">対応する RangeEventModel</param>
         /// <param name="view">対応する RangeEventView</param>
+        /// <param name="trackView">トラック要素 View</param>
         /// <param name="labelElementView">ラベル要素の View</param>
         /// <param name="editorModel">編集中のモデル</param>
         /// <param name="selectionService">選択状態を扱うサービス</param>
@@ -53,6 +54,12 @@ namespace ActionSequencer.Editor {
             switch (dragInfo.Type) {
                 case SequenceEventManipulator.DragType.Middle: {
                     var duration = _dragStartExitTime - _dragStartEnterTime;
+                    if (TryGetSharedMiddleDragDeltaTime(dragInfo, out var sharedDeltaTime)) {
+                        var sharedEnterTime = Mathf.Max(0.0f, _dragStartEnterTime + sharedDeltaTime);
+                        EventEditingService.MoveRangeKeepingDuration(RangeModel, sharedEnterTime, sharedEnterTime + duration);
+                        break;
+                    }
+
                     var desiredEnterTime = Mathf.Max(0.0f, _dragStartEnterTime + deltaTime);
                     var enterTime = TimelineService.GetAbsorptionTime(desiredEnterTime);
                     var exitTime = enterTime + duration;

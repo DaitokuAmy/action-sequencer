@@ -162,9 +162,9 @@ namespace ActionSequencer.Editor {
             });
 
             var signalTypes = TypeCache.GetTypesDerivedFrom<SignalSequenceEvent>()
-                .Where(x => !x.IsAbstract && !x.IsGenericType);
+                .Where(SequenceEditorUtility.IsSupportedEventType);
             var rangeTypes = TypeCache.GetTypesDerivedFrom<RangeSequenceEvent>()
-                .Where(x => !x.IsAbstract && !x.IsGenericType);
+                .Where(SequenceEditorUtility.IsSupportedEventType);
 
             foreach (var signalType in signalTypes) {
                 var displayName = SequenceEditorUtility.GetDisplayName(signalType);

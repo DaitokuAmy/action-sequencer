@@ -9,6 +9,11 @@ namespace ActionSequencer {
     /// </summary>
     public sealed class ActionSequencerSettings : ScriptableObject {
         /// <summary>
+        /// 設定変更時に発火する
+        /// </summary>
+        public static event Action SettingsChanged;
+
+        /// <summary>
         /// SequenceEvent型用の情報
         /// </summary>
         [Serializable]
@@ -37,6 +42,13 @@ namespace ActionSequencer {
         }
 
         /// <summary>
+        /// 設定変更通知を発火
+        /// </summary>
+        public static void NotifySettingsChanged() {
+            SettingsChanged?.Invoke();
+        }
+
+        /// <summary>
         /// 設定ファイル検索用辞書の更新
         /// </summary>
         private void RefreshSettingDict() {
@@ -58,6 +70,7 @@ namespace ActionSequencer {
         /// </summary>
         private void OnValidate() {
             _sequenceEventTypeSettingDict = null;
+            NotifySettingsChanged();
         }
     }
 }

@@ -195,7 +195,7 @@ namespace ActionSequencer.Editor {
         /// <param name="eventModel">変更対象</param>
         /// <param name="label">変更後のラベル</param>
         public void RenameEvent(SequenceEventModel eventModel, string label) {
-            if (eventModel == null || eventModel.Label == label) {
+            if (eventModel == null || eventModel.RawLabel == (label ?? string.Empty)) {
                 return;
             }
 
@@ -214,8 +214,7 @@ namespace ActionSequencer.Editor {
                 return;
             }
 
-            var label = SequenceEditorUtility.GetDisplayName(eventModel.Target.GetType());
-            RenameEvent(eventModel, label);
+            RenameEvent(eventModel, string.Empty);
         }
 
         /// <summary>

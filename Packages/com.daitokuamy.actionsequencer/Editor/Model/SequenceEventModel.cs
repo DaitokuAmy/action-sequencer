@@ -6,6 +6,8 @@ namespace ActionSequencer.Editor {
     /// SequenceEvent の編集用キャッシュ
     /// </summary>
     internal abstract class SequenceEventModel {
+        private string _rawLabel;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -15,7 +17,7 @@ namespace ActionSequencer.Editor {
         /// <param name="themeColor">テーマカラー</param>
         protected SequenceEventModel(SequenceEvent target, string label, bool active, Color themeColor) {
             Target = target;
-            Label = label;
+            _rawLabel = label;
             Active = active;
             ThemeColor = themeColor;
         }
@@ -24,12 +26,18 @@ namespace ActionSequencer.Editor {
         public SequenceEvent Target { get; }
         /// <summary>所属する TrackModel</summary>
         public SequenceTrackModel TrackModel { get; internal set; }
+        /// <summary>保存されている生のラベル</summary>
+        public string RawLabel => _rawLabel;
         /// <summary>表示ラベル</summary>
-        public string Label { get; private set; }
+        public string Label => UsesDefaultLabel ? SequenceEditorUtility.GetDisplayName(Target.GetType()) : _rawLabel;
+        /// <summary>Timeline 上に表示する補助テキスト</summary>
+        public string TimelineText => Target.TimelineText;
         /// <summary>有効状態</summary>
         public bool Active { get; private set; }
         /// <summary>テーマカラー</summary>
         public Color ThemeColor { get; }
+        /// <summary>デフォルトラベル表示を使っている場合は true</summary>
+        public bool UsesDefaultLabel => string.IsNullOrWhiteSpace(_rawLabel);
 
         /// <summary>
         /// ラベルを更新
@@ -37,11 +45,12 @@ namespace ActionSequencer.Editor {
         /// <param name="label">更新後のラベル</param>
         /// <returns>値が変化した場合は true</returns>
         public bool SetLabel(string label) {
-            if (Label == label) {
+            var nextLabel = label ?? string.Empty;
+            if (_rawLabel == nextLabel) {
                 return false;
             }
 
-            Label = label;
+            _rawLabel = nextLabel;
             return true;
         }
 
@@ -50,7 +59,7 @@ namespace ActionSequencer.Editor {
         /// </summary>
         /// <returns>値が変化した場合は true</returns>
         public bool ResetLabel() {
-            return SetLabel(SequenceEditorUtility.GetDisplayName(Target.GetType()));
+            return SetLabel(string.Empty);
         }
 
         /// <summary>

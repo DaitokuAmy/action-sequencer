@@ -1,12 +1,18 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace ActionSequencer.Editor {
     /// <summary>
     /// タイムライン表示設定を扱うサービス
     /// </summary>
     internal sealed class TimelineViewService : IDisposable {
+        /// <summary>選択対象 fit 時の最小 duration</summary>
+        private const float MinFitDuration = 0.25f;
+
         /// <summary>
         /// タイムライン表示設定の永続化データ
         /// </summary>
@@ -165,6 +171,31 @@ namespace ActionSequencer.Editor {
             return true;
         }
 
+        /// <summary>
+        /// 現在の選択対象が収まる TimeToSize を自動設定
+        /// </summary>
+        /// <param name="selectedTargets">現在の選択対象</param>
+        /// <param name="contentWidth">表示領域の幅</param>
+        /// <param name="padding">左右に確保する余白</param>
+        /// <param name="startTime">選択範囲の開始時間</param>
+        /// <returns>選択範囲を算出できた場合は true</returns>
+        public bool FitSelection(IReadOnlyList<Object> selectedTargets, float contentWidth, float padding, out float startTime) {
+            startTime = 0.0f;
+            if (contentWidth <= 0.0f || !TryGetSelectionRange(selectedTargets, out var endTime, out startTime)) {
+                return false;
+            }
+
+            var fitWidth = Mathf.Max(1.0f, contentWidth - padding * 2.0f);
+            var duration = Mathf.Max(endTime - startTime, MinFitDuration);
+            var changed = _model.SetTimeToSize(fitWidth / duration);
+            if (changed) {
+                SaveUserData();
+                SettingsChanged?.Invoke();
+            }
+
+            return true;
+        }
+
         /// <inheritdoc/>
         public void Dispose() {
             SaveUserData();
@@ -222,6 +253,113 @@ namespace ActionSequencer.Editor {
                 SequenceEditorModel.TimeMode.Frames60 => 60,
                 _ => -1,
             };
+        }
+
+        /// <summary>
+        /// 現在の選択対象から表示範囲を算出
+        /// </summary>
+        /// <param name="selectedTargets">現在の選択対象</param>
+        /// <param name="endTime">選択範囲の終了時間</param>
+        /// <param name="startTime">選択範囲の開始時間</param>
+        /// <returns>算出できた場合は true</returns>
+        private bool TryGetSelectionRange(IReadOnlyList<Object> selectedTargets, out float endTime, out float startTime) {
+            startTime = 0.0f;
+            endTime = 0.0f;
+
+            var clipModel = _model.ClipModel;
+            if (clipModel == null || selectedTargets == null || selectedTargets.Count == 0) {
+                return false;
+            }
+
+            var hasRange = false;
+            var minStartTime = float.MaxValue;
+            var maxEndTime = float.MinValue;
+            foreach (var target in selectedTargets) {
+                switch (target) {
+                    case SequenceEvent sequenceEvent:
+                        var eventModel = clipModel.FindEventModel(sequenceEvent);
+                        if (!TryGetEventRange(eventModel, out var eventStartTime, out var eventEndTime)) {
+                            continue;
+                        }
+
+                        minStartTime = Mathf.Min(minStartTime, eventStartTime);
+                        maxEndTime = Mathf.Max(maxEndTime, eventEndTime);
+                        hasRange = true;
+                        break;
+
+                    case SequenceTrack sequenceTrack:
+                        var trackModel = clipModel.FindTrackModel(sequenceTrack);
+                        if (!TryGetTrackRange(trackModel, out var trackStartTime, out var trackEndTime)) {
+                            continue;
+                        }
+
+                        minStartTime = Mathf.Min(minStartTime, trackStartTime);
+                        maxEndTime = Mathf.Max(maxEndTime, trackEndTime);
+                        hasRange = true;
+                        break;
+                }
+            }
+
+            if (!hasRange) {
+                return false;
+            }
+
+            startTime = minStartTime;
+            endTime = maxEndTime;
+            return true;
+        }
+
+        /// <summary>
+        /// Track の表示範囲を算出
+        /// </summary>
+        /// <param name="trackModel">対象の TrackModel</param>
+        /// <param name="startTime">表示範囲の開始時間</param>
+        /// <param name="endTime">表示範囲の終了時間</param>
+        /// <returns>算出できた場合は true</returns>
+        private bool TryGetTrackRange(SequenceTrackModel trackModel, out float startTime, out float endTime) {
+            startTime = 0.0f;
+            endTime = 0.0f;
+
+            if (trackModel == null || trackModel.EventModels.Count == 0) {
+                return false;
+            }
+
+            var ranges = trackModel.EventModels
+                .Select(eventModel => TryGetEventRange(eventModel, out var eventStartTime, out var eventEndTime)
+                    ? (valid: true, startTime: eventStartTime, endTime: eventEndTime)
+                    : (valid: false, startTime: 0.0f, endTime: 0.0f))
+                .Where(x => x.valid)
+                .ToArray();
+            if (ranges.Length == 0) {
+                return false;
+            }
+
+            startTime = ranges.Min(x => x.startTime);
+            endTime = ranges.Max(x => x.endTime);
+            return true;
+        }
+
+        /// <summary>
+        /// Event の表示範囲を算出
+        /// </summary>
+        /// <param name="eventModel">対象の EventModel</param>
+        /// <param name="startTime">表示範囲の開始時間</param>
+        /// <param name="endTime">表示範囲の終了時間</param>
+        /// <returns>算出できた場合は true</returns>
+        private bool TryGetEventRange(SequenceEventModel eventModel, out float startTime, out float endTime) {
+            startTime = 0.0f;
+            endTime = 0.0f;
+            if (eventModel == null) {
+                return false;
+            }
+
+            startTime = eventModel.GetStartTime();
+            endTime = eventModel switch {
+                SignalSequenceEventModel signalEventModel => signalEventModel.Time + signalEventModel.ViewDuration,
+                _ => eventModel.GetEndTime(),
+            };
+            endTime = Mathf.Max(startTime, endTime);
+            return true;
         }
     }
 }
