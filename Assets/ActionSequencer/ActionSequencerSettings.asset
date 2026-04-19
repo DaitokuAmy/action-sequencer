@@ -22,3 +22,9 @@ MonoBehaviour:
   - fullName: Test.TimerRangeSequenceEvent
     label: "\u30C6\u30B9\u30C8/\u30BF\u30A4\u30DE\u30FC"
     color: {r: 0.25, g: 0.5, b: 0.4083333, a: 1}
+  - fullName: PlaySoundSignalSequenceEvent
+    label: "\u5171\u901A/\u30B5\u30A6\u30F3\u30C9\u518D\u751F"
+    color: {r: 0.7019608, g: 0.7267974, b: 1, a: 1}
+  - fullName: FlyingRangeSequenceEvent
+    label: "\u7A7A\u4E2D\u671F\u9593"
+    color: {r: 1, g: 0.751634, b: 0.7019608, a: 1}

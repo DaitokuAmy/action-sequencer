@@ -14,11 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
   active: 1
-  time: 0.4
+  time: 0.36666667
   prefab: {fileID: 8846004282753536196, guid: 8e7585cfe058d3044a74307dc2b1780b, type: 3}
   offsetPosition: {x: 0, y: 0, z: 0}
   offsetAngles: {x: 0, y: 0, z: 0}
-  testDuration: 0.1
+--- !u!114 &-1915657593615666489
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 468c43142459b4d9782f6bc1d818823f, type: 3}
+  m_Name: LogSignalSequenceEvent
+  m_EditorClassIdentifier: 
+  label: 
+  active: 1
+  time: 1.1666666
+  text: "\u7740\u5730"
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tracks:
   - {fileID: 497499553068626419}
-  frameRate: -1
+  frameRate: 30
   filterData: {fileID: 0}
   includeClips:
   - {fileID: 11400000, guid: 950aedd48fde8b74a8452b84d8a454d1, type: 2}
@@ -54,6 +69,7 @@ MonoBehaviour:
   - {fileID: -7540210036600917106}
   - {fileID: 5492008818865290078}
   - {fileID: 6414136816052409574}
+  - {fileID: -1915657593615666489}
 --- !u!114 &5492008818865290078
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -68,11 +84,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   label: "\u5171\u901A/\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
   active: 1
-  time: 1.175
+  time: 1.1666666
   prefab: {fileID: 8846004282753536196, guid: 8e7585cfe058d3044a74307dc2b1780b, type: 3}
   offsetPosition: {x: 0, y: 0, z: 0}
   offsetAngles: {x: 0, y: 0, z: 0}
-  testDuration: 0.1
 --- !u!114 &6414136816052409574
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -87,5 +102,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   label: 
   active: 1
-  time: 1.175
-  text: test
+  time: 0.36666667
+  text: "\u30B8\u30E3\u30F3\u30D7\u958B\u59CB"

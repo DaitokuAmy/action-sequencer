@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7540210036600917106
+--- !u!114 &-187309294232255336
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,35 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03d5a44d3d23160488ba30478c4f6ec8, type: 3}
-  m_Name: PlayEffectSignalSequenceEvent
-  m_EditorClassIdentifier: 
-  label: "\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+  m_Script: {fileID: 11500000, guid: 3ac60661ee970b94cb8811b4788aae73, type: 3}
+  m_Name: PlaySoundSignalSequenceEvent
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundSignalSequenceEvent
+  label: 
   active: 1
-  time: 0.45
-  prefab: {fileID: 8846004282753536196, guid: 8e7585cfe058d3044a74307dc2b1780b, type: 3}
+  time: 0.36666667
+  soundLabel: Jump001
   offsetPosition: {x: 0, y: 0, z: 0}
   offsetAngles: {x: 0, y: 0, z: 0}
-  testDuration: 0.1
---- !u!114 &-2609615831507043047
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03d5a44d3d23160488ba30478c4f6ec8, type: 3}
-  m_Name: PlayEffectSignalSequenceEvent
-  m_EditorClassIdentifier: 
-  label: "\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
-  active: 1
-  time: 1.525
-  prefab: {fileID: 8846004282753536196, guid: 8e7585cfe058d3044a74307dc2b1780b, type: 3}
-  offsetPosition: {x: 0, y: 0, z: 0}
-  offsetAngles: {x: 0, y: 0, z: 0}
-  testDuration: 0.1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54,8 +34,7 @@ MonoBehaviour:
   - {fileID: 497499553068626419}
   frameRate: -1
   filterData: {fileID: 0}
-  includeClips:
-  - {fileID: 11400000, guid: 52fe1afb0e48ed74f8a3417f952236a2, type: 2}
+  includeClips: []
 --- !u!114 &497499553068626419
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -68,12 +47,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f3dc1b502acd48ad9608fc38cadbbcb, type: 3}
   m_Name: SequenceTrack
   m_EditorClassIdentifier: 
-  label: Effect
+  label: Sound
   sequenceEvents:
-  - {fileID: -7540210036600917106}
-  - {fileID: 6981048880060931027}
-  - {fileID: -2609615831507043047}
---- !u!114 &6981048880060931027
+  - {fileID: -187309294232255336}
+  - {fileID: 5775620576940740175}
+--- !u!114 &5775620576940740175
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -82,13 +60,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03d5a44d3d23160488ba30478c4f6ec8, type: 3}
-  m_Name: PlayEffectSignalSequenceEvent
-  m_EditorClassIdentifier: 
-  label: "\u30A8\u30D5\u30A7\u30AF\u30C8\u518D\u751F"
+  m_Script: {fileID: 11500000, guid: 3ac60661ee970b94cb8811b4788aae73, type: 3}
+  m_Name: PlaySoundSignalSequenceEvent
+  m_EditorClassIdentifier: Assembly-CSharp::PlaySoundSignalSequenceEvent
+  label: 
   active: 1
-  time: 0.55
-  prefab: {fileID: 8846004282753536196, guid: 8e7585cfe058d3044a74307dc2b1780b, type: 3}
+  time: 1.1666666
+  soundLabel: Impact001
   offsetPosition: {x: 0, y: 0, z: 0}
   offsetAngles: {x: 0, y: 0, z: 0}
-  testDuration: 0.1
