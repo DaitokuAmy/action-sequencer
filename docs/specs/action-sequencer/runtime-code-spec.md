@@ -130,13 +130,11 @@ Range 系も同様に以下を持ちます。
 登録は「イベント型に対して、どの Handler 定義をぶら下げるか」という意味を持ちます。  
 よって、同一イベント型に複数の Handler 型を紐づけることはサポート対象です。
 
-一方で、現在の Handler pool は Handler 型単位で再利用するため、同一 Handler 型を別設定で複数登録する運用はサポート対象外とします。
+現在の Handler pool は登録単位で保持します。  
+そのため、同一 Handler 型を別設定で複数登録する運用もサポート対象です。
 
 例:
-
-- 想定内
 `MyEvent -> HandlerA, HandlerB`
-- 想定外
 `MyEvent -> HandlerA(設定A), HandlerA(設定B)`
 
 ## 再生ライフサイクル
@@ -254,7 +252,7 @@ Runtime では以下を pool で再利用します。
 
 - `includeClips` は `Play` 時にその時点の参照を読む。再生中に asset を変更しても進行中再生には反映しない。
 - local 登録が存在するイベント型では global 登録は使われない。
-- 同一 Handler 型を別設定で複数登録する運用はサポート対象外。
+- 同一 Handler 型でも、登録単位で別設定の Handler を複数ぶら下げられる。
 - Runtime の時刻進行は呼び出し側の `Update(deltaTime)` に依存する。Animator の再生状態とは自動同期しない。
 
 ## 運用指針
