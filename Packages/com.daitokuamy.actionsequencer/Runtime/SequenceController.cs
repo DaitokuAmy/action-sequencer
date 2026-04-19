@@ -11,10 +11,10 @@ namespace ActionSequencer {
     /// </summary>
     public readonly struct SequenceHandle : IEnumerator, IDisposable {
         private readonly SequenceController _controller;
-        private readonly SequenceController.PlayingInfo _playingInfo;
+        private readonly int _playingId;
 
         /// <summary>再生完了しているか</summary>
-        public bool IsDone => _controller == null || _playingInfo == null || _playingInfo.IsDone;
+        public bool IsDone => _controller == null || !_controller.IsPlaying(_playingId);
 
         /// <summary>IEnumerator用</summary>
         object IEnumerator.Current => null;
@@ -22,9 +22,9 @@ namespace ActionSequencer {
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        internal SequenceHandle(SequenceController controller, SequenceController.PlayingInfo playingInfo) {
+        internal SequenceHandle(SequenceController controller, int playingId) {
             _controller = controller;
-            _playingInfo = playingInfo;
+            _playingId = playingId;
         }
 
         /// <summary>
@@ -49,11 +49,11 @@ namespace ActionSequencer {
         /// 停止
         /// </summary>
         public void Stop() {
-            if (_controller == null || _playingInfo == null || _playingInfo.IsDone) {
+            if (_controller == null) {
                 return;
             }
 
-            _controller.Stop(_playingInfo);
+            _controller.Stop(_playingId);
         }
     }
 
@@ -77,6 +77,8 @@ namespace ActionSequencer {
 
             /// <summary>再生しているClip</summary>
             public SequenceClip Clip;
+            /// <summary>再生ID</summary>
+            public int Id;
             /// <summary>現在の再生時間</summary>
             public float Time;
 
@@ -118,7 +120,9 @@ namespace ActionSequencer {
 
         // 再生中情報リスト
         private readonly List<PlayingInfo> _playingInfos = new();
+        private readonly Dictionary<int, PlayingInfo> _playingInfoMap = new();
         private readonly ObjectPool<PlayingInfo> _playingInfoPool;
+        private int _nextPlayingId = 1;
         // 削除対象のPlayingInfoIndexリスト（高速化用にメンバー化）
         private readonly List<int> _removePlayingIndices = new();
         // ハンドラインスタンス用Pool
@@ -245,7 +249,7 @@ namespace ActionSequencer {
         /// </summary>
         public static void ResetGlobalEventHandlers() {
             ResetGlobalSignalEventHandlers();
-            ResetGlobalSignalEventHandlers();
+            ResetGlobalRangeEventHandlers();
         }
 
         /// <summary>
@@ -380,8 +384,9 @@ namespace ActionSequencer {
             // 再生用の情報を追加
             var playingInfo = CreatePlayingInfo(clip, startOffset);
             _playingInfos.Add(playingInfo);
+            _playingInfoMap.Add(playingInfo.Id, playingInfo);
 
-            return new SequenceHandle(this, playingInfo);
+            return new SequenceHandle(this, playingInfo.Id);
         }
 
         /// <summary>
@@ -416,6 +421,7 @@ namespace ActionSequencer {
             }
 
             _playingInfos.Clear();
+            _playingInfoMap.Clear();
         }
 
         /// <summary>
@@ -514,16 +520,42 @@ namespace ActionSequencer {
             // 再生終了した物を除外
             for (var i = _removePlayingIndices.Count - 1; i >= 0; i--) {
                 var index = _removePlayingIndices[i];
+                var playingInfo = _playingInfos[index];
+                _playingInfoMap.Remove(playingInfo.Id);
                 _playingInfos.RemoveAt(index);
+                ReleasePlayingInfo(playingInfo);
             }
 
             _removePlayingIndices.Clear();
         }
 
         /// <summary>
+        /// 指定した再生IDが有効か
+        /// </summary>
+        /// <param name="playingId">再生ID</param>
+        internal bool IsPlaying(int playingId) {
+            if (playingId <= 0) {
+                return false;
+            }
+
+            return _playingInfoMap.ContainsKey(playingId);
+        }
+
+        /// <summary>
         /// 停止処理
         /// </summary>
-        internal void Stop(PlayingInfo playingInfo) {
+        internal void Stop(int playingId) {
+            if (!_playingInfoMap.TryGetValue(playingId, out var playingInfo)) {
+                return;
+            }
+
+            Stop(playingInfo);
+        }
+
+        /// <summary>
+        /// 停止処理
+        /// </summary>
+        private void Stop(PlayingInfo playingInfo) {
             if (playingInfo == null) {
                 return;
             }
@@ -532,6 +564,8 @@ namespace ActionSequencer {
             if (!_playingInfos.Remove(playingInfo)) {
                 return;
             }
+
+            _playingInfoMap.Remove(playingInfo.Id);
 
             // 実行中の物を全部キャンセル
             for (var i = playingInfo.ActiveSignalEvents.Count - 1; i >= 0; i--) {
@@ -566,6 +600,7 @@ namespace ActionSequencer {
         private PlayingInfo CreatePlayingInfo(SequenceClip clip, float startOffset) {
             _playingInfoPool.Get(out var playingInfo);
             playingInfo.Clip = clip;
+            playingInfo.Id = GetNextPlayingId();
             playingInfo.Time = startOffset;
 
             bool TryGetHandlerInfo(Dictionary<Type, List<EventHandlerInfo>> localInfos,
@@ -652,6 +687,7 @@ namespace ActionSequencer {
         /// </summary>
         private void ReleasePlayingInfo(PlayingInfo playingInfo) {
             playingInfo.Clip = null;
+            playingInfo.Id = 0;
             playingInfo.Time = 0.0f;
             playingInfo.ActiveSignalEvents.Clear();
             playingInfo.ActiveRangeEvents.Clear();
@@ -663,7 +699,22 @@ namespace ActionSequencer {
                 pair.Value.Clear();
             }
 
+            playingInfo.SignalEventHandlers.Clear();
+            playingInfo.RangeEventHandlers.Clear();
             _playingInfoPool.Release(playingInfo);
+        }
+
+        /// <summary>
+        /// 次の再生IDを取得
+        /// </summary>
+        private int GetNextPlayingId() {
+            var playingId = _nextPlayingId;
+            while (playingId <= 0 || _playingInfoMap.ContainsKey(playingId)) {
+                playingId++;
+            }
+
+            _nextPlayingId = playingId + 1;
+            return playingId;
         }
 
         /// <summary>
