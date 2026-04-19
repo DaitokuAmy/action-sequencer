@@ -48,8 +48,8 @@ namespace ActionSequencer.Editor {
         // OnDisableで廃棄されるDisposablesのリスト
         private List<IDisposable> _disposables = new List<IDisposable>();
         // 再生主
-        private GameObject _controllerProviderOwner;
-        private ISequenceControllerProvider _controllerProvider;
+        private GameObject _playerProviderOwner;
+        private ISequencePlayerProvider _playerProvider;
 
         /// <summary>
         /// Windowを開く処理
@@ -171,24 +171,24 @@ namespace ActionSequencer.Editor {
         }
 
         /// <summary>
-        /// ControllerProviderを更新
+        /// PlayerProviderを更新
         /// </summary>
-        private void UpdateControllerProvider() {
+        private void UpdatePlayerProvider() {
             if (!Application.isPlaying) {
-                _controllerProviderOwner = null;
-                _controllerProvider = null;
+                _playerProviderOwner = null;
+                _playerProvider = null;
                 return;
             }
 
             var activeObject = Selection.activeGameObject;
-            if (activeObject != null && activeObject != _controllerProviderOwner) {
-                var provider = activeObject.GetComponentInParent<ISequenceControllerProvider>();
+            if (activeObject != null && activeObject != _playerProviderOwner) {
+                var provider = activeObject.GetComponentInParent<ISequencePlayerProvider>();
                 if (provider == null) {
                     return;
                 }
 
-                _controllerProviderOwner = activeObject;
-                _controllerProvider = provider;
+                _playerProviderOwner = activeObject;
+                _playerProvider = provider;
             }
         }
 
@@ -411,14 +411,14 @@ namespace ActionSequencer.Editor {
                 return;
             }
 
-            UpdateControllerProvider();
+            UpdatePlayerProvider();
 
             float GetSeekTime(SequenceClip clip) {
                 var result = -1.0f;
 
-                // SequenceControllerがあれば優先させる
-                var sequenceController = _controllerProvider?.SequenceController;
-                result = sequenceController?.GetSequenceTime(clip) ?? -1.0f;
+                // SequencePlayerがあれば優先させる
+                var sequencePlayer = _playerProvider?.SequencePlayer;
+                result = sequencePlayer?.GetSequenceTime(clip) ?? -1.0f;
                 if (result >= 0.0f) {
                     return result;
                 }
@@ -449,7 +449,7 @@ namespace ActionSequencer.Editor {
         /// 更新処理
         /// </summary>
         private void Update() {
-            if (_controllerProvider != null) {
+            if (_playerProvider != null) {
                 Repaint();
             }
         }

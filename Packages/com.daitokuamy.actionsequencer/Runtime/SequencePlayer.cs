@@ -10,11 +10,11 @@ namespace ActionSequencer {
     /// Sequence再生管理用ハンドル
     /// </summary>
     public readonly struct SequenceHandle : IEnumerator, IDisposable {
-        private readonly SequenceController _controller;
+        private readonly SequencePlayer _player;
         private readonly int _playingId;
 
         /// <summary>再生完了しているか</summary>
-        public bool IsDone => _controller == null || !_controller.IsPlaying(_playingId);
+        public bool IsDone => _player == null || !_player.IsPlaying(_playingId);
 
         /// <summary>IEnumerator用</summary>
         object IEnumerator.Current => null;
@@ -22,8 +22,8 @@ namespace ActionSequencer {
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        internal SequenceHandle(SequenceController controller, int playingId) {
-            _controller = controller;
+        internal SequenceHandle(SequencePlayer player, int playingId) {
+            _player = player;
             _playingId = playingId;
         }
 
@@ -49,18 +49,18 @@ namespace ActionSequencer {
         /// 停止
         /// </summary>
         public void Stop() {
-            if (_controller == null) {
+            if (_player == null) {
                 return;
             }
 
-            _controller.Stop(_playingId);
+            _player.Stop(_playingId);
         }
     }
 
     /// <summary>
-    /// Sequence再生用クラス
+    /// Sequence再生用プレイヤー
     /// </summary>
-    public sealed class SequenceController : IReadOnlySequenceController, IDisposable {
+    public sealed class SequencePlayer : IReadOnlySequencePlayer, IDisposable {
         /// <summary>
         /// 再生中情報
         /// </summary>
@@ -135,7 +135,7 @@ namespace ActionSequencer {
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public SequenceController() {
+        public SequencePlayer() {
             _playingInfoPool = new ObjectPool<PlayingInfo>(() => new PlayingInfo());
         }
 

@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// サンプル用コード
 /// </summary>
-public class Sample : MonoBehaviour, ISequenceControllerProvider {
+public class Sample : MonoBehaviour, ISequencePlayerProvider {
     // アクション情報
     [Serializable]
     private class ActionInfo {
@@ -21,15 +21,15 @@ public class Sample : MonoBehaviour, ISequenceControllerProvider {
 
     public float startOffset;
 
-    // SequenceClip制御用コントローラ
-    private SequenceController _sequenceController;
+    // SequenceClip再生用プレイヤー
+    private SequencePlayer _sequencePlayer;
     // 以前再生したActionによるSequenceHandle
     private SequenceHandle _actionSequenceHandle;
     // 現在流すべきActionIndex
     private int _actionIndex;
 
     // Preview用
-    SequenceController ISequenceControllerProvider.SequenceController => _sequenceController;
+    SequencePlayer ISequencePlayerProvider.SequencePlayer => _sequencePlayer;
 
     /// <summary>
     /// 開始処理
@@ -37,12 +37,12 @@ public class Sample : MonoBehaviour, ISequenceControllerProvider {
     private void Start() {
         Application.targetFrameRate = 30;
         
-        _sequenceController = new SequenceController();
+        _sequencePlayer = new SequencePlayer();
 
         // 各種イベントと振る舞いを紐づける
-        _sequenceController.BindSignalEventHandler<LogSignalSequenceEvent, LogSignalSequenceEventHandler>();
-        _sequenceController.BindRangeEventHandler<TimerRangeSequenceEvent, TimerRangeSequenceEventHandler>();
-        _sequenceController.BindSignalEventHandler<PlayEffectSignalSequenceEvent, PlayEffectSignalSequenceEventHandler>(
+        _sequencePlayer.BindSignalEventHandler<LogSignalSequenceEvent, LogSignalSequenceEventHandler>();
+        _sequencePlayer.BindRangeEventHandler<TimerRangeSequenceEvent, TimerRangeSequenceEventHandler>();
+        _sequencePlayer.BindSignalEventHandler<PlayEffectSignalSequenceEvent, PlayEffectSignalSequenceEventHandler>(
             handler => { handler.Setup(_animator.transform); });
     }
 
@@ -55,15 +55,15 @@ public class Sample : MonoBehaviour, ISequenceControllerProvider {
             PlayAction(_actionIndex);
         }
         
-        _sequenceController.Update(Time.deltaTime);
+        _sequencePlayer.Update(Time.deltaTime);
     }
 
     /// <summary>
     /// 廃棄時処理
     /// </summary>
     private void OnDestroy() {
-        _sequenceController.ResetEventHandlers();
-        _sequenceController?.Dispose();
+        _sequencePlayer.ResetEventHandlers();
+        _sequencePlayer?.Dispose();
     }
 
     /// <summary>
@@ -80,6 +80,6 @@ public class Sample : MonoBehaviour, ISequenceControllerProvider {
         // モーション再生と同時にシーケンスを流す
         var actionInfo = _actionInfos[actionIndex];
         _animator.SetTrigger(actionInfo.triggerName);
-        _actionSequenceHandle = _sequenceController.Play(actionInfo.SequenceClip, startOffset);
+        _actionSequenceHandle = _sequencePlayer.Play(actionInfo.SequenceClip, startOffset);
     }
 }

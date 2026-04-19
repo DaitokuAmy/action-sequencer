@@ -39,33 +39,33 @@ ActionSequencerにはAnimationClipをPreviewする機能がついています
 ![action_sequencer_preview](https://user-images.githubusercontent.com/6957962/226096510-3aa669d6-4112-413e-8f07-d561603a4c4e.gif)
 
 #### ライフサイクル
-初期化はSequenceControllerというクラス(Sequenceを実行するためのクラス)を作成する所から始まります
+初期化はSequencePlayerというクラス(Sequenceを再生するためのクラス)を作成する所から始まります
 ```C#
-_sequenceController = new SequenceController();
+_sequencePlayer = new SequencePlayer();
 ```
 これだけでは更新が行われないため、適切なイベント発火タイミングを行いたい場所で更新を呼び出します
 ```C#
-_sequenceController.Update(Time.deltaTime);
+_sequencePlayer.Update(Time.deltaTime);
 ```
 終了時はDisposeを行います（もし実行中の区間イベントがあればキャンセルが発火されます）
 ```C#
-_sequenceController.Dispose();
+_sequencePlayer.Dispose();
 ```
 #### シーケンスの実行
-SequenceClipをAssetとして読み込んだ状態で、SequenceControllerに渡す事でシーケンスが始まります  
-また、Sequence自体は並列再生可能なのでSequenceController一つで様々な用途のイベント管理が可能です
+SequenceClipをAssetとして読み込んだ状態で、SequencePlayerに渡す事でシーケンスが始まります  
+また、Sequence自体は並列再生可能なのでSequencePlayer一つで様々な用途のイベント管理が可能です
 ```C#
-_sequenceController.Play(sequenceClip);
+_sequencePlayer.Play(sequenceClip);
 
 // 開始時間をずらす事も可能(この例は1.0sec)
-// _sequenceController.Play(sequenceClip, 1.0f);
+// _sequencePlayer.Play(sequenceClip, 1.0f);
 ```
 #### シーケンスの停止
 基本的には全部流れ終わると自動で止まりますが、止めたい場合はPlayの戻り値に来たHandleを利用して停止します
 ```C#
-_sequenceHandle = _sequenceController.Play(sequenceClip);
+_sequenceHandle = _sequencePlayer.Play(sequenceClip);
   :
-_sequenceController.Stop(_sequenceHandle);
+_sequenceHandle.Stop();
 ```
 #### イベントクラスの作成
 基本機能のままだと何も出来ないため、アプリケーション固有のイベントクラスを以下の様に作成します
@@ -141,8 +141,8 @@ public class TimerRangeSequenceEventHandler : RangeSequenceEventHandler<TimerRan
 イベントの作成、イベントハンドリング処理の記述だけでは動かせず、それらを紐づけ(Bind)する事で機能が動作するようになります  
 イベントのハンドリングが必要ないシーンなどでは<b>Bindを行わない、もしくは違うHandlerをBindするなど</b>といった使い分けが可能です
 ```C#
-_sequenceController.BindSignalEventHandler<LogSignalSequenceEvent, LogSignalSequenceEventHandler>();
-_sequenceController.BindRangeEventHandler<TimerRangeSequenceEvent, TimerRangeSequenceEventHandler>();
+_sequencePlayer.BindSignalEventHandler<LogSignalSequenceEvent, LogSignalSequenceEventHandler>();
+_sequencePlayer.BindRangeEventHandler<TimerRangeSequenceEvent, TimerRangeSequenceEventHandler>();
 ```
 #### SequenceClipの作成
 Projectウィンドウにて、<b>「Create > Action Sequencer > Sequence Clip」</b>と選択し、SequenceClipのアセットを作成します

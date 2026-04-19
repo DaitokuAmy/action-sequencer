@@ -2,9 +2,9 @@ using System;
 
 namespace ActionSequencer {
     /// <summary>
-    /// 外部公開用のSequenceController
+    /// 外部公開用のSequencePlayer
     /// </summary>
-    public interface IReadOnlySequenceController {
+    public interface IReadOnlySequencePlayer {
         /// <summary>再生中のSequenceClipが存在するか</summary>
         bool HasPlayingClip { get; }
         
