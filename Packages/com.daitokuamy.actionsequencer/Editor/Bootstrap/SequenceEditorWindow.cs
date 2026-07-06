@@ -38,12 +38,25 @@ namespace ActionSequencer.Editor {
         /// <summary>
         /// Asset オープン時に Window を開く
         /// </summary>
+        #if UNITY_6000_5_OR_NEWER
+        /// <param name="entityId">開かれた asset の entity id</param>
+        /// <param name="line">対象行番号</param>
+        /// <returns>SequenceClip を処理した場合は true</returns>
+        [OnOpenAsset(0)]
+        public static bool OnOpenAsset(EntityId entityId, int line) {
+            return OpenAsset(EditorUtility.EntityIdToObject(entityId));
+        }
+        #else
         /// <param name="instanceId">開かれた asset の instance id</param>
         /// <param name="line">対象行番号</param>
         /// <returns>SequenceClip を処理した場合は true</returns>
         [OnOpenAsset(0)]
         public static bool OnOpenAsset(int instanceId, int line) {
-            var asset = EditorUtility.InstanceIDToObject(instanceId);
+            return OpenAsset(EditorUtility.InstanceIDToObject(instanceId));
+        }
+        #endif
+
+        private static bool OpenAsset(UnityEngine.Object asset) {
             if (asset is not SequenceClip clip) {
                 return false;
             }
